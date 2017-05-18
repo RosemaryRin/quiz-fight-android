@@ -1,6 +1,8 @@
 package rogueone.quizfight;
 
+import android.content.Intent;
 import android.content.res.Resources;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -52,5 +54,16 @@ public class HomeActivity extends AppCompatActivity {
             opponent.setText(opponents[i]);
             score.setText(scores[i][0]+" - "+scores[i][1]);
         }
+
+
+        // start duel button
+        View rootView = findViewById(android.R.id.content);
+        FloatingActionButton startDuelFAB = (FloatingActionButton) rootView.findViewById(R.id.StartDuelFAB);
+        startDuelFAB.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(v.getContext(), StartDuel.class));
+            }
+        });
     }
 }

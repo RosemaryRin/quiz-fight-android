@@ -3,7 +3,7 @@
     <string name="user_image">User image</string>
     <string name="start_duel">Start duel</string>
     <string name="last_duels">Last duels:</string>
-    <string name="victory_defeat_icon">Victory or defeat icon</string>
+    <string name="result_icon">Duel result icon</string>
     <string name="history">View all duels</string>
     <string name="no_duels">No duels found</string>
 </resources>

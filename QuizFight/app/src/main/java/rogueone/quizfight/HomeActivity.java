@@ -5,10 +5,13 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
 public class HomeActivity extends AppCompatActivity {
+
+    private static final int DUELS_SHOWN = 5;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -17,8 +20,8 @@ public class HomeActivity extends AppCompatActivity {
 
         //FIXME: get proper data from login and db
         String username = "abeccaro";
-        String[] opponents = {"mdipirro", "emanuelec", "rajej", "pincoPallo", "Tizio"};
-        int[][] scores = {{10,7},{5,9},{10,8},{9,9},{12,8}};
+        String[] opponents = {"mdipirro", "emanuelec", "rajej", "Pinco Pallo", "Tizio", "Caio", "Sempronio", "Player1234", "Tua mamma", "armir"};
+        int[][] scores = {{10,7},{5,9},{10,8},{9,9},{12,8},{10,7},{5,9},{10,8},{9,9},{12,8}};
 
         // setting username from login
         final TextView usernameView = (TextView) findViewById(R.id.UsernameView);
@@ -29,16 +32,38 @@ public class HomeActivity extends AppCompatActivity {
             findViewById(R.id.NoDuels).setVisibility(View.GONE);
             findViewById(R.id.DuelsHistory).setVisibility(View.VISIBLE);
             findViewById(R.id.ListTest).setVisibility(View.VISIBLE);
+
+            // initializing showed data arrays
+            String[] opponentsShown = new String[DUELS_SHOWN];
+            int[][] scoresShown = new int[DUELS_SHOWN][2];
+            if (opponents.length < DUELS_SHOWN) {
+                opponentsShown = opponents;
+                scoresShown = scores;
+            }
+            else {
+                System.arraycopy(opponents, 0, opponentsShown, 0, DUELS_SHOWN);
+                System.arraycopy(scores, 0, scoresShown, 0, DUELS_SHOWN);
+            }
+
+            final ListView listview = (ListView) findViewById(R.id.ListTest);
+
+            final DuelSummaryAdapter listAdapter = new DuelSummaryAdapter(this, opponentsShown, scoresShown);
+            listview.setAdapter(listAdapter);
         }
 
-        final ListView listview = (ListView) findViewById(R.id.ListTest);
 
-        final DuelSummaryAdapter listAdapter = new DuelSummaryAdapter(this, opponents, scores);
-        listview.setAdapter(listAdapter);
+        // duels history button
+        View rootView = findViewById(android.R.id.content);
+        Button historyButton = (Button) rootView.findViewById(R.id.DuelsHistory);
+        historyButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //startActivity(new Intent(v.getContext(), DuelsHistory.class));
+            }
+        });
 
 
         // start duel button
-        View rootView = findViewById(android.R.id.content);
         FloatingActionButton startDuelFAB = (FloatingActionButton) rootView.findViewById(R.id.StartDuelFAB);
         startDuelFAB.setOnClickListener(new View.OnClickListener() {
             @Override

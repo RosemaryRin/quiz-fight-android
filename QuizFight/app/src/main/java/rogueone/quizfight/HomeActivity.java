@@ -29,9 +29,11 @@ public class HomeActivity extends AppCompatActivity {
 
         // if there's at least one old duel hide empty message and show old duels list
         if (opponents.length > 0) {
+            final ListView listView = (ListView) findViewById(R.id.ListTest);
+
             findViewById(R.id.NoDuels).setVisibility(View.GONE);
             findViewById(R.id.DuelsHistory).setVisibility(View.VISIBLE);
-            findViewById(R.id.ListTest).setVisibility(View.VISIBLE);
+            listView.setVisibility(View.VISIBLE);
 
             // initializing showed data arrays
             String[] opponentsShown = new String[DUELS_SHOWN];
@@ -45,10 +47,8 @@ public class HomeActivity extends AppCompatActivity {
                 System.arraycopy(scores, 0, scoresShown, 0, DUELS_SHOWN);
             }
 
-            final ListView listview = (ListView) findViewById(R.id.ListTest);
-
             final DuelSummaryAdapter listAdapter = new DuelSummaryAdapter(this, opponentsShown, scoresShown);
-            listview.setAdapter(listAdapter);
+            listView.setAdapter(listAdapter);
         }
 
 
@@ -58,7 +58,7 @@ public class HomeActivity extends AppCompatActivity {
         historyButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //startActivity(new Intent(v.getContext(), DuelsHistory.class));
+                startActivity(new Intent(v.getContext(), DuelsHistory.class));
             }
         });
 

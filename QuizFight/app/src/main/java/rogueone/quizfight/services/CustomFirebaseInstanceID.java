@@ -3,6 +3,7 @@ package rogueone.quizfight.services;
 import android.util.Log;
 
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.games.Games;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.FirebaseInstanceIdService;
 
@@ -63,7 +64,7 @@ public class CustomFirebaseInstanceID extends FirebaseInstanceIdService {
                 .build();
         EndpointInterface apiService = retrofit.create(EndpointInterface.class);
         Call<ResponseBody> addToken = apiService.addToken(new User(
-                context.getGoogleAPIHelper().getUserEmailAddress(),
+                Games.getCurrentAccountName(context.getClient()),
                 FirebaseInstanceId.getInstance().getToken().toString()
         ));
         addToken.enqueue(new Callback<ResponseBody>() {

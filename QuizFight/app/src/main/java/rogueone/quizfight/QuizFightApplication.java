@@ -1,10 +1,10 @@
 package rogueone.quizfight;
 
 import android.app.Application;
+import android.support.annotation.NonNull;
 
 import com.google.android.gms.common.api.GoogleApiClient;
-
-import rogueone.quizfight.utils.GoogleAPIHelper;
+import com.google.android.gms.games.Games;
 
 /**
  * Created by mdipirro on 19/05/17.
@@ -12,16 +12,18 @@ import rogueone.quizfight.utils.GoogleAPIHelper;
 
 public class QuizFightApplication extends Application {
 
-    private GoogleAPIHelper gHelper;
+    private GoogleApiClient client;
 
     @Override
     public void onCreate() {
         super.onCreate();
-
-        gHelper = new GoogleAPIHelper(this);
     }
 
-    public GoogleAPIHelper getGoogleAPIHelper() {
-        return gHelper;
+    public void setClient(@NonNull GoogleApiClient client) {
+        this.client = client;
+    }
+
+    public GoogleApiClient getClient() {
+        return client;
     }
 }

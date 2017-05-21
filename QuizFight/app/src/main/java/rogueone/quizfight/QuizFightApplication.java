@@ -4,7 +4,6 @@ import android.app.Application;
 import android.support.annotation.NonNull;
 
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.games.Games;
 
 /**
  * Created by mdipirro on 19/05/17.

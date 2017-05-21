@@ -17,8 +17,8 @@ import rogueone.quizfight.HomeActivity;
  * Created by mdipirro on 20/05/17.
  */
 
-public class DuelResultMessagingService extends FirebaseMessagingService {
-    private static final String TAG = "DuelResultMessagingService";
+public class MessagingService extends FirebaseMessagingService {
+    private static final String TAG = "MessagingService";
 
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
@@ -36,9 +36,10 @@ public class DuelResultMessagingService extends FirebaseMessagingService {
     /**
      * Create and show a simple notification containing the received FCM message.
      *
-     * @param messageBody FCM message body received.
+     * @param title FCM title received
+     * @param notificationBody FCM message body received.
      */
-    private void sendNotification(String title, String messageBody) {
+    private void sendNotification(String title, String notificationBody) {
         Intent intent = new Intent(this, HomeActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
@@ -47,7 +48,7 @@ public class DuelResultMessagingService extends FirebaseMessagingService {
         Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
                 .setContentTitle(title)
-                .setContentText(messageBody)
+                .setContentText(notificationBody)
                 .setAutoCancel(true)
                 .setSound(defaultSoundUri)
                 .setContentIntent(pendingIntent);

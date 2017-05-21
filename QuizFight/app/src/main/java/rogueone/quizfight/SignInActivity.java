@@ -12,8 +12,6 @@ import rogueone.quizfight.utils.BaseGameUtils;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -34,11 +32,6 @@ public class SignInActivity extends AppCompatActivity implements
     private static final int RC_SIGN_IN = 9001;
 
     private GoogleApiClient client;
-
-    private boolean resolvingConnectionFailure  = false;
-    private boolean autoStartSignInFlow         = true;
-    private boolean signInClicked               = false;
-    private boolean inSignInFlow                = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,18 +55,13 @@ public class SignInActivity extends AppCompatActivity implements
     @Override
     protected void onStart() {
         super.onStart();
-        if (!inSignInFlow) {
-            // auto sign in
-            client.connect();
-        }
+        client.connect();
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == RESULT_OK) {
-            Intent intent = new Intent(SignInActivity.this, HomeActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            startActivity(intent);
+            startHomeActivity();
         }
     }
 
@@ -91,12 +79,7 @@ public class SignInActivity extends AppCompatActivity implements
         addToken.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                /*Intent intent = new Intent(context, HomeActivity.class);
-                context.startActivity(intent);*/
-                Intent intent = new Intent(SignInActivity.this, HomeActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-                startActivityIfNeeded(intent, 0);
-
+                startHomeActivity();
             }
 
             @Override
@@ -114,6 +97,17 @@ public class SignInActivity extends AppCompatActivity implements
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
         BaseGameUtils.resolveConnectionFailure(this, client, connectionResult,
-                RC_SIGN_IN, R.string.signin_other_error);
+                    RC_SIGN_IN, R.string.signin_other_error);
+
+    }
+
+    /**
+     * Start HomeActivity and finish() the current activity. Finishing is necessary to prevent
+     * SignInActivity to be created again when the application is in background.
+     */
+    private void startHomeActivity() {
+        Intent intent = new Intent(SignInActivity.this, HomeActivity.class);
+        finish();
+        startActivity(intent);
     }
 }

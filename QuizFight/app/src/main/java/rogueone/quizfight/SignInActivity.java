@@ -10,6 +10,7 @@ import rogueone.quizfight.utils.BaseGameUtils;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.provider.Settings.Secure;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -18,6 +19,8 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.games.Games;
 import com.google.firebase.iid.FirebaseInstanceId;
+
+import static java.security.AccessController.getContext;
 
 /**
  * Created by mdipirro on 19/05/17.
@@ -66,8 +69,11 @@ public class SignInActivity extends AppCompatActivity implements
     public void onConnected(Bundle bundle) {
         String token = FirebaseInstanceId.getInstance().getToken();
         if (token != null) {
-            new AddToken(new User(Games.getCurrentAccountName(client), token))
-                    .call(new Callback<ResponseBody>() {
+            new AddToken(new User(
+                    Games.getCurrentAccountName(client),
+                    token,
+                    Secure.getString(getContentResolver(), Secure.ANDROID_ID)
+            )).call(new Callback<ResponseBody>() {
                 @Override
                 public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                     startHomeActivity();

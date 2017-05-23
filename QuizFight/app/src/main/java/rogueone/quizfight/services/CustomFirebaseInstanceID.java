@@ -13,6 +13,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 import rogueone.quizfight.QuizFightApplication;
 import rogueone.quizfight.R;
 import rogueone.quizfight.models.User;
+import rogueone.quizfight.rest.AddToken;
 import rogueone.quizfight.rest.EndpointInterface;
 
 /**
@@ -47,25 +48,17 @@ public class CustomFirebaseInstanceID extends FirebaseInstanceIdService {
      */
     private void sendRegistrationToServer(String token) {
         QuizFightApplication context = (QuizFightApplication)getApplicationContext();
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(context.getString(R.string.base_url))
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-        EndpointInterface apiService = retrofit.create(EndpointInterface.class);
-        Call<ResponseBody> addToken = apiService.addToken(new User(
-                Games.getCurrentAccountName(context.getClient()),
-                token
-        ));
-        addToken.enqueue(new Callback<ResponseBody>() {
-            @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                // TODO
-            }
+        new AddToken(new User(Games.getCurrentAccountName(context.getClient()), token))
+                .call(new Callback<ResponseBody>() {
+                    @Override
+                    public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                        // TODO
+                    }
 
-            @Override
-            public void onFailure(Call<ResponseBody> call, Throwable t) {
-                // TODO
-            }
-        });
+                    @Override
+                    public void onFailure(Call<ResponseBody> call, Throwable t) {
+                        // TODO
+                    }
+                });
     }
 }

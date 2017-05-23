@@ -2,6 +2,8 @@
     <string name="app_name">Quiz Fight</string>
     <string name="app_id">628056279109</string>
 
+    <string name="snapshot_name">quiz-fight-snapshot</string>
+
     <string name="title_activity_start_duel">Start Duel</string>
     <string name="title_activity_duels_history">Duels History</string>
 

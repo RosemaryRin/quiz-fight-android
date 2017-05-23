@@ -1,8 +1,11 @@
 package rogueone.quizfight;
 
 import android.app.LoaderManager;
+import android.content.Context;
 import android.content.Intent;
 import android.content.Loader;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -11,6 +14,7 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.games.Games;
 
 import butterknife.BindView;
@@ -31,42 +35,17 @@ public class HomeActivity extends AppCompatActivity implements
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // TODO crash con notifiche perché non trova il client google
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
         ButterKnife.bind(this);
 
         getLoaderManager().initLoader(SAVED_GAMES_LOADER, null, this);
 
-        //FIXME: get proper data from login and db
-        String[] opponents = {"mdipirro", "emanuelec", "rajej", "Pinco Pallo", "Tizio", "Caio", "Sempronio", "Player1234", "Tua mamma", "armir"};
-        int[][] scores = {{10,7},{5,9},{10,8},{9,9},{12,8},{10,7},{5,9},{10,8},{9,9},{12,8}};
-
         // setting username from login
         username.setText(Games.Players.getCurrentPlayer(
                 ((QuizFightApplication)getApplicationContext()).getClient()
         ).getDisplayName());
-
-        // if there's at least one old duel hide empty message and show old duels list
-        /*if (opponents.length > 0) {
-
-
-
-            // initializing showed data arrays
-            String[] opponentsShown = new String[DUELS_SHOWN];
-            int[][] scoresShown = new int[DUELS_SHOWN][2];
-            if (opponents.length < DUELS_SHOWN) {
-                opponentsShown = opponents;
-                scoresShown = scores;
-            }
-            else {
-                System.arraycopy(opponents, 0, opponentsShown, 0, DUELS_SHOWN);
-                System.arraycopy(scores, 0, scoresShown, 0, DUELS_SHOWN);
-            }
-
-            final DuelSummaryAdapter listAdapter = new DuelSummaryAdapter(this, opponentsShown, scoresShown);
-            listView.setAdapter(listAdapter);
-        }*/
-
 
         // duels history button
         View rootView = findViewById(android.R.id.content);
@@ -113,4 +92,17 @@ public class HomeActivity extends AppCompatActivity implements
 
     @Override
     public void onLoaderReset(Loader<SavedGames> loader) {}
+
+    //FIXME temporary
+    public void signOut(View v) {
+        v.setEnabled(false); //prevent another click
+        GoogleApiClient client = ((QuizFightApplication)getApplicationContext()).getClient();
+        Games.signOut(client);
+        client.disconnect();
+
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putBoolean(getString(R.string.signed_in), false);
+        editor.apply();
+    }
 }

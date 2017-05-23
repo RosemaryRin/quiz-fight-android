@@ -12,6 +12,7 @@ import rogueone.quizfight.utils.BaseGameUtils;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -28,7 +29,6 @@ import com.google.firebase.iid.FirebaseInstanceId;
 public class SignInActivity extends AppCompatActivity implements
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
-    private static final String TAG     = "SignInActivity";
     private static final int RC_SIGN_IN = 9001;
 
     private GoogleApiClient client;
@@ -74,7 +74,7 @@ public class SignInActivity extends AppCompatActivity implements
         EndpointInterface apiService = retrofit.create(EndpointInterface.class);
         Call<ResponseBody> addToken = apiService.addToken(new User(
                 Games.getCurrentAccountName(client),
-                FirebaseInstanceId.getInstance().getToken().toString()
+                FirebaseInstanceId.getInstance().getToken()
         ));
         addToken.enqueue(new Callback<ResponseBody>() {
             @Override
@@ -95,7 +95,7 @@ public class SignInActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void onConnectionFailed(ConnectionResult connectionResult) {
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
         BaseGameUtils.resolveConnectionFailure(this, client, connectionResult,
                     RC_SIGN_IN, R.string.signin_other_error);
 

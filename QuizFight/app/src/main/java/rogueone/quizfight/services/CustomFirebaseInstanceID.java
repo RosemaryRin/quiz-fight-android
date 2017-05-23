@@ -1,8 +1,5 @@
 package rogueone.quizfight.services;
 
-import android.util.Log;
-
-import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.games.Games;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.FirebaseInstanceIdService;
@@ -24,18 +21,11 @@ import rogueone.quizfight.rest.EndpointInterface;
 
 public class CustomFirebaseInstanceID extends FirebaseInstanceIdService {
 
-    private static final String TAG = "CustomFirebaseInstanceID";
-
-    private GoogleApiClient client;
-
-
-
     /**
      * Called if InstanceID token is updated. This may occur if the security of
      * the previous token had been compromised. Note that this is called when the InstanceID token
      * is initially generated so this is where you would retrieve the token.
      */
-    // [START refresh_token]
     @Override
     public void onTokenRefresh() {
         // Get updated InstanceID token.
@@ -46,7 +36,6 @@ public class CustomFirebaseInstanceID extends FirebaseInstanceIdService {
         // Instance ID token to your app server.
         sendRegistrationToServer(refreshedToken);
     }
-    // [END refresh_token]
 
     /**
      * Persist token to third-party servers.
@@ -65,7 +54,7 @@ public class CustomFirebaseInstanceID extends FirebaseInstanceIdService {
         EndpointInterface apiService = retrofit.create(EndpointInterface.class);
         Call<ResponseBody> addToken = apiService.addToken(new User(
                 Games.getCurrentAccountName(context.getClient()),
-                FirebaseInstanceId.getInstance().getToken().toString()
+                token
         ));
         addToken.enqueue(new Callback<ResponseBody>() {
             @Override

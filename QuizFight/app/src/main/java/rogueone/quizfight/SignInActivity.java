@@ -17,10 +17,9 @@ import android.view.View;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.drive.Drive;
 import com.google.android.gms.games.Games;
 import com.google.firebase.iid.FirebaseInstanceId;
-
-import static java.security.AccessController.getContext;
 
 /**
  * Created by mdipirro on 19/05/17.
@@ -43,6 +42,7 @@ public class SignInActivity extends AppCompatActivity implements
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
                 .addApi(Games.API).addScope(Games.SCOPE_GAMES)
+                .addApi(Drive.API).addScope(Drive.SCOPE_APPFOLDER)
                 .build();
 
         ((QuizFightApplication)getApplicationContext()).setClient(client);

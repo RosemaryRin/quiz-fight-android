@@ -18,8 +18,6 @@ import rogueone.quizfight.HomeActivity;
  */
 
 public class MessagingService extends FirebaseMessagingService {
-    private static final String TAG = "MessagingService";
-
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
         //TODO save body

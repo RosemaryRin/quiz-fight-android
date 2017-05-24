@@ -17,6 +17,10 @@ public class SavedGames implements Serializable{
         return duels;
     }
 
+    public List getDuels(int n) {
+        return duels.subList(0, n + 1);
+    }
+
     public boolean isEmpty() {
         return duels.isEmpty();
     }

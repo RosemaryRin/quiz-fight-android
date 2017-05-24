@@ -41,20 +41,22 @@ public class CustomFirebaseInstanceID extends FirebaseInstanceIdService {
      */
     private void sendRegistrationToServer(String token) {
         QuizFightApplication context = (QuizFightApplication)getApplicationContext();
-        new AddToken(new User(
-                Games.getCurrentAccountName(context.getClient()),
-                token,
-                Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID)
-        )).call(new Callback<ResponseBody>() {
-                    @Override
-                    public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                        // TODO
-                    }
+        if (context.getClient() != null && context.getClient().isConnected()) {
+            new AddToken(new User(
+                    Games.getCurrentAccountName(context.getClient()),
+                    token,
+                    Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID)
+            )).call(new Callback<ResponseBody>() {
+                @Override
+                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                    // TODO
+                }
 
-                    @Override
-                    public void onFailure(Call<ResponseBody> call, Throwable t) {
-                        // TODO
-                    }
-                });
+                @Override
+                public void onFailure(Call<ResponseBody> call, Throwable t) {
+                    // TODO
+                }
+            });
+        }
     }
 }

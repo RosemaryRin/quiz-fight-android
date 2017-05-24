@@ -85,6 +85,14 @@
             android:textAlignment="center"
             android:visibility="gone" />
 
+        <!-- FIXME Temporary -->
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/sign_out_button"
+            android:text="@string/sign_out"
+            android:onClick="signOut"/>
+
     </LinearLayout>
 
     <android.support.design.widget.FloatingActionButton

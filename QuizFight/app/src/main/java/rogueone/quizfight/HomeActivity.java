@@ -35,18 +35,11 @@ public class HomeActivity extends AppCompatActivity implements
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        // TODO crash con notifiche perché non trova il client google
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
         ButterKnife.bind(this);
 
         getLoaderManager().initLoader(SAVED_GAMES_LOADER, null, this);
-
-        if (getIntent().getExtras() != null) {
-            for (String key : getIntent().getExtras().keySet()) {
-                System.out.println(getIntent().getExtras().get(key));
-            }
-        }
 
         // setting username from login
         username.setText(Games.Players.getCurrentPlayer(

@@ -46,7 +46,7 @@ public class StartDuel extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start_duel);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_startduel_toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         // Create the adapter that will return a fragment for each of the three
@@ -54,10 +54,10 @@ public class StartDuel extends AppCompatActivity {
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 
         // Set up the ViewPager with the sections adapter.
-        mViewPager = (ViewPager) findViewById(R.id.container);
+        mViewPager = (ViewPager) findViewById(R.id.viewpager_startduel_content);
         mViewPager.setAdapter(mSectionsPagerAdapter);
 
-        TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
+        TabLayout tabLayout = (TabLayout) findViewById(R.id.tablayout_startduel_tabs);
         tabLayout.setupWithViewPager(mViewPager);
 
     }
@@ -98,7 +98,7 @@ public class StartDuel extends AppCompatActivity {
                                     {"2", "asdrubale", "1034"},
                                     {"3", "tullio", "1033"}};
 
-            LinearLayout list = (LinearLayout) rootView.findViewById(R.id.List);
+            LinearLayout list = (LinearLayout) rootView.findViewById(R.id.linearlayout_startduel_list);
             if (getArguments().getInt(ARG_SECTION_NUMBER) == 1) { // friends tab
                 for (int i = 0; i < friends.length; i++)
                     list.addView(getFriendRow(list.getContext(), friends[i]));

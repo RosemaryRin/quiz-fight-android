@@ -2,13 +2,14 @@
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/constraintlayout_home_activitycontainer"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background"
     tools:context="rogueone.quizfight.HomeActivity">
 
     <LinearLayout
-        android:id="@+id/UsernameLayout"
+        android:id="@+id/linearlayout_home_maincontainer"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
@@ -31,69 +32,54 @@
         tools:layout_constraintTop_creator="1">
 
         <TextView
-            android:id="@+id/UsernameView"
+            android:id="@+id/textview_home_username"
             android:layout_width="wrap_content"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:drawableLeft="@mipmap/ic_launcher"
             android:drawablePadding="10dp"
             android:drawableStart="@mipmap/ic_launcher"
             android:gravity="center"
             android:textSize="24sp" />
 
-        <Button
-            android:id="@+id/StartDuel"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:drawableEnd="@drawable/caret_right"
-            android:drawableLeft="@drawable/duel"
-            android:drawablePadding="15dp"
-            android:drawableRight="@drawable/caret_right"
-            android:drawableStart="@drawable/duel"
-            android:text="@string/start_duel"
-            android:textAlignment="textStart"
-            android:visibility="gone" />
-
         <TextView
-            android:id="@+id/LastDuelsText"
+            android:id="@+id/textview_home_lastview"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingTop="50dp"
-            android:text="@string/last_duels"
+            android:text="@string/home_lastduels"
             android:textSize="14sp" />
 
         <TextView
-            android:id="@+id/NoDuels"
+            android:id="@+id/textview_home_noduels"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/no_duels"
+            android:text="@string/all_noduels"
             android:textAlignment="center" />
 
         <ListView
-            android:id="@+id/ListTest"
+            android:id="@+id/listview_home_lastduels"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:visibility="gone" />
 
         <Button
-            android:id="@+id/DuelsHistory"
+            android:id="@+id/button_home_duelshistory"
             style="@style/Widget.AppCompat.Button.Colored"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end"
-            android:text="@string/history"
+            android:text="@string/home_viewhistory"
             android:textAlignment="center"
             android:visibility="gone" />
 
     </LinearLayout>
 
     <android.support.design.widget.FloatingActionButton
-        android:id="@+id/StartDuelFAB"
+        android:id="@+id/floatingactionbutton_home_startduel"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
         android:layout_marginEnd="16dp"
-        android:layout_marginRight="16dp"
         android:clickable="true"
         android:scaleType="center"
         android:visibility="visible"

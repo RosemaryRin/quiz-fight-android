@@ -24,16 +24,16 @@ public class HomeActivity extends AppCompatActivity {
         int[][] scores = {{10,7},{5,9},{10,8},{9,9},{12,8},{10,7},{5,9},{10,8},{9,9},{12,8}};
 
         // setting username from login
-        final TextView usernameView = (TextView) findViewById(R.id.UsernameView);
+        final TextView usernameView = (TextView) findViewById(R.id.textview_home_username);
         usernameView.setText(username);
 
         // if there's at least one old duel hide empty message and show old duels list
         if (opponents.length > 0) {
-            final ListView listView = (ListView) findViewById(R.id.ListTest);
+            final ListView listView = (ListView) findViewById(R.id.listview_home_lastduels);
 
-            findViewById(R.id.NoDuels).setVisibility(View.GONE);
-            findViewById(R.id.DuelsHistory).setVisibility(View.VISIBLE);
+            findViewById(R.id.textview_home_noduels).setVisibility(View.GONE);
             listView.setVisibility(View.VISIBLE);
+            findViewById(R.id.button_home_duelshistory).setVisibility(View.VISIBLE);
 
             // initializing showed data arrays
             String[] opponentsShown = new String[DUELS_SHOWN];
@@ -54,7 +54,7 @@ public class HomeActivity extends AppCompatActivity {
 
         // duels history button
         View rootView = findViewById(android.R.id.content);
-        Button historyButton = (Button) rootView.findViewById(R.id.DuelsHistory);
+        Button historyButton = (Button) rootView.findViewById(R.id.button_home_duelshistory);
         historyButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -64,7 +64,7 @@ public class HomeActivity extends AppCompatActivity {
 
 
         // start duel button
-        FloatingActionButton startDuelFAB = (FloatingActionButton) rootView.findViewById(R.id.StartDuelFAB);
+        FloatingActionButton startDuelFAB = (FloatingActionButton) rootView.findViewById(R.id.floatingactionbutton_home_startduel);
         startDuelFAB.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

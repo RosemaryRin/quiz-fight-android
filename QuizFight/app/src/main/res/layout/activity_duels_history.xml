@@ -2,13 +2,14 @@
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/constraintlayout_duelshistory_activitycontainer"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background"
     tools:context="rogueone.quizfight.DuelsHistory">
 
     <LinearLayout
-        android:id="@+id/historyLayout"
+        android:id="@+id/linearlayout_duelshistory_maincontainer"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
@@ -27,17 +28,17 @@
         tools:layout_constraintTop_creator="1">
 
         <TextView
-            android:id="@+id/duelsHistory"
+            android:id="@+id/textview_duelshistory_duelshistory"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingBottom="10dp"
-            android:text="@string/duels_history"
+            android:text="@string/duelshistory_duelshistory"
             android:textSize="14sp"
             tools:layout_editor_absoluteX="8dp"
             tools:layout_editor_absoluteY="0dp" />
 
         <ListView
-            android:id="@+id/history"
+            android:id="@+id/listview_duelshistory_history"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:visibility="gone"
@@ -47,10 +48,10 @@
             tools:layout_constraintTop_creator="1" />
 
         <TextView
-            android:id="@+id/noDuels"
+            android:id="@+id/textview_duelshistory_noduels"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/no_duels"
+            android:text="@string/all_noduels"
             android:textAlignment="center"
             tools:layout_editor_absoluteX="8dp"
             tools:layout_editor_absoluteY="0dp" />

@@ -24,9 +24,9 @@ public class DuelsHistory extends AppCompatActivity {
 
         // if there's at least one old duel hide empty message and show old duels list
         if (opponents.length > 0) {
-            final ListView listView = (ListView) findViewById(R.id.history);
+            final ListView listView = (ListView) findViewById(R.id.listview_duelshistory_history);
 
-            findViewById(R.id.noDuels).setVisibility(View.GONE);
+            findViewById(R.id.textview_duelshistory_noduels).setVisibility(View.GONE);
             listView.setVisibility(View.VISIBLE);
 
             final DuelSummaryAdapter listAdapter = new DuelSummaryAdapter(this, opponents, scores);

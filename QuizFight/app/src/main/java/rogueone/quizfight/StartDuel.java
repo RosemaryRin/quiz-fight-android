@@ -22,6 +22,7 @@ import android.view.ViewGroup;
 
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.TextView;
 
 public class StartDuel extends AppCompatActivity {
@@ -63,24 +64,23 @@ public class StartDuel extends AppCompatActivity {
     }
 
     /**
-     * A placeholder fragment containing a simple view.
+     * A fragment containing a list of possible opponents.
      */
-    public static class PlaceholderFragment extends Fragment {
+    public static class StartDuelFragment extends Fragment {
         /**
          * The fragment argument representing the section number for this
          * fragment.
          */
         private static final String ARG_SECTION_NUMBER = "section_number";
 
-        public PlaceholderFragment() {
-        }
+        public StartDuelFragment() {}
 
         /**
          * Returns a new instance of this fragment for the given section
          * number.
          */
-        public static PlaceholderFragment newInstance(int sectionNumber) {
-            PlaceholderFragment fragment = new PlaceholderFragment();
+        public static StartDuelFragment newInstance(int sectionNumber) {
+            StartDuelFragment fragment = new StartDuelFragment();
             Bundle args = new Bundle();
             args.putInt(ARG_SECTION_NUMBER, sectionNumber);
             fragment.setArguments(args);
@@ -88,74 +88,37 @@ public class StartDuel extends AppCompatActivity {
         }
 
         @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
+        public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_start_duel, container, false);
 
             // FIXME: get data from database/ggames
-            String[] friends = {"mdipirro", "emanuelec"};
-            String[][] topRanked = {{"1", "pinco pallo", "1234"},
-                                    {"2", "asdrubale", "1034"},
-                                    {"3", "tullio", "1033"}};
+            String[] friends = {"mdipirro", "emanuelec", "rajej"};
+            String[] topRanked = {"pinco pallo", "asdrubale", "tullio"};
 
-            LinearLayout list = (LinearLayout) rootView.findViewById(R.id.linearlayout_startduel_list);
             if (getArguments().getInt(ARG_SECTION_NUMBER) == 1) { // friends tab
-                for (int i = 0; i < friends.length; i++)
-                    list.addView(getFriendRow(list.getContext(), friends[i]));
+                if (friends.length > 0) {
+                    final ListView listView = (ListView) rootView.findViewById(R.id.listview_startduel_list);
+
+                    rootView.findViewById(R.id.textview_startduel_nouserstoshow).setVisibility(View.GONE);
+                    listView.setVisibility(View.VISIBLE);
+
+                    final FriendListAdapter listAdapter = new FriendListAdapter(getContext(), friends);
+                    listView.setAdapter(listAdapter);
+                }
             }
             else { // top-ranked tab
-                for (int i = 0; i < topRanked.length; i++)
-                    list.addView(getRankedRow(list.getContext(), topRanked[i]));
+                if (topRanked.length > 0) {
+                    final ListView listView = (ListView) rootView.findViewById(R.id.listview_startduel_list);
+
+                    rootView.findViewById(R.id.textview_startduel_nouserstoshow).setVisibility(View.GONE);
+                    listView.setVisibility(View.VISIBLE);
+
+                    final TopRankedListAdapter listAdapter = new TopRankedListAdapter(getContext(), topRanked);
+                    listView.setAdapter(listAdapter);
+                }
             }
 
             return rootView;
-        }
-
-
-        private LinearLayout getFriendRow(Context c, String name) {
-            LinearLayout ll = new LinearLayout(c);
-            ll.setOrientation(LinearLayout.HORIZONTAL);
-
-            ImageView img = new ImageView(ll.getContext());
-            img.setImageResource(R.drawable.duel);
-            int height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 46, getResources().getDisplayMetrics());
-            img.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, height));
-            ll.addView(img);
-
-            TextView nameView = new TextView(ll.getContext());
-            nameView.setText(name);
-            nameView.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT));
-            nameView.setGravity(Gravity.CENTER);
-            ll.addView(nameView);
-
-            return ll;
-        }
-
-        private LinearLayout getRankedRow(Context c, String[] player) {
-            LinearLayout ll = new LinearLayout(c);
-            ll.setOrientation(LinearLayout.HORIZONTAL);
-
-            TextView positionView = new TextView(ll.getContext());
-            positionView.setText(player[0]);
-            int dim = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 46, getResources().getDisplayMetrics());
-            positionView.setLayoutParams(new LinearLayout.LayoutParams(dim, dim));
-            positionView.setGravity(Gravity.CENTER);
-            ll.addView(positionView);
-
-            TextView nameView = new TextView(ll.getContext());
-            nameView.setText(player[1]);
-            nameView.setLayoutParams(new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.MATCH_PARENT, 1f));
-            nameView.setGravity(Gravity.CENTER);
-            ll.addView(nameView);
-
-            TextView scoreView = new TextView(ll.getContext());
-            scoreView.setText(player[2]);
-            int width = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 46, getResources().getDisplayMetrics());
-            scoreView.setLayoutParams(new LinearLayout.LayoutParams(width, LinearLayout.LayoutParams.MATCH_PARENT));
-            scoreView.setGravity(Gravity.CENTER);
-            ll.addView(scoreView);
-
-            return ll;
         }
     }
 
@@ -173,7 +136,7 @@ public class StartDuel extends AppCompatActivity {
         public Fragment getItem(int position) {
             // getItem is called to instantiate the fragment for the given page.
             // Return a PlaceholderFragment (defined as a static inner class below).
-            return PlaceholderFragment.newInstance(position + 1);
+            return StartDuelFragment.newInstance(position + 1);
         }
 
         @Override

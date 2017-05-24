@@ -5,10 +5,15 @@
 
     <string name="action_settings">Settings</string>
 
+    <string name="all_duelresulticondescription">Duel result icon</string>
+    <string name="all_noduels">No duels found</string>
+
     <string name="home_usericondescription">User image</string>
     <string name="home_lastduels">Last duels:</string>
-    <string name="all_duelresulticondescription">Duel result icon</string>
     <string name="home_viewhistory">View all duels</string>
+
     <string name="duelshistory_duelshistory">Duels history:</string>
-    <string name="all_noduels">No duels found</string>
+
+    <string name="startduel_nofriends">No friends found</string>
+    <string name="startduel_notopplayers">Top players not found, try again later</string>
 </resources>

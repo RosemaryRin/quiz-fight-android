@@ -84,7 +84,7 @@ public class HomeActivity extends AppCompatActivity implements
             findViewById(R.id.NoDuels).setVisibility(View.GONE);
             findViewById(R.id.DuelsHistory).setVisibility(View.VISIBLE);
             oldDuels_listview.setVisibility(View.VISIBLE);
-            final DuelSummaryAdapter listAdapter = new DuelSummaryAdapter(this, savedState.getDuels());
+            final DuelSummaryAdapter listAdapter = new DuelSummaryAdapter(this, savedState.getDuels(DUELS_SHOWN));
             oldDuels_listview.setAdapter(listAdapter);
         }
     }

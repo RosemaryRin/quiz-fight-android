@@ -27,6 +27,8 @@ import com.google.android.gms.drive.Drive;
 import com.google.android.gms.games.Games;
 import com.google.firebase.iid.FirebaseInstanceId;
 
+import static rogueone.quizfight.NotificationFactory.getTargetActivity;
+
 /**
  * Created by mdipirro on 19/05/17.
  */
@@ -91,6 +93,7 @@ public class SignInActivity extends AppCompatActivity implements
         saveSuccessfulSignIn();
         String token = FirebaseInstanceId.getInstance().getToken();
         if (token != null) {
+            System.out.println(token);
             new AddToken(new User(
                     Games.getCurrentAccountName(client),
                     token,
@@ -135,7 +138,16 @@ public class SignInActivity extends AppCompatActivity implements
      * SignInActivity to be created again when the application is in background.
      */
     private void startHomeActivity() {
-        Intent intent = new Intent(SignInActivity.this, HomeActivity.class);
+        Intent intent;
+        Bundle bundle = getIntent().getExtras();
+        if (bundle == null || bundle.get("id") == null) {
+            intent = new Intent(SignInActivity.this, HomeActivity.class);
+        } else {
+            String stringID = bundle.getString("id");
+            int id = (stringID != null) ? Integer.parseInt(stringID) : 0;
+            intent = new Intent(SignInActivity.this, getTargetActivity(id));
+            intent.putExtras(bundle);
+        }
         finish();
         startActivity(intent);
     }

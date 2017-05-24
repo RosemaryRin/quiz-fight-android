@@ -42,6 +42,12 @@ public class HomeActivity extends AppCompatActivity implements
 
         getLoaderManager().initLoader(SAVED_GAMES_LOADER, null, this);
 
+        if (getIntent().getExtras() != null) {
+            for (String key : getIntent().getExtras().keySet()) {
+                System.out.println(getIntent().getExtras().get(key));
+            }
+        }
+
         // setting username from login
         username.setText(Games.Players.getCurrentPlayer(
                 ((QuizFightApplication)getApplicationContext()).getClient()

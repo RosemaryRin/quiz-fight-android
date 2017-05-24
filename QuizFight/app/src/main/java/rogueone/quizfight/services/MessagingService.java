@@ -15,7 +15,9 @@ import com.google.firebase.messaging.RemoteMessage;
 
 import java.util.Map;
 
+import rogueone.quizfight.QuizFightApplication;
 import rogueone.quizfight.R;
+import rogueone.quizfight.SignInActivity;
 
 import static rogueone.quizfight.NotificationFactory.getTargetActivity;
 
@@ -24,14 +26,14 @@ import static rogueone.quizfight.NotificationFactory.getTargetActivity;
  */
 
 public class MessagingService extends FirebaseMessagingService {
-    private static final String title = "title";
-    private static final String message = "message";
+    private static final String TITLE = "title";
+    private static final String MESSAGE = "message";
 
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
         Map<String, String> body = remoteMessage.getData();
         if (body != null) {
-            if (body.containsKey(title) && body.containsKey(message)) {
+            if (body.containsKey(TITLE) && body.containsKey(MESSAGE)) {
                 sendNotification(body);
             }
         }
@@ -43,8 +45,14 @@ public class MessagingService extends FirebaseMessagingService {
      * @param body FCM body received
      */
     private void sendNotification(@NonNull Map<String, String> body) {
-        int id = Integer.parseInt(body.get("id"));
-        Intent intent = new Intent(this, getTargetActivity(id));
+        String stringID = body.get("id");
+        int id = (stringID != null) ? Integer.parseInt(stringID) : 0;
+        Intent intent = new Intent(
+                this,
+                (((QuizFightApplication)getApplicationContext()).getClient() == null)
+                    ? SignInActivity.class
+                    : getTargetActivity(id)
+        );
         populateIntent(body, intent);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, id, intent,
@@ -52,8 +60,8 @@ public class MessagingService extends FirebaseMessagingService {
 
         Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
-                .setContentTitle(body.get(title))
-                .setContentText(body.get(message))
+                .setContentTitle(body.get(TITLE))
+                .setContentText(body.get(MESSAGE))
                 .setAutoCancel(true)
                 .setSound(defaultSoundUri)
                 .setContentIntent(pendingIntent)
@@ -67,7 +75,7 @@ public class MessagingService extends FirebaseMessagingService {
 
     private void populateIntent(@NonNull Map<String, String> body, @NonNull Intent intent) {
         for (Map.Entry<String, String> entry : body.entrySet()) {
-            if (!entry.getKey().equals(title) && !entry.getKey().equals(message)) {
+            if (!entry.getKey().equals(TITLE) && !entry.getKey().equals(MESSAGE)) {
                 intent.putExtra(entry.getKey(), entry.getValue());
             }
         }

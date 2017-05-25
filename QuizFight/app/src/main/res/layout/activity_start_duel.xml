@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:background="@color/background"
     android:fitsSystemWindows="true"
-    tools:context="rogueone.quizfight.StartDuel">
+    tools:context="rogueone.quizfight.StartDuelActivity">
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/appbarlayout_startduel_appbar"

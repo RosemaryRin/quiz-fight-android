@@ -36,13 +36,6 @@ public class DuelSummaryAdapter extends ArrayAdapter<Duel> {
 
         ImageView iconView = (ImageView) rowView.findViewById(R.id.imageview_duelrow_resulticon);
 
-//        if (playerScore > opponentScore)
-//            iconView.setImageResource(R.drawable.all_victory);
-//        else if (playerScore == opponentScore)
-//            iconView.setImageResource(R.drawable.all_tie);
-//        else
-//            iconView.setImageResource(R.drawable.all_defeat);
-
         if (playerScore > opponentScore) {
             iconView.setImageResource(R.drawable.all_victory);
             iconView.setColorFilter(ContextCompat.getColor(context,R.color.won_duel));

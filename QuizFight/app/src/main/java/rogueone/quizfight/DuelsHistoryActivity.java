@@ -8,7 +8,7 @@ import android.widget.ListView;
 import rogueone.quizfight.adapters.DuelSummaryAdapter;
 import rogueone.quizfight.models.History;
 
-public class DuelsHistory extends AppCompatActivity {
+public class DuelsHistoryActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

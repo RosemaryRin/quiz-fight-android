@@ -30,7 +30,7 @@
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
         <activity
-            android:name=".StartDuel"
+            android:name=".StartDuelActivity"
             android:label="@string/title_activity_start_duel"
             android:parentActivityName=".HomeActivity"
             android:theme="@style/AppTheme.NoActionBar">
@@ -39,7 +39,7 @@
                 android:value="rogueone.quizfight.HomeActivity" />
         </activity>
         <activity
-            android:name=".DuelsHistory"
+            android:name=".DuelsHistoryActivity"
             android:label="@string/title_activity_duels_history"
             android:parentActivityName=".HomeActivity">
             <meta-data

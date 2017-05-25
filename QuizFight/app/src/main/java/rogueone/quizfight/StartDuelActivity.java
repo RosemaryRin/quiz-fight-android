@@ -18,7 +18,7 @@ import android.widget.ListView;
 import rogueone.quizfight.adapters.FriendListAdapter;
 import rogueone.quizfight.adapters.TopRankedListAdapter;
 
-public class StartDuel extends AppCompatActivity {
+public class StartDuelActivity extends AppCompatActivity {
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide

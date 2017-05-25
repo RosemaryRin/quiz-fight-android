@@ -64,7 +64,7 @@ public class HomeActivity extends AppCompatActivity {
         historyButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(v.getContext(), DuelsHistory.class));
+                startActivity(new Intent(v.getContext(), DuelsHistoryActivity.class));
             }
         });
 
@@ -74,7 +74,7 @@ public class HomeActivity extends AppCompatActivity {
         startDuelFAB.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(v.getContext(), StartDuel.class));
+                startActivity(new Intent(v.getContext(), StartDuelActivity.class));
             }
         });
 

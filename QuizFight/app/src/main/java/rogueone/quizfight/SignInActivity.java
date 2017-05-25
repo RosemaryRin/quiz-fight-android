@@ -1,16 +1,18 @@
 package rogueone.quizfight;
 
+import butterknife.BindString;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import rogueone.quizfight.loaders.SavedGamesLoader;
 import rogueone.quizfight.rest.AddToken;
 import rogueone.quizfight.models.User;
-import rogueone.quizfight.utils.BaseGameUtils;
 
-import android.content.Context;
+import android.app.LoaderManager;
 import android.content.Intent;
 import android.content.IntentSender;
+import android.content.Loader;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -25,19 +27,24 @@ import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.drive.Drive;
 import com.google.android.gms.games.Games;
+import com.google.android.gms.games.snapshot.Snapshot;
 import com.google.firebase.iid.FirebaseInstanceId;
 
+import java.io.IOException;
+
 import static rogueone.quizfight.NotificationFactory.getTargetActivity;
+import static rogueone.quizfight.utils.SavedGames.byteToHistory;
 
 /**
  * Created by mdipirro on 19/05/17.
  */
 
 public class SignInActivity extends AppCompatActivity implements
-        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
+        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener,
+        LoaderManager.LoaderCallbacks<Snapshot> {
 
-    private static final int RC_SIGN_IN = 9001;
     private static final int RESOLUTION = 2404;
+    private static final int SAVED_GAMES_LOADER = 1;
 
     private GoogleApiClient client;
 
@@ -84,30 +91,26 @@ public class SignInActivity extends AppCompatActivity implements
         if (requestCode == RESOLUTION && resultCode == RESULT_OK){
             client.connect();
         }else{
-            Toast.makeText(this, "Not able to connect to google client.", Toast.LENGTH_LONG).show();
+            errorToast(getApplicationContext().getString(R.string.unable_to_connect));
         }
     }
 
     @Override
     public void onConnected(Bundle bundle) {
         saveSuccessfulSignIn();
+        getLoaderManager().initLoader(SAVED_GAMES_LOADER, null, this);
         String token = FirebaseInstanceId.getInstance().getToken();
         if (token != null) {
-            System.out.println(token);
             new AddToken(new User(
                     Games.getCurrentAccountName(client),
                     token,
                     Secure.getString(getContentResolver(), Secure.ANDROID_ID)
             )).call(new Callback<ResponseBody>() {
                 @Override
-                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                    startHomeActivity();
-                }
+                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {}
 
                 @Override
-                public void onFailure(Call<ResponseBody> call, Throwable t) {
-                    // TODO
-                }
+                public void onFailure(Call<ResponseBody> call, Throwable t) {}
             });
         }
     }
@@ -127,11 +130,38 @@ public class SignInActivity extends AppCompatActivity implements
         } else {
             try {
                 connectionResult.startResolutionForResult(this, RESOLUTION);
-            } catch (IntentSender.SendIntentException e) {
-
-            }
+            } catch (IntentSender.SendIntentException e) {}
         }
     }
+
+    @Override
+    public Loader<Snapshot> onCreateLoader(int id, Bundle args) {
+        return new SavedGamesLoader(this);
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Snapshot> loader, Snapshot snapshot) {
+        if (snapshot != null) {
+            QuizFightApplication application = (QuizFightApplication)getApplicationContext();
+            application.setSnapshot(snapshot);
+            // Read the byte content of the saved game.
+            try {
+                application.setHistory(byteToHistory(snapshot.getSnapshotContents().readFully()));
+            } catch (IOException e) {
+                errorToast(getApplicationContext().getString(R.string.unable_to_restore_saved_games));
+            }
+        } else {
+            errorToast(getApplicationContext().getString(R.string.unable_to_restore_saved_games));
+        }
+        startHomeActivity();
+    }
+
+    private void errorToast(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Snapshot> loader) {}
 
     /**
      * Start HomeActivity and finish() the current activity. Finishing is necessary to prevent

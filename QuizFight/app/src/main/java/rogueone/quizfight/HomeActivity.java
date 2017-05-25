@@ -1,9 +1,6 @@
 package rogueone.quizfight;
 
-import android.app.LoaderManager;
-import android.content.Context;
 import android.content.Intent;
-import android.content.Loader;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
@@ -19,16 +16,20 @@ import com.google.android.gms.games.Games;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import rogueone.quizfight.loaders.SavedGamesLoader;
-import rogueone.quizfight.models.SavedGames;
+import rogueone.quizfight.models.Duel;
+import rogueone.quizfight.models.History;
+import rogueone.quizfight.models.Question;
+import rogueone.quizfight.models.Quiz;
+import rogueone.quizfight.models.Score;
 
-public class HomeActivity extends AppCompatActivity implements
-        LoaderManager.LoaderCallbacks<SavedGames> {
+import static rogueone.quizfight.utils.SavedGames.writeSnapshot;
+
+public class HomeActivity extends AppCompatActivity {
 
     private static final int DUELS_SHOWN = 5;
-    private static final int SAVED_GAMES_LOADER = 1;
 
-    private SavedGames savedState;
+    private History history;
+    private QuizFightApplication application;
 
     @BindView(R.id.UsernameView) TextView username;
     @BindView(R.id.ListTest) ListView oldDuels_listview;
@@ -39,11 +40,27 @@ public class HomeActivity extends AppCompatActivity implements
         setContentView(R.layout.activity_home);
         ButterKnife.bind(this);
 
-        getLoaderManager().initLoader(SAVED_GAMES_LOADER, null, this);
+        application = (QuizFightApplication)getApplicationContext();
+        history = application.getHistory();
+
+
+        /*Question q1 = new Question("Question 1", "Answer 1"),
+                q2 = new Question("Question 2", "Answer 2");
+        Quiz quiz = new Quiz();
+        quiz.addQuestion(q1); quiz.addQuestion(q2);
+        Duel duel = new Duel("Alex", new Score(10, 9), quiz);
+        Duel duel1 = new Duel("Emanuele", new Score(8, 7), quiz);
+        Duel duel2 = new Duel("Rajej", new Score(2, 7), quiz);
+        Duel duel3 = new Duel("Milly Maietti", new Score(0, 0), quiz);
+        Duel duel4 = new Duel("Maestro Tullio", new Score(0, 2000), quiz);
+        Duel duel5 = new Duel("Bresolin", new Score(5, 0), quiz);
+        history.addDuel(duel); history.addDuel(duel1); history.addDuel(duel2); history.addDuel(duel3);
+        history.addDuel(duel4); history.addDuel(duel5);
+        writeSnapshot(application.getSnapshot(), history, "First write", application.getClient());*/
 
         // setting username from login
         username.setText(Games.Players.getCurrentPlayer(
-                ((QuizFightApplication)getApplicationContext()).getClient()
+                application.getClient()
         ).getDisplayName());
 
         // duels history button
@@ -65,37 +82,24 @@ public class HomeActivity extends AppCompatActivity implements
                 startActivity(new Intent(v.getContext(), StartDuel.class));
             }
         });
+
+        updateHistory();
     }
 
-    @Override
-    public Loader<SavedGames> onCreateLoader(int id, Bundle args) {
-        return new SavedGamesLoader(this);
-    }
-
-    @Override
-    public void onLoadFinished(Loader<SavedGames> loader, SavedGames data) {
-        ((QuizFightApplication)getApplicationContext()).setSavedGames(data);
-        savedState = data;
-        updateUI();
-    }
-
-    private void updateUI() {
-        if (savedState!= null && !savedState.isEmpty()) {
+    private void updateHistory() {
+        if (history!= null && !history.isEmpty()) {
             findViewById(R.id.NoDuels).setVisibility(View.GONE);
             findViewById(R.id.DuelsHistory).setVisibility(View.VISIBLE);
             oldDuels_listview.setVisibility(View.VISIBLE);
-            final DuelSummaryAdapter listAdapter = new DuelSummaryAdapter(this, savedState.getDuels(DUELS_SHOWN));
+            final DuelSummaryAdapter listAdapter = new DuelSummaryAdapter(this, history.getDuels(DUELS_SHOWN));
             oldDuels_listview.setAdapter(listAdapter);
         }
     }
 
-    @Override
-    public void onLoaderReset(Loader<SavedGames> loader) {}
-
     //FIXME temporary
     public void signOut(View v) {
         v.setEnabled(false); //prevent another click
-        GoogleApiClient client = ((QuizFightApplication)getApplicationContext()).getClient();
+        GoogleApiClient client = application.getClient();
         Games.signOut(client);
         client.disconnect();
 

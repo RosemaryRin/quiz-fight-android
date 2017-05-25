@@ -16,13 +16,8 @@ import com.google.android.gms.games.Games;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import rogueone.quizfight.models.Duel;
+import rogueone.quizfight.adapters.DuelSummaryAdapter;
 import rogueone.quizfight.models.History;
-import rogueone.quizfight.models.Question;
-import rogueone.quizfight.models.Quiz;
-import rogueone.quizfight.models.Score;
-
-import static rogueone.quizfight.utils.SavedGames.writeSnapshot;
 
 public class HomeActivity extends AppCompatActivity {
 

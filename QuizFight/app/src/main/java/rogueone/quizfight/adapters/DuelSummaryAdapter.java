@@ -1,4 +1,4 @@
-package rogueone.quizfight;
+package rogueone.quizfight.adapters;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -13,6 +13,7 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
+import rogueone.quizfight.R;
 import rogueone.quizfight.models.Duel;
 
 public class DuelSummaryAdapter extends ArrayAdapter<Duel> {

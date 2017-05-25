@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.ListView;
 
+import rogueone.quizfight.adapters.DuelSummaryAdapter;
 import rogueone.quizfight.models.History;
 
 public class DuelsHistory extends AppCompatActivity {

@@ -1,4 +1,4 @@
-package rogueone.quizfight;
+package rogueone.quizfight.adapters;
 
 /**
  * Created by Becks on 24/05/17.
@@ -11,23 +11,25 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
-public class TopRankedListAdapter extends ArrayAdapter<String> {
-    private final Context context;
-    private final String[] players;
+import rogueone.quizfight.R;
 
-    public TopRankedListAdapter(Context context, String[] players) {
-        super(context, -1, players);
+public class FriendListAdapter extends ArrayAdapter<String> {
+    private final Context context;
+    private final String[] friends;
+
+    public FriendListAdapter(Context context, String[] friends) {
+        super(context, -1, friends);
         this.context = context;
-        this.players = players;
+        this.friends = friends;
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View rowView = inflater.inflate(R.layout.top_ranked_row, parent, false);
+        View rowView = inflater.inflate(R.layout.friend_row, parent, false);
 
-        TextView nameView = (TextView) rowView.findViewById(R.id.textview_toprankedrow_name);
-        nameView.setText(players[position]);
+        TextView nameView = (TextView) rowView.findViewById(R.id.textview_friendrow_name);
+        nameView.setText(friends[position]);
 
         return rowView;
     }

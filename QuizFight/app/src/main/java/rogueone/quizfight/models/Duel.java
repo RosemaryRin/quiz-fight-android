@@ -3,6 +3,8 @@ package rogueone.quizfight.models;
 import android.support.annotation.NonNull;
 
 import java.io.Serializable;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Created by mdipirro on 23/05/17.
@@ -11,12 +13,12 @@ import java.io.Serializable;
 public class Duel implements Serializable {
     private String opponent;
     private Score score;
-    private Quiz quiz;
+    private List<Quiz> quizzes = new LinkedList<>();
 
-    public Duel (@NonNull String opponent, @NonNull Score score, @NonNull Quiz quiz) {
+    public Duel (@NonNull String opponent, @NonNull Score score,@NonNull List<Quiz> quizzes) {
         this.opponent = opponent;
         this.score = score;
-        this.quiz = quiz;
+        this.quizzes = quizzes;
     }
 
     public String getOpponent() {
@@ -27,7 +29,7 @@ public class Duel implements Serializable {
         return score;
     }
 
-    public Quiz getQuiz() {
-        return quiz;
+    public List<Quiz> getQuizzes() {
+        return quizzes;
     }
 }

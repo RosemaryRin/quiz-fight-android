@@ -1,6 +1,5 @@
 package rogueone.quizfight;
 
-import butterknife.BindString;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -66,6 +65,9 @@ public class SignInActivity extends AppCompatActivity implements
         findViewById(R.id.button_sign_in).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (client != null && client.isConnected()) {
+                    client.clearDefaultAccountAndReconnect();
+                }
                 signIn();
             }
         });

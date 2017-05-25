@@ -2,6 +2,7 @@ package rogueone.quizfight.adapters;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,7 +28,7 @@ public class DuelSummaryAdapter extends ArrayAdapter<Duel> {
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public @NonNull View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
         int playerScore = duels.get(position).getScore().getPlayerScore();
         int opponentScore = duels.get(position).getScore().getOpponentScore();
 

@@ -40,7 +40,7 @@ public class SavedGamesLoader extends AsyncTaskLoader<Snapshot> {
     }
 
     private Snapshot processSnapshotOpenResult(Snapshots.OpenSnapshotResult result, int retryCount) {
-        Snapshot snapshot = null;
+        Snapshot snapshot;
         retryCount++;
 
         int status = result.getStatus().getStatusCode();

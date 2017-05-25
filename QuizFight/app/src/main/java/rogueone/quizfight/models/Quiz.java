@@ -15,11 +15,15 @@ public class Quiz implements Serializable {
 
     public Quiz() {}
 
-    public Quiz(@NonNull List questions) {
+    public Quiz(@NonNull List<Question> questions) {
         this.questions = questions;
     }
 
     public void addQuestion(@NonNull Question question) {
         questions.add(question);
+    }
+
+    public List<Question> getQuestions() {
+        return questions;
     }
 }

@@ -13,11 +13,11 @@ import java.util.List;
 public class History implements Serializable {
     private List<Duel> duels = new ArrayList<>();
 
-    public List getDuels() {
+    public List<Duel> getDuels() {
         return duels;
     }
 
-    public List getDuels(int n) {
+    public List<Duel> getDuels(int n) {
         if (n < duels.size()) {
             return duels.subList(0, n);
         } else {

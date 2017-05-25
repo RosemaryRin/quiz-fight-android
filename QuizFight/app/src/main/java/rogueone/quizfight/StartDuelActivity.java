@@ -101,8 +101,6 @@ public class StartDuelActivity extends AppCompatActivity {
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
             final View rootView = inflater.inflate(R.layout.fragment_start_duel, container, false);
 
-            Player player = Games.Players.getCurrentPlayer(application.getClient());
-
             if (getArguments().getInt(ARG_SECTION_NUMBER) == 1) { // friends tab
 
                 Games.Players.loadConnectedPlayers(application.getClient(), true).setResultCallback(

@@ -1,0 +1,67 @@
+{
+  "project_info": {
+    "project_number": "628056279109",
+    "firebase_url": "https://quiz-fight-167108.firebaseio.com",
+    "project_id": "quiz-fight-167108",
+    "storage_bucket": "quiz-fight-167108.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:628056279109:android:af4df678df23b4ee",
+        "android_client_info": {
+          "package_name": "rogueone.quizfight"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "628056279109-rh0bepeil258kfnl0psljdqh6s3bvcfm.apps.googleusercontent.com",
+          "client_type": 3
+        },
+        {
+          "client_id": "628056279109-8ldt3dcvv5d707m5fr9me5jcjis735fo.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "rogueone.quizfight",
+            "certificate_hash": "7e3a772d31d5ee5a37501fd403732cd02294d4c4"
+          }
+        },
+        {
+          "client_id": "628056279109-8a15q55v7ssf3qdh38taqb859uaobocf.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "rogueone.quizfight",
+            "certificate_hash": "af05148aa66758670b4c40a2e53f0961c5197423"
+          }
+        },
+        {
+          "client_id": "628056279109-2q735p2uhkcipejdm0rjhmrb0va1tjr1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAtcCGarbzxsWKVgQlSG7leXWwOCgl7Bp4"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "628056279109-rh0bepeil258kfnl0psljdqh6s3bvcfm.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

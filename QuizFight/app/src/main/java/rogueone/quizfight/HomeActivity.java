@@ -1,6 +1,8 @@
 package rogueone.quizfight;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -9,48 +11,57 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.games.Games;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import rogueone.quizfight.models.Duel;
+import rogueone.quizfight.models.History;
+import rogueone.quizfight.models.Question;
+import rogueone.quizfight.models.Quiz;
+import rogueone.quizfight.models.Score;
+
+import static rogueone.quizfight.utils.SavedGames.writeSnapshot;
+
 public class HomeActivity extends AppCompatActivity {
 
     private static final int DUELS_SHOWN = 5;
+
+    private History history;
+    private QuizFightApplication application;
+
+    @BindView(R.id.textview_home_username) TextView username;
+    @BindView(R.id.listview_home_lastduels) ListView oldDuels_listview;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+        ButterKnife.bind(this);
 
-        //FIXME: get proper data from login and db
-        String username = "abeccaro";
-        String[] opponents = {"mdipirro", "emanuelec", "rajej", "Pinco Pallo", "Tizio", "Caio", "Sempronio", "Player1234", "Tua mamma", "armir"};
-        int[][] scores = {{10,7},{5,9},{10,8},{9,9},{12,8},{10,7},{5,9},{10,8},{9,9},{12,8}};
+        application = (QuizFightApplication)getApplicationContext();
+        history = application.getHistory();
+
+
+        /*Question q1 = new Question("Question 1", "Answer 1"),
+                q2 = new Question("Question 2", "Answer 2");
+        Quiz quiz = new Quiz();
+        quiz.addQuestion(q1); quiz.addQuestion(q2);
+        Duel duel = new Duel("Alex", new Score(10, 9), quiz);
+        Duel duel1 = new Duel("Emanuele", new Score(8, 7), quiz);
+        Duel duel2 = new Duel("Rajej", new Score(2, 7), quiz);
+        Duel duel3 = new Duel("Milly Maietti", new Score(0, 0), quiz);
+        Duel duel4 = new Duel("Maestro Tullio", new Score(0, 2000), quiz);
+        Duel duel5 = new Duel("Bresolin", new Score(5, 0), quiz);
+        history.addDuel(duel); history.addDuel(duel1); history.addDuel(duel2); history.addDuel(duel3);
+        history.addDuel(duel4); history.addDuel(duel5);
+        writeSnapshot(application.getSnapshot(), history, "First write", application.getClient());*/
 
         // setting username from login
-        final TextView usernameView = (TextView) findViewById(R.id.textview_home_username);
-        usernameView.setText(username);
-
-        // if there's at least one old duel hide empty message and show old duels list
-        if (opponents.length > 0) {
-            final ListView listView = (ListView) findViewById(R.id.listview_home_lastduels);
-
-            findViewById(R.id.textview_home_noduels).setVisibility(View.GONE);
-            listView.setVisibility(View.VISIBLE);
-            findViewById(R.id.button_home_duelshistory).setVisibility(View.VISIBLE);
-
-            // initializing showed data arrays
-            String[] opponentsShown = new String[DUELS_SHOWN];
-            int[][] scoresShown = new int[DUELS_SHOWN][2];
-            if (opponents.length < DUELS_SHOWN) {
-                opponentsShown = opponents;
-                scoresShown = scores;
-            }
-            else {
-                System.arraycopy(opponents, 0, opponentsShown, 0, DUELS_SHOWN);
-                System.arraycopy(scores, 0, scoresShown, 0, DUELS_SHOWN);
-            }
-
-            final DuelSummaryAdapter listAdapter = new DuelSummaryAdapter(this, opponentsShown, scoresShown);
-            listView.setAdapter(listAdapter);
-        }
-
+        username.setText(Games.Players.getCurrentPlayer(
+                application.getClient()
+        ).getDisplayName());
 
         // duels history button
         View rootView = findViewById(android.R.id.content);
@@ -71,5 +82,30 @@ public class HomeActivity extends AppCompatActivity {
                 startActivity(new Intent(v.getContext(), StartDuel.class));
             }
         });
+
+        updateHistory();
+    }
+
+    private void updateHistory() {
+        if (history!= null && !history.isEmpty()) {
+            findViewById(R.id.textview_home_noduels).setVisibility(View.GONE);
+            findViewById(R.id.button_home_duelshistory).setVisibility(View.VISIBLE);
+            oldDuels_listview.setVisibility(View.VISIBLE);
+            final DuelSummaryAdapter listAdapter = new DuelSummaryAdapter(this, history.getDuels(DUELS_SHOWN));
+            oldDuels_listview.setAdapter(listAdapter);
+        }
+    }
+
+    //FIXME temporary
+    public void signOut(View v) {
+        v.setEnabled(false); //prevent another click
+        GoogleApiClient client = application.getClient();
+        Games.signOut(client);
+        client.disconnect();
+
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putBoolean(getString(R.string.signed_in), false);
+        editor.apply();
     }
 }

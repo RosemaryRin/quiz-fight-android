@@ -1,7 +1,7 @@
 package rogueone.quizfight;
 
 import android.content.Context;
-import android.graphics.Color;
+import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,27 +10,38 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-public class DuelSummaryAdapter extends ArrayAdapter<String> {
-    private final Context context;
-    private final String[] values;
-    private final int[][] scores;
+import java.util.ArrayList;
+import java.util.List;
 
-    public DuelSummaryAdapter(Context context, String[] values, int[][] scores) {
-        super(context, -1, values);
+import rogueone.quizfight.models.Duel;
+
+public class DuelSummaryAdapter extends ArrayAdapter<Duel> {
+    private Context context;
+    private List<Duel> duels = new ArrayList<>();
+
+    public DuelSummaryAdapter(@NonNull Context context, @NonNull List<Duel> duels) {
+        super(context, -1, duels);
         this.context = context;
-        this.values = values;
-        this.scores = scores;
+        this.duels = duels;
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        int playerScore = scores[position][0];
-        int opponentScore = scores[position][1];
+        int playerScore = duels.get(position).getScore().getPlayerScore();
+        int opponentScore = duels.get(position).getScore().getOpponentScore();
 
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View rowView = inflater.inflate(R.layout.duel_row, parent, false);
 
         ImageView iconView = (ImageView) rowView.findViewById(R.id.imageview_duelrow_resulticon);
+
+//        if (playerScore > opponentScore)
+//            iconView.setImageResource(R.drawable.all_victory);
+//        else if (playerScore == opponentScore)
+//            iconView.setImageResource(R.drawable.all_tie);
+//        else
+//            iconView.setImageResource(R.drawable.all_defeat);
+
         if (playerScore > opponentScore) {
             iconView.setImageResource(R.drawable.all_victory);
             iconView.setColorFilter(ContextCompat.getColor(context,R.color.won_duel));
@@ -45,10 +56,10 @@ public class DuelSummaryAdapter extends ArrayAdapter<String> {
         }
 
         TextView nameView = (TextView) rowView.findViewById(R.id.textview_duelrow_name);
-        nameView.setText(values[position]);
+        nameView.setText(duels.get(position).getOpponent());
 
         TextView scoreView = (TextView) rowView.findViewById(R.id.textview_duelrow_score);
-        scoreView.setText(playerScore+" - "+opponentScore);
+        scoreView.setText(playerScore + " - " + opponentScore);
 
         return rowView;
     }

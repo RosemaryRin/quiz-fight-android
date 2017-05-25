@@ -1,5 +1,9 @@
 <resources>
     <string name="app_name">Quiz Fight</string>
+    <string name="app_id">628056279109</string>
+
+    <string name="snapshot_name">quiz-fight-snapshot</string>
+
     <string name="title_activity_start_duel">Start Duel</string>
     <string name="title_activity_duels_history">Duels History</string>
 
@@ -11,4 +15,10 @@
     <string name="home_viewhistory">View all duels</string>
     <string name="duelshistory_duelshistory">Duels history:</string>
     <string name="all_noduels">No duels found</string>
+
+    <string name="unable_to_connect">Not able to connect to google client.</string>
+    <string name="unable_to_restore_saved_games">Not able to restore previous duels.</string>
+
+    <string name="sign_out">Sign out</string>
+    <string name="signed_in">signed_in</string>
 </resources>

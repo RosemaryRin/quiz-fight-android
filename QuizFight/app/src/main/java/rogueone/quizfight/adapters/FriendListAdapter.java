@@ -9,16 +9,20 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.google.android.gms.games.Player;
+import com.google.android.gms.games.PlayerBuffer;
 
 import rogueone.quizfight.R;
 
-public class FriendListAdapter extends ArrayAdapter<String> {
+public class FriendListAdapter extends ArrayAdapter<Player> {
     private final Context context;
-    private final String[] friends;
+    private final PlayerBuffer friends;
 
-    public FriendListAdapter(Context context, String[] friends) {
-        super(context, -1, friends);
+    public FriendListAdapter(Context context, PlayerBuffer friends) {
+        super(context, -1);
         this.context = context;
         this.friends = friends;
     }
@@ -28,8 +32,14 @@ public class FriendListAdapter extends ArrayAdapter<String> {
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View rowView = inflater.inflate(R.layout.friend_row, parent, false);
 
+        ImageView iconView = (ImageView) rowView.findViewById(R.id.imageview_friendrow_icon);
+        //TODO: show personal icon
+
         TextView nameView = (TextView) rowView.findViewById(R.id.textview_friendrow_name);
-        nameView.setText(friends[position]);
+        nameView.setText(friends.get(position).getDisplayName());
+
+        TextView scoreView = (TextView) rowView.findViewById(R.id.textview_friendrow_score);
+        //TODO: show friend score
 
         return rowView;
     }

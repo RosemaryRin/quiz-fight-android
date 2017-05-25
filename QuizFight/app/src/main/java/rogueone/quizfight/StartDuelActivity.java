@@ -1,5 +1,6 @@
 package rogueone.quizfight;
 
+import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -9,14 +10,24 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import android.widget.ListView;
 
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.games.Games;
+import com.google.android.gms.games.Player;
+import com.google.android.gms.games.PlayerBuffer;
+import com.google.android.gms.games.Players;
+import com.google.android.gms.games.leaderboard.LeaderboardScoreBuffer;
+import com.google.android.gms.games.leaderboard.LeaderboardVariant;
+import com.google.android.gms.games.leaderboard.Leaderboards;
+
 import rogueone.quizfight.adapters.FriendListAdapter;
-import rogueone.quizfight.adapters.TopRankedListAdapter;
+import rogueone.quizfight.adapters.LeaderboardAdapter;
 
 public class StartDuelActivity extends AppCompatActivity {
 
@@ -34,6 +45,10 @@ public class StartDuelActivity extends AppCompatActivity {
      * The {@link ViewPager} that will host the section contents.
      */
     private ViewPager mViewPager;
+
+    private static QuizFightApplication application;
+
+    private final static String LEADERBOARD_ID = "CgkIxZDJ2KMSEAIQAg";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +68,8 @@ public class StartDuelActivity extends AppCompatActivity {
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tablayout_startduel_tabs);
         tabLayout.setupWithViewPager(mViewPager);
+
+        application = (QuizFightApplication)getApplicationContext();
 
     }
 
@@ -82,33 +99,55 @@ public class StartDuelActivity extends AppCompatActivity {
 
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_start_duel, container, false);
+            final View rootView = inflater.inflate(R.layout.fragment_start_duel, container, false);
 
-            // FIXME: get data from database/ggames
-            String[] friends = {"mdipirro", "emanuelec", "rajej"};
-            String[] topRanked = {"pinco pallo", "asdrubale", "tullio"};
+            Player player = Games.Players.getCurrentPlayer(application.getClient());
 
             if (getArguments().getInt(ARG_SECTION_NUMBER) == 1) { // friends tab
-                if (friends.length > 0) {
-                    final ListView listView = (ListView) rootView.findViewById(R.id.listview_startduel_list);
 
-                    rootView.findViewById(R.id.textview_startduel_nouserstoshow).setVisibility(View.GONE);
-                    listView.setVisibility(View.VISIBLE);
+                Games.Players.loadConnectedPlayers(application.getClient(), true).setResultCallback(
+                        new ResultCallback<Players.LoadPlayersResult>() {
+                            @Override
+                            public void onResult(@NonNull Players.LoadPlayersResult loadPlayersResult) {
+                                PlayerBuffer friends = loadPlayersResult.getPlayers();
 
-                    final FriendListAdapter listAdapter = new FriendListAdapter(getContext(), friends);
-                    listView.setAdapter(listAdapter);
-                }
+                                if (friends.getCount() > 0) {
+                                    final ListView listView = (ListView) rootView.findViewById(R.id.listview_startduel_list);
+
+                                    rootView.findViewById(R.id.textview_startduel_nouserstoshow).setVisibility(View.GONE);
+                                    listView.setVisibility(View.VISIBLE);
+
+                                    final FriendListAdapter listAdapter = new FriendListAdapter(getContext(), friends);
+                                    listView.setAdapter(listAdapter);
+                                }
+                            }
+                        }
+                );
+
             }
-            else { // top-ranked tab
-                if (topRanked.length > 0) {
-                    final ListView listView = (ListView) rootView.findViewById(R.id.listview_startduel_list);
+            else { // leaderboard tab
 
-                    rootView.findViewById(R.id.textview_startduel_nouserstoshow).setVisibility(View.GONE);
-                    listView.setVisibility(View.VISIBLE);
+                Games.Leaderboards.loadPlayerCenteredScores(application.getClient(), LEADERBOARD_ID, LeaderboardVariant.TIME_SPAN_ALL_TIME, LeaderboardVariant.COLLECTION_PUBLIC, 10, true).setResultCallback(
+                        new ResultCallback<Leaderboards.LoadScoresResult>() {
+                            @Override
+                            public void onResult(@NonNull Leaderboards.LoadScoresResult loadScoresResult) {
+                                LeaderboardScoreBuffer leaderboard = loadScoresResult.getScores();
 
-                    final TopRankedListAdapter listAdapter = new TopRankedListAdapter(getContext(), topRanked);
-                    listView.setAdapter(listAdapter);
-                }
+                                Log.d("Debug", ""+leaderboard.getCount());
+
+                                if (leaderboard.getCount() > 0) {
+                                    final ListView listView = (ListView) rootView.findViewById(R.id.listview_startduel_list);
+
+                                    rootView.findViewById(R.id.textview_startduel_nouserstoshow).setVisibility(View.GONE);
+                                    listView.setVisibility(View.VISIBLE);
+
+                                    final LeaderboardAdapter listAdapter = new LeaderboardAdapter(getContext(), leaderboard);
+                                    listView.setAdapter(listAdapter);
+                                }
+                            }
+                        }
+                );
+
             }
 
             return rootView;
@@ -144,7 +183,7 @@ public class StartDuelActivity extends AppCompatActivity {
                 case 0:
                     return "FRIENDS";
                 case 1:
-                    return "TOP RANKED";
+                    return "LEADERBOARD";
             }
             return null;
         }

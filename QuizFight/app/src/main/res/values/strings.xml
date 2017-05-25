@@ -26,4 +26,6 @@
 
     <string name="sign_out">Sign out</string>
     <string name="signed_in">signed_in</string>
+
+    <string name="leaderboard_id">asd</string>
 </resources>

@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">Quiz Fight</string>
     <string name="app_id">628056279109</string>
+    <string name="facebook_app_id">1778022419175506</string>
 
     <string name="snapshot_name">quiz-fight-snapshot</string>
 
@@ -28,4 +29,7 @@
     <string name="signed_in">signed_in</string>
 
     <string name="leaderboard_id">asd</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

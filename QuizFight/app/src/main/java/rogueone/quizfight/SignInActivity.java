@@ -21,6 +21,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Toast;
 
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
+import com.facebook.login.LoginResult;
+import com.facebook.login.widget.LoginButton;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -34,6 +39,10 @@ import java.io.IOException;
 import static rogueone.quizfight.NotificationFactory.getTargetActivity;
 import static rogueone.quizfight.utils.SavedGames.byteToHistory;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import com.facebook.FacebookSdk;
+
 /**
  * Created by mdipirro on 19/05/17.
  */
@@ -46,12 +55,18 @@ public class SignInActivity extends AppCompatActivity implements
     private static final int SAVED_GAMES_LOADER = 1;
 
     private GoogleApiClient client;
+    private CallbackManager callbackManager;
+
+    @BindView(R.id.login_button) LoginButton loginButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        FacebookSdk.sdkInitialize(getApplicationContext());
+
         setContentView(R.layout.activity_sign_in);
+        ButterKnife.bind(this);
 
         client = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
@@ -71,6 +86,28 @@ public class SignInActivity extends AppCompatActivity implements
                 signIn();
             }
         });
+
+        loginButton.setReadPermissions("email");
+
+        callbackManager = CallbackManager.Factory.create();
+
+        loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
+            @Override
+            public void onSuccess(LoginResult loginResult) {
+
+            }
+
+            @Override
+            public void onCancel() {
+
+            }
+
+            @Override
+            public void onError(FacebookException error) {
+
+            }
+        });
+
     }
 
     private void signIn() {
@@ -92,9 +129,10 @@ public class SignInActivity extends AppCompatActivity implements
 
         if (requestCode == RESOLUTION && resultCode == RESULT_OK){
             client.connect();
-        }else{
+        } else {
             errorToast(getApplicationContext().getString(R.string.unable_to_connect));
         }
+        callbackManager.onActivityResult(requestCode, resultCode, data);
     }
 
     @Override

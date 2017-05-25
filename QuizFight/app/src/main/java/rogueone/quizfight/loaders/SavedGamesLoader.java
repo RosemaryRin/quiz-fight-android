@@ -9,20 +9,14 @@ import com.google.android.gms.games.GamesStatusCodes;
 import com.google.android.gms.games.snapshot.Snapshot;
 import com.google.android.gms.games.snapshot.Snapshots;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.ObjectInput;
-import java.io.ObjectInputStream;
-
 import rogueone.quizfight.QuizFightApplication;
 import rogueone.quizfight.R;
-import rogueone.quizfight.models.SavedGames;
 
 /**
  * Created by mdipirro on 23/05/17.
  */
 
-public class SavedGamesLoader extends AsyncTaskLoader<SavedGames> {
+public class SavedGamesLoader extends AsyncTaskLoader<Snapshot> {
 
     private static final int MAX_SNAPSHOT_RESOLVE_RETRIES = 3;
 
@@ -37,30 +31,15 @@ public class SavedGamesLoader extends AsyncTaskLoader<SavedGames> {
     }
 
     @Override
-    public SavedGames loadInBackground() {
+    public Snapshot loadInBackground() {
         Snapshots.OpenSnapshotResult result = Games.Snapshots.open(
                 ((QuizFightApplication)getContext()).getClient(),
                 getContext().getString(R.string.snapshot_name),
                 true).await();
-        Snapshot snapshot = processSnapshotOpenResult(result, 0);
-
-        if (snapshot != null) {
-            // Read the byte content of the saved game.
-            try {
-                return byteToObject(snapshot.getSnapshotContents().readFully());
-            } catch (IOException e) {
-                return null;
-            }
-        } else {
-            return null;
-        }
+        return processSnapshotOpenResult(result, 0);
     }
 
-    /**
-     * Conflict resolution for when Snapshots are opened.  Must be run in an AsyncTask or in a
-     * background thread,
-     */
-    Snapshot processSnapshotOpenResult(Snapshots.OpenSnapshotResult result, int retryCount) {
+    private Snapshot processSnapshotOpenResult(Snapshots.OpenSnapshotResult result, int retryCount) {
         Snapshot snapshot = null;
         retryCount++;
 
@@ -95,27 +74,5 @@ public class SavedGamesLoader extends AsyncTaskLoader<SavedGames> {
         }
         // Fail, return null.
         return null;
-    }
-
-    private SavedGames byteToObject(byte[] data) {
-        ByteArrayInputStream bis = new ByteArrayInputStream(data);
-        ObjectInput in = null;
-        SavedGames savedGames = new SavedGames();
-        try {
-            in = new ObjectInputStream(bis);
-            savedGames = (SavedGames)in.readObject();
-        } catch (ClassNotFoundException e) {
-            return null;
-        } catch (IOException e) {
-            return null;
-        }
-        finally {
-            try {
-                if (in != null) {
-                    in.close();
-                }
-            } catch (IOException ex) {}
-        }
-        return savedGames;
     }
 }

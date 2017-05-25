@@ -10,8 +10,10 @@ import java.util.List;
  * Created by mdipirro on 23/05/17.
  */
 
-public class Quiz implements Serializable{
+public class Quiz implements Serializable {
     private List<Question> questions = new LinkedList<>();
+
+    public Quiz() {}
 
     public Quiz(@NonNull List questions) {
         this.questions = questions;

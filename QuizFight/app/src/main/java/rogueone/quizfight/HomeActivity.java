@@ -17,7 +17,7 @@ import com.google.android.gms.games.Games;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import rogueone.quizfight.adapters.DuelSummaryAdapter;
-import rogueone.quizfight.models.History;
+import rogueone.quizfight.models.client.History;
 
 public class HomeActivity extends AppCompatActivity {
 

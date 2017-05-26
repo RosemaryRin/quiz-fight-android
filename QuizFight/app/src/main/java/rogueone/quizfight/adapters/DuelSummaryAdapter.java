@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import rogueone.quizfight.R;
-import rogueone.quizfight.models.Duel;
+import rogueone.quizfight.models.client.Duel;
 
 public class DuelSummaryAdapter extends ArrayAdapter<Duel> {
     private Context context;

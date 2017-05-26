@@ -6,7 +6,7 @@ import android.support.annotation.NonNull;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.games.snapshot.Snapshot;
 
-import rogueone.quizfight.models.History;
+import rogueone.quizfight.models.client.History;
 
 /**
  * Created by mdipirro on 19/05/17.

@@ -5,7 +5,7 @@ import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.Headers;
 import retrofit2.http.PUT;
-import rogueone.quizfight.models.User;
+import rogueone.quizfight.models.server.User;
 
 /**
  * Created by mdipirro on 19/05/17.

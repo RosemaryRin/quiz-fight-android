@@ -1,8 +1,6 @@
 package rogueone.quizfight.utils;
 
-import android.graphics.Bitmap;
 import android.support.annotation.NonNull;
-import android.util.Log;
 
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
@@ -19,7 +17,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
 
-import rogueone.quizfight.models.History;
+import rogueone.quizfight.models.client.History;
 
 /**
  * Created by mdipirro on 25/05/17.

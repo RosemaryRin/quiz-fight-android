@@ -1,4 +1,4 @@
-package rogueone.quizfight.models;
+package rogueone.quizfight.models.server;
 
 import android.support.annotation.NonNull;
 

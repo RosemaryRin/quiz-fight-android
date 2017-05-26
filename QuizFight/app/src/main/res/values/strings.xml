@@ -24,8 +24,40 @@
     <string name="unable_to_connect">Not able to connect to google client.</string>
     <string name="unable_to_restore_saved_games">Not able to restore previous duels.</string>
 
+    <string name="title_friends">FRIENDS</string>
+    <string name="title_leaderboard">LEADERBOARD</string>
+    <string name="random_player">Random Player</string>
+
     <string name="sign_out">Sign out</string>
     <string name="signed_in">signed_in</string>
 
-    <string name="leaderboard_id">asd</string>
+    <string name="leaderboard_id">CgkIxZDJ2KMSEAIQAg</string>
+
+    <string-array name="topics">
+        <item>General Knowledge</item>
+        <item>Entertainment: Books</item>
+        <item>Entertainment: Film</item>
+        <item>Entertainment: Music</item>
+        <item>Entertainment: Musicals &amp; Theaters</item>
+        <item>Entertainment: Television</item>
+        <item>Entertainment: Video Games</item>
+        <item>Entertainment: Board Games</item>
+        <item>Entertainment: Comics</item>
+        <item>Entertainment: Cartoon &amp; Animations</item>
+        <item>Entertainment: Japanese Anime &amp; Manga</item>
+        <item>Science &amp; Nature</item>
+        <item>Science: Computer</item>
+        <item>Science: Mathematics</item>
+        <item>Science: Gadgets</item>
+        <item>Mythology</item>
+        <item>Sports</item>
+        <item>Geography</item>
+        <item>History</item>
+        <item>Politics</item>
+        <item>Art</item>
+        <item>Celebrities</item>
+        <item>Animals</item>
+        <item>Vehicles</item>
+        <item>Science: Gadgets</item>
+    </string-array>
 </resources>

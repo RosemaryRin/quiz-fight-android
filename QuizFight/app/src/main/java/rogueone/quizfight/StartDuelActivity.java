@@ -1,5 +1,6 @@
 package rogueone.quizfight;
 
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -15,6 +16,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import android.widget.Button;
 import android.widget.ListView;
 
 import com.google.android.gms.common.api.ResultCallback;
@@ -26,6 +28,8 @@ import com.google.android.gms.games.leaderboard.LeaderboardScoreBuffer;
 import com.google.android.gms.games.leaderboard.LeaderboardVariant;
 import com.google.android.gms.games.leaderboard.Leaderboards;
 
+import butterknife.BindString;
+import butterknife.ButterKnife;
 import rogueone.quizfight.adapters.FriendListAdapter;
 import rogueone.quizfight.adapters.LeaderboardAdapter;
 
@@ -48,8 +52,6 @@ public class StartDuelActivity extends AppCompatActivity {
 
     private static QuizFightApplication application;
 
-    private final static String LEADERBOARD_ID = "CgkIxZDJ2KMSEAIQAg";
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -71,6 +73,13 @@ public class StartDuelActivity extends AppCompatActivity {
 
         application = (QuizFightApplication)getApplicationContext();
 
+        findViewById(R.id.button_random_player).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(StartDuelActivity.this, DuelActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 
     /**
@@ -125,7 +134,7 @@ public class StartDuelActivity extends AppCompatActivity {
             }
             else { // leaderboard tab
 
-                Games.Leaderboards.loadPlayerCenteredScores(application.getClient(), LEADERBOARD_ID, LeaderboardVariant.TIME_SPAN_ALL_TIME, LeaderboardVariant.COLLECTION_PUBLIC, 10, true).setResultCallback(
+                Games.Leaderboards.loadPlayerCenteredScores(application.getClient(), getString(R.string.leaderboard_id), LeaderboardVariant.TIME_SPAN_ALL_TIME, LeaderboardVariant.COLLECTION_PUBLIC, 10, true).setResultCallback(
                         new ResultCallback<Leaderboards.LoadScoresResult>() {
                             @Override
                             public void onResult(@NonNull Leaderboards.LoadScoresResult loadScoresResult) {
@@ -179,9 +188,9 @@ public class StartDuelActivity extends AppCompatActivity {
         public CharSequence getPageTitle(int position) {
             switch (position) {
                 case 0:
-                    return "FRIENDS";
+                    return getString(R.string.title_friends);
                 case 1:
-                    return "LEADERBOARD";
+                    return getString(R.string.title_leaderboard);
             }
             return null;
         }

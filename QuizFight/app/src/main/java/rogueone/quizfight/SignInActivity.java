@@ -6,7 +6,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import rogueone.quizfight.loaders.SavedGamesLoader;
 import rogueone.quizfight.rest.AddToken;
-import rogueone.quizfight.models.server.User;
+import rogueone.quizfight.rest.pojo.User;
 
 import android.app.LoaderManager;
 import android.content.Intent;

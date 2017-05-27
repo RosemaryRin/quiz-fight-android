@@ -16,17 +16,15 @@ import butterknife.BindArray;
 
 public class DuelActivity extends AppCompatActivity {
 
-    //@BindArray(R.array.topics) private String[] topics;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         // shuffle for getting three random topics to be used during the duel
         // those elements will be the first three in the
-
-        /*List<String> list = Arrays.asList(topics); list.add(""); // empty string means "Every topic"
-        Collections.shuffle(list);*/
+        List<String> list = Arrays.asList(getResources().getStringArray(R.array.topics));
+        list.add(""); // empty string means "Every topic"
+        Collections.shuffle(list);
 
     }
 }

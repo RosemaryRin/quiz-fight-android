@@ -9,6 +9,8 @@ public class NotificationFactory {
         switch (id) {
             case 1:
                 return HomeActivity.class;
+            case 2:
+                return DuelActivity.class;
         }
         return SignInActivity.class;
     }

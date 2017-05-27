@@ -1,6 +1,8 @@
 package rogueone.quizfight;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -39,6 +41,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 
 import butterknife.BindView;
@@ -171,24 +176,16 @@ public class StartDuelActivity extends AppCompatActivity {
                         HttpMethod.GET,
                         new GraphRequest.Callback() {
                             public void onCompleted(GraphResponse response) {
-                                Log.d(TAG, "Friend list request completed");
-                                try {
-                                    JSONArray rawFriends = response.getJSONObject()
-                                            .getJSONArray("data");
+                                if (response != null) {
+                                    Log.d(TAG, "Friend list request completed");
+                                    try {
+                                        JSONArray friends = response.getJSONObject()
+                                                .getJSONArray("data");
 
-                                    final ListView listView = (ListView) rootView
-                                            .findViewById(R.id.listview_startduel_list);
-
-                                    rootView.findViewById(R.id.textview_startduel_nouserstoshow)
-                                            .setVisibility(View.GONE);
-
-                                    listView.setVisibility(View.VISIBLE);
-
-                                    final FriendListAdapter listAdapter =
-                                            new FriendListAdapter(getContext(), rawFriends);
-                                    listView.setAdapter(listAdapter);
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
+                                        setFriendsAdapter(friends, rootView);
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
                                 }
                             }
                         }
@@ -242,6 +239,21 @@ public class StartDuelActivity extends AppCompatActivity {
 
             return rootView;
         }
+
+        private void setFriendsAdapter(JSONArray friends, View rootView) {
+            final ListView listView = (ListView) rootView
+                    .findViewById(R.id.listview_startduel_list);
+
+            rootView.findViewById(R.id.textview_startduel_nouserstoshow)
+                    .setVisibility(View.GONE);
+
+            listView.setVisibility(View.VISIBLE);
+
+            final FriendListAdapter listAdapter =
+                    new FriendListAdapter(getContext(), friends);
+            listView.setAdapter(listAdapter);
+        }
+
     }
 
     /**

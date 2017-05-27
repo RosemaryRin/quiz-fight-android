@@ -5,6 +5,8 @@ package rogueone.quizfight.adapters;
  */
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
@@ -20,6 +22,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+
 import rogueone.quizfight.R;
 
 public class FriendListAdapter extends ArrayAdapter<JSONObject> {
@@ -33,24 +37,25 @@ public class FriendListAdapter extends ArrayAdapter<JSONObject> {
     }
 
     @Override
+    public int getCount() {
+        return friends.length();
+    }
+
+    @Override
     public @NonNull View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View rowView = inflater.inflate(R.layout.friend_row, parent, false);
 
         ImageView iconView = (ImageView) rowView.findViewById(R.id.imageview_friendrow_icon);
-        //TODO: show personal icon
 
         TextView nameView = (TextView) rowView.findViewById(R.id.textview_friendrow_name);
 
-        String friend_name = "";
-
         try {
-            friend_name = friends.getJSONObject(1).getString("first_name");
+            String friend_name = friends.getJSONObject(position).getString("name");
+            nameView.setText(friend_name);
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
-        nameView.setText(friend_name);
 
         TextView scoreView = (TextView) rowView.findViewById(R.id.textview_friendrow_score);
         //TODO: show friend score
@@ -58,4 +63,3 @@ public class FriendListAdapter extends ArrayAdapter<JSONObject> {
         return rowView;
     }
 }
-

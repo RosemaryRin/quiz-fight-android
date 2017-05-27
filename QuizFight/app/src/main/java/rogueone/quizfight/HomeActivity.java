@@ -1,5 +1,6 @@
 package rogueone.quizfight;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
@@ -17,6 +18,7 @@ import com.google.android.gms.games.Games;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import rogueone.quizfight.adapters.DuelSummaryAdapter;
+import rogueone.quizfight.listeners.DuelDetailListener;
 import rogueone.quizfight.models.History;
 
 public class HomeActivity extends AppCompatActivity {
@@ -87,6 +89,7 @@ public class HomeActivity extends AppCompatActivity {
             oldDuels_listview.setVisibility(View.VISIBLE);
             final DuelSummaryAdapter listAdapter = new DuelSummaryAdapter(this, history.getDuels(DUELS_SHOWN));
             oldDuels_listview.setAdapter(listAdapter);
+            oldDuels_listview.setOnItemClickListener(new DuelDetailListener(this));
         }
     }
 

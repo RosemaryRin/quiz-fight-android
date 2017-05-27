@@ -34,8 +34,14 @@
                 android:id="@+id/button_random_player"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:text="@string/random_player"
-                android:textSize="6sp"/>
+                android:layout_gravity="end"
+                android:layout_marginEnd="10dip"
+                android:backgroundTint="@color/colorPrimaryDark"
+                android:drawableEnd="@drawable/random"
+                android:drawablePadding="10dip"
+                android:drawableRight="@drawable/random"
+                android:drawableTint="@color/common_google_signin_btn_text_dark_default"
+                android:text="@string/random_player" />
 
         </android.support.v7.widget.Toolbar>
 

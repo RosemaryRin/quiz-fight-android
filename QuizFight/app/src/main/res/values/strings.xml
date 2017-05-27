@@ -28,7 +28,7 @@
 
     <string name="title_friends">FRIENDS</string>
     <string name="title_leaderboard">LEADERBOARD</string>
-    <string name="random_player">Random Player</string>
+    <string name="random_player">Random</string>
 
     <string name="sign_out">Sign out</string>
     <string name="signed_in">signed_in</string>

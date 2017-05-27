@@ -25,6 +25,8 @@
     <string name="unable_to_connect">Not able to connect to google client.</string>
     <string name="unable_to_restore_saved_games">Not able to restore previous duels.</string>
 
+    <string name="dueldetail_you">You</string>
+
     <string name="title_friends">FRIENDS</string>
     <string name="title_leaderboard">LEADERBOARD</string>
     <string name="random_player">Random</string>

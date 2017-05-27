@@ -1,5 +1,6 @@
 package rogueone.quizfight;
 
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -14,20 +15,37 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
 import android.widget.ListView;
 
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
+import com.facebook.GraphRequest;
+import com.facebook.GraphResponse;
+import com.facebook.HttpMethod;
+import com.facebook.login.LoginResult;
+import com.facebook.login.widget.LoginButton;
+import com.facebook.AccessToken;
+import com.facebook.AccessTokenTracker;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.games.Games;
-import com.google.android.gms.games.Player;
 import com.google.android.gms.games.PlayerBuffer;
 import com.google.android.gms.games.Players;
 import com.google.android.gms.games.leaderboard.LeaderboardScoreBuffer;
 import com.google.android.gms.games.leaderboard.LeaderboardVariant;
 import com.google.android.gms.games.leaderboard.Leaderboards;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import rogueone.quizfight.adapters.FriendListAdapter;
 import rogueone.quizfight.adapters.LeaderboardAdapter;
+
 
 public class StartDuelActivity extends AppCompatActivity {
 
@@ -47,13 +65,50 @@ public class StartDuelActivity extends AppCompatActivity {
     private ViewPager mViewPager;
 
     private static QuizFightApplication application;
+    private CallbackManager callbackManager;
 
     private final static String LEADERBOARD_ID = "CgkIxZDJ2KMSEAIQAg";
+    private final static String TAG = "StartDuelActivity";
+
+    @BindView(R.id.login_button) LoginButton loginButton;
+
+    private AccessToken accessToken;
+    private AccessTokenTracker accessTokenTracker;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start_duel);
+        ButterKnife.bind(this);
+
+        loginButton.setReadPermissions("email", "user_friends");
+
+        callbackManager = CallbackManager.Factory.create();
+
+        loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
+            @Override
+            public void onSuccess(LoginResult loginResult) {
+                Log.d(TAG, "Facebook login request success");
+                accessToken = AccessToken.getCurrentAccessToken();
+            }
+
+            @Override
+            public void onCancel() {
+                Log.d(TAG, "Facebook login request Canceled");
+            }
+
+            @Override
+            public void onError(FacebookException error) {
+                Log.d(TAG, "Facebook login request Error");
+            }
+        });
+
+        accessTokenTracker = new AccessTokenTracker() {
+            @Override
+            protected void onCurrentAccessTokenChanged(AccessToken oldAccessToken, AccessToken currentAccessToken) {
+                accessToken = currentAccessToken;
+            }
+        };
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_startduel_toolbar);
         setSupportActionBar(toolbar);
@@ -70,7 +125,12 @@ public class StartDuelActivity extends AppCompatActivity {
         tabLayout.setupWithViewPager(mViewPager);
 
         application = (QuizFightApplication)getApplicationContext();
+    }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        callbackManager.onActivityResult(requestCode, resultCode, data);
     }
 
     /**
@@ -101,9 +161,40 @@ public class StartDuelActivity extends AppCompatActivity {
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
             final View rootView = inflater.inflate(R.layout.fragment_start_duel, container, false);
 
-            if (getArguments().getInt(ARG_SECTION_NUMBER) == 1) { // friends tab
+            if (getArguments().getInt(ARG_SECTION_NUMBER) == 1
+                    && AccessToken.getCurrentAccessToken() != null) { // friends tab
 
-                Games.Players.loadConnectedPlayers(application.getClient(), true).setResultCallback(
+                new GraphRequest(
+                        AccessToken.getCurrentAccessToken(),
+                        "/me/friends",
+                        null,
+                        HttpMethod.GET,
+                        new GraphRequest.Callback() {
+                            public void onCompleted(GraphResponse response) {
+                                Log.d(TAG, "Friend list request completed");
+                                try {
+                                    JSONArray rawFriends = response.getJSONObject()
+                                            .getJSONArray("data");
+
+                                    final ListView listView = (ListView) rootView
+                                            .findViewById(R.id.listview_startduel_list);
+
+                                    rootView.findViewById(R.id.textview_startduel_nouserstoshow)
+                                            .setVisibility(View.GONE);
+
+                                    listView.setVisibility(View.VISIBLE);
+
+                                    final FriendListAdapter listAdapter =
+                                            new FriendListAdapter(getContext(), rawFriends);
+                                    listView.setAdapter(listAdapter);
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }
+                ).executeAsync();
+
+                /* Games.Players.loadConnectedPlayers(application.getClient(), true).setResultCallback(
                         new ResultCallback<Players.LoadPlayersResult>() {
                             @Override
                             public void onResult(@NonNull Players.LoadPlayersResult loadPlayersResult) {
@@ -120,9 +211,10 @@ public class StartDuelActivity extends AppCompatActivity {
                                 }
                             }
                         }
-                );
+                ); */
 
             }
+
             else { // leaderboard tab
 
                 Games.Leaderboards.loadPlayerCenteredScores(application.getClient(), LEADERBOARD_ID, LeaderboardVariant.TIME_SPAN_ALL_TIME, LeaderboardVariant.COLLECTION_PUBLIC, 10, true).setResultCallback(

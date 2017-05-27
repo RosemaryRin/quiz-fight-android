@@ -3,6 +3,7 @@ package rogueone.quizfight;
 import android.app.Application;
 import android.support.annotation.NonNull;
 
+import com.facebook.FacebookSdk;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.games.snapshot.Snapshot;
 
@@ -21,6 +22,7 @@ public class QuizFightApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        FacebookSdk.sdkInitialize(getApplicationContext());
     }
 
     public void setClient(@NonNull GoogleApiClient client) {

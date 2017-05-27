@@ -15,15 +15,18 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.android.gms.games.Player;
-import com.google.android.gms.games.PlayerBuffer;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import rogueone.quizfight.R;
 
-public class FriendListAdapter extends ArrayAdapter<Player> {
+public class FriendListAdapter extends ArrayAdapter<JSONObject> {
     private final Context context;
-    private final PlayerBuffer friends;
+    private final JSONArray friends;
 
-    public FriendListAdapter(Context context, PlayerBuffer friends) {
+    public FriendListAdapter(Context context, JSONArray friends) {
         super(context, -1);
         this.context = context;
         this.friends = friends;
@@ -38,7 +41,16 @@ public class FriendListAdapter extends ArrayAdapter<Player> {
         //TODO: show personal icon
 
         TextView nameView = (TextView) rowView.findViewById(R.id.textview_friendrow_name);
-        nameView.setText(friends.get(position).getDisplayName());
+
+        String friend_name = "";
+
+        try {
+            friend_name = friends.getJSONObject(1).getString("first_name");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        nameView.setText(friend_name);
 
         TextView scoreView = (TextView) rowView.findViewById(R.id.textview_friendrow_score);
         //TODO: show friend score

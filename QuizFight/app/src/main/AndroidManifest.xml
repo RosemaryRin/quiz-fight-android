@@ -47,11 +47,6 @@
                 android:value="rogueone.quizfight.HomeActivity" />
         </activity>
 
-        <activity android:name="com.facebook.FacebookActivity"
-            android:configChanges=
-                "keyboard|keyboardHidden|screenLayout|screenSize|orientation"
-            android:label="@string/app_name" />
-
         <service
             android:name=".services.CustomFirebaseInstanceID">
             <intent-filter>

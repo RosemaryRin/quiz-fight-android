@@ -1,4 +1,4 @@
-package rogueone.quizfight.models.client;
+package rogueone.quizfight.models;
 
 import android.support.annotation.NonNull;
 
@@ -9,6 +9,8 @@ import java.io.Serializable;
  */
 
 public class Question implements Serializable{
+    private static final long serialVersionUID = 4750714490860667727L;
+
     private String question;
     private String answer;
 

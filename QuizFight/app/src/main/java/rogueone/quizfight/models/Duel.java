@@ -1,4 +1,4 @@
-package rogueone.quizfight.models.client;
+package rogueone.quizfight.models;
 
 import android.support.annotation.NonNull;
 
@@ -11,6 +11,8 @@ import java.util.List;
  */
 
 public class Duel implements Serializable {
+    private static final long serialVersionUID = 2679890596381781576L;
+
     private String opponent;
     private Score score;
     private List<Quiz> quizzes = new LinkedList<>();

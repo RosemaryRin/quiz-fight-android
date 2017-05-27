@@ -1,4 +1,4 @@
-package rogueone.quizfight.models.client;
+package rogueone.quizfight.models;
 
 import android.support.annotation.NonNull;
 
@@ -11,6 +11,8 @@ import java.util.List;
  */
 
 public class Quiz implements Serializable {
+    private static final long serialVersionUID = 2464343497562028117L;
+
     private List<Question> questions = new LinkedList<>();
 
     public Quiz() {}

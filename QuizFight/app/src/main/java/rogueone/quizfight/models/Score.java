@@ -1,4 +1,4 @@
-package rogueone.quizfight.models.client;
+package rogueone.quizfight.models;
 
 import java.io.Serializable;
 
@@ -7,6 +7,8 @@ import java.io.Serializable;
  */
 
 public class Score implements Serializable{
+    private static final long serialVersionUID = 2321585485734097863L;
+
     private int playerScore;
     private int opponentScore;
 

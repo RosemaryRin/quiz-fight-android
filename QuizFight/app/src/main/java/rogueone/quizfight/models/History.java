@@ -1,4 +1,4 @@
-package rogueone.quizfight.models.client;
+package rogueone.quizfight.models;
 
 import android.support.annotation.NonNull;
 
@@ -11,6 +11,8 @@ import java.util.List;
  */
 
 public class History implements Serializable {
+    private static final long serialVersionUID = 290106142979256029L;
+
     private List<Duel> duels = new ArrayList<>();
 
     public List<Duel> getDuels() {

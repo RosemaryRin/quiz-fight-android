@@ -6,6 +6,7 @@
 
     <string name="title_activity_start_duel">Start Duel</string>
     <string name="title_activity_duels_history">Duels History</string>
+    <string name="title_activity_duel">Duel</string>
 
     <string name="action_settings">Settings</string>
 
@@ -23,6 +24,7 @@
 
     <string name="unable_to_connect">Not able to connect to google client.</string>
     <string name="unable_to_restore_saved_games">Not able to restore previous duels.</string>
+    <string name="unable_to_start_duel">Not able to start a new duel.</string>
 
     <string name="title_friends">FRIENDS</string>
     <string name="title_leaderboard">LEADERBOARD</string>
@@ -32,6 +34,8 @@
     <string name="signed_in">signed_in</string>
 
     <string name="leaderboard_id">CgkIxZDJ2KMSEAIQAg</string>
+
+    <string name="round">round</string>
 
     <string-array name="topics">
         <item>General Knowledge</item>

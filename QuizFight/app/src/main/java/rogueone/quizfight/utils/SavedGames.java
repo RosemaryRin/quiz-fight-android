@@ -1,6 +1,7 @@
 package rogueone.quizfight.utils;
 
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
@@ -17,7 +18,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
 
-import rogueone.quizfight.models.client.History;
+import rogueone.quizfight.models.History;
 
 /**
  * Created by mdipirro on 25/05/17.
@@ -32,7 +33,9 @@ public class SavedGames {
             in = new ObjectInputStream(bis);
             history = (History) in.readObject();
         } catch (ClassNotFoundException e) {
+            e.printStackTrace();
         } catch (IOException e) {
+            Log.d("HISTORY exc", e.getMessage());
         } finally {
             try {
                 if (in != null) {

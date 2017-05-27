@@ -6,6 +6,8 @@ import retrofit2.http.Body;
 import retrofit2.http.Headers;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
+import rogueone.quizfight.rest.pojo.Duel;
+import rogueone.quizfight.rest.pojo.Round;
 import rogueone.quizfight.rest.pojo.User;
 
 /**
@@ -19,5 +21,5 @@ public interface EndpointInterface {
 
     @Headers({"Content-Type: application/json"})
     @POST("fight")
-    Call<ResponseBody> newDuel(@Body User user);
+    Call<Round> newDuel(@Body Duel user);
 }

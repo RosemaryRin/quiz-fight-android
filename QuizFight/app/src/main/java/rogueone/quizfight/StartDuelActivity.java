@@ -1,8 +1,6 @@
 package rogueone.quizfight;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -31,20 +29,12 @@ import com.facebook.AccessToken;
 import com.facebook.AccessTokenTracker;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.games.Games;
-import com.google.android.gms.games.PlayerBuffer;
-import com.google.android.gms.games.Players;
 import com.google.android.gms.games.leaderboard.LeaderboardScoreBuffer;
 import com.google.android.gms.games.leaderboard.LeaderboardVariant;
 import com.google.android.gms.games.leaderboard.Leaderboards;
 
 import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;

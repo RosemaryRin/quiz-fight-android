@@ -16,30 +16,28 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.games.Games;
-import com.google.android.gms.games.Player;
 import com.google.android.gms.games.PlayerBuffer;
 import com.google.android.gms.games.Players;
 import com.google.android.gms.games.leaderboard.LeaderboardScoreBuffer;
 import com.google.android.gms.games.leaderboard.LeaderboardVariant;
 import com.google.android.gms.games.leaderboard.Leaderboards;
 
-import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import rogueone.quizfight.adapters.FriendListAdapter;
 import rogueone.quizfight.adapters.LeaderboardAdapter;
-import rogueone.quizfight.rest.NewDuel;
+import rogueone.quizfight.rest.api.NewDuel;
 import rogueone.quizfight.rest.pojo.Duel;
 import rogueone.quizfight.rest.pojo.Round;
 
@@ -111,12 +109,13 @@ public class StartDuelActivity extends AppCompatActivity {
         // shuffle for getting three random topics to be used during the duel
         // those elements will be the first three in the
         List<String> list = Arrays.asList(getResources().getStringArray(R.array.topics));
-        Collections.shuffle(list);
+        Collections.shuffle(list, new Random());
         return list.subList(0, 3);
     }
 
     private void startDuel(@NonNull Round round) {
         Intent intent = new Intent(StartDuelActivity.this, DuelActivity.class);
+        Log.d("ROUND", round.getQuestions().get(0).getOptions().size() + "");
         intent.putExtra(getString(R.string.round), round);
         startActivity(intent);
     }

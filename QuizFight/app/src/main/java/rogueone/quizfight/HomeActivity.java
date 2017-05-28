@@ -15,11 +15,20 @@ import android.widget.TextView;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.games.Games;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import rogueone.quizfight.adapters.DuelSummaryAdapter;
 import rogueone.quizfight.listeners.DuelDetailListener;
+import rogueone.quizfight.models.Duel;
 import rogueone.quizfight.models.History;
+import rogueone.quizfight.models.Question;
+import rogueone.quizfight.models.Quiz;
+import rogueone.quizfight.models.Score;
+
+import static rogueone.quizfight.utils.SavedGames.writeSnapshot;
 
 public class HomeActivity extends AppCompatActivity {
 
@@ -40,19 +49,23 @@ public class HomeActivity extends AppCompatActivity {
         application = (QuizFightApplication)getApplicationContext();
         history = application.getHistory();
 
-        /*Question q1 = new Question("Question 1", "Answer 1"),
-                q2 = new Question("Question 2", "Answer 2");
-        Quiz quiz = new Quiz();
-        quiz.addQuestion(q1); quiz.addQuestion(q2);
-        Duel duel = new Duel("Alex", new Score(10, 9), quiz);
-        Duel duel1 = new Duel("Emanuele", new Score(8, 7), quiz);
-        Duel duel2 = new Duel("Rajej", new Score(2, 7), quiz);
-        Duel duel3 = new Duel("Milly Maietti", new Score(0, 0), quiz);
-        Duel duel4 = new Duel("Maestro Tullio", new Score(0, 2000), quiz);
-        Duel duel5 = new Duel("Bresolin", new Score(5, 0), quiz);
-        history.addDuel(duel); history.addDuel(duel1); history.addDuel(duel2); history.addDuel(duel3);
-        history.addDuel(duel4); history.addDuel(duel5);
-        writeSnapshot(application.getSnapshot(), history, "First write", application.getClient());*/
+//        Question q1 = new Question("Question 1", "Answer 1"),
+//                q2 = new Question("Question 2", "Answer 2");
+//        Quiz quiz1 = new Quiz(), quiz2 = new Quiz();
+//        quiz1.addQuestion(q1); quiz1.addQuestion(q2);
+//        quiz2.addQuestion(q1); quiz2.addQuestion(q2);
+//        List<Quiz> quizzes = new ArrayList<Quiz>(2);
+//        quizzes.add(quiz1);
+//        quizzes.add(quiz2);
+//        Duel duel = new Duel("Matteo", new Score(10,9), quizzes);
+//        Duel duel1 = new Duel("Emanuele", new Score(8, 7), quizzes);
+//        Duel duel2 = new Duel("Rajej", new Score(2, 7), quizzes);
+//        Duel duel3 = new Duel("Milly Maietti", new Score(0, 0), quizzes);
+//        Duel duel4 = new Duel("Maestro Tullio", new Score(0, 2000), quizzes);
+//        Duel duel5 = new Duel("Bresolin", new Score(5, 0), quizzes);
+//        history.addDuel(duel); history.addDuel(duel1); history.addDuel(duel2); history.addDuel(duel3);
+//        history.addDuel(duel4); history.addDuel(duel5);
+//        writeSnapshot(application.getSnapshot(), history, "First write", application.getClient());
 
         // setting username from login
         username.setText(Games.Players.getCurrentPlayer(

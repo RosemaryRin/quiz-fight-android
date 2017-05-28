@@ -14,6 +14,7 @@
         android:id="@+id/linearlayout_dueldetail_header"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
         android:orientation="horizontal"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -46,5 +47,10 @@
             android:textSize="18sp" />
 
     </LinearLayout>
+
+    <ExpandableListView
+        android:id="@+id/expandablelistview_dueldetail_list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
 
 </LinearLayout>

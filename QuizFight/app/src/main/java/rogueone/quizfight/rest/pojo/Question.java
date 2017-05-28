@@ -22,6 +22,7 @@ public class Question implements Parcelable {
         trueOrFalse = in.readByte() != 0;
         answer = in.readInt();
         difficulty = in.readInt();
+        options = in.createTypedArrayList(Option.CREATOR);
     }
 
     public String getQuestion() {
@@ -67,5 +68,6 @@ public class Question implements Parcelable {
         dest.writeByte((byte) (trueOrFalse ? 1 : 0));
         dest.writeInt(answer);
         dest.writeInt(difficulty);
+        dest.writeTypedList(options);
     }
 }

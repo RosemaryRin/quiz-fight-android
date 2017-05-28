@@ -1,4 +1,4 @@
-package rogueone.quizfight.rest;
+package rogueone.quizfight.rest.api;
 
 import android.support.annotation.NonNull;
 

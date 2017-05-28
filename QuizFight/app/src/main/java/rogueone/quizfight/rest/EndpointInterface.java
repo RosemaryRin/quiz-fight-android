@@ -3,11 +3,15 @@ package rogueone.quizfight.rest;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
+import retrofit2.http.GET;
 import retrofit2.http.Headers;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
+import retrofit2.http.Path;
+import retrofit2.http.Query;
 import rogueone.quizfight.rest.pojo.Duel;
 import rogueone.quizfight.rest.pojo.Round;
+import rogueone.quizfight.rest.pojo.Scores;
 import rogueone.quizfight.rest.pojo.User;
 
 /**
@@ -22,4 +26,8 @@ public interface EndpointInterface {
     @Headers({"Content-Type: application/json"})
     @POST("fight")
     Call<Round> newDuel(@Body Duel user);
+
+    @Headers({"Content-Type: application/json"})
+    @GET("scores/{playerID}/{duelID}")
+    Call<Scores> getPendingScores(@Path("playerID") String player, @Path("duelID") String duels);
 }

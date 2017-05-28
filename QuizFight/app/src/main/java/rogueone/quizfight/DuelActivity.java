@@ -7,6 +7,7 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 
@@ -17,6 +18,7 @@ import java.util.Collections;
 import java.util.List;
 
 import butterknife.BindArray;
+import butterknife.BindColor;
 import butterknife.BindView;
 import rogueone.quizfight.fragments.MultipleChoiceFragment;
 import rogueone.quizfight.fragments.TrueFalseFragment;
@@ -76,15 +78,26 @@ public class DuelActivity extends AppCompatActivity {
     private void nextQuestion() {
         if (count < QUESTIONS_PER_ROUND) {
             currentQuestion = round.getQuestions().get(count++);
+            Log.d("ROUND", currentQuestion.getOptions().size() +"");
             textView_question.setText(currentQuestion.getQuestion());
             if (currentQuestion.isTrueOrFalse()) {
                 showHide(true, trueFalseFragment);
                 showHide(false, multipleChoiceFragment);
+
+                trueFalseFragment.fillOptions(currentQuestion.getOptions());
             } else {
                 showHide(false, trueFalseFragment);
                 showHide(true, multipleChoiceFragment);
+
+                multipleChoiceFragment.fillOptions(currentQuestion.getOptions());
             }
+        } else {
+            roundTerminated();
         }
+    }
+
+    private void roundTerminated() {
+
     }
 
     private void showHide(boolean show, @NonNull Fragment fragment) {

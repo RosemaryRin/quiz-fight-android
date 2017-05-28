@@ -12,7 +12,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import rogueone.quizfight.QuizFightApplication;
 import rogueone.quizfight.rest.pojo.User;
-import rogueone.quizfight.rest.AddToken;
+import rogueone.quizfight.rest.api.AddToken;
 
 
 /**

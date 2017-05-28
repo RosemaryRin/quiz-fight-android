@@ -15,6 +15,7 @@
 
     <string name="home_usericondescription">User image</string>
     <string name="home_lastduels">Last duels:</string>
+    <string name="home_duels_in_progress">Duels in progress:</string>
     <string name="home_viewhistory">View all duels</string>
 
     <string name="duelshistory_duelshistory">Duels history:</string>
@@ -32,6 +33,8 @@
 
     <string name="sign_out">Sign out</string>
     <string name="signed_in">signed_in</string>
+    <string name="duel_id">duelID</string>
+    <string name="opponent">opponent</string>
 
     <string name="leaderboard_id">CgkIxZDJ2KMSEAIQAg</string>
 
@@ -42,7 +45,7 @@
         <item>Entertainment: Books</item>
         <item>Entertainment: Film</item>
         <item>Entertainment: Music</item>
-        <item>Entertainment: Musicals &amp; Theaters</item>
+        <item>Entertainment: Musicals &amp; Theatres</item>
         <item>Entertainment: Television</item>
         <item>Entertainment: Video Games</item>
         <item>Entertainment: Board Games</item>
@@ -50,7 +53,7 @@
         <item>Entertainment: Cartoon &amp; Animations</item>
         <item>Entertainment: Japanese Anime &amp; Manga</item>
         <item>Science &amp; Nature</item>
-        <item>Science: Computer</item>
+        <item>Science: Computers</item>
         <item>Science: Mathematics</item>
         <item>Science: Gadgets</item>
         <item>Mythology</item>

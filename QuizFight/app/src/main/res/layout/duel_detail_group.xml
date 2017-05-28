@@ -4,14 +4,15 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:padding="8dp">
+    android:padding="8dp"
+    android:paddingEnd="8dp"
+    android:paddingStart="40dp">
 
     <TextView
         android:id="@+id/textview_dueldetailgroup_roundtext"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_weight="1"
-        android:text="Round 1"
         android:textSize="16sp" />
 
     <TextView
@@ -19,7 +20,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:text="4 - 3"
         android:textAlignment="textEnd"
         android:textSize="16sp" />
 </LinearLayout>

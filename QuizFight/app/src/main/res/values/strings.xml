@@ -26,6 +26,7 @@
     <string name="unable_to_restore_saved_games">Not able to restore previous duels.</string>
 
     <string name="dueldetail_you">You</string>
+    <string name="dueldetail_questionicon">A check if given answer is correct, a cross otherwise</string>
 
     <string name="title_friends">FRIENDS</string>
     <string name="title_leaderboard">LEADERBOARD</string>

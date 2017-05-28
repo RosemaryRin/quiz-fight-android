@@ -33,6 +33,10 @@ public class DuelDetailActivity extends AppCompatActivity {
 
         DuelDetailAdapter adapter = new DuelDetailAdapter(getLayoutInflater(), duel);
         list.setAdapter(adapter);
+
+        // initially expands all rounds
+        for (int i = 0; i < adapter.getGroupCount(); i++)
+            list.expandGroup(i);
     }
 
 }

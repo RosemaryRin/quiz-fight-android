@@ -84,9 +84,6 @@ public class DuelDetailAdapter extends BaseExpandableListAdapter {
         // FIXME: get proper data, model doesn't provide this information yet
         score.setText("4 - 3");
 
-        ExpandableListView list = (ExpandableListView) parent;
-        list.expandGroup(groupPosition);
-
         return convertView;
     }
 

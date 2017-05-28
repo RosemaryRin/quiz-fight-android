@@ -81,6 +81,7 @@ public class SavedGames {
                 .build();
 
         // Commit the operation
+        Log.d("HISTORY", "Saved");
         return Games.Snapshots.commitAndClose(client, snapshot, metadataChange);
     }
 }

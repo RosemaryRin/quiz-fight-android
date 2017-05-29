@@ -12,7 +12,7 @@ import java.util.List;
 
 public class Duel implements Serializable {
     private static final long serialVersionUID = 8344928931366336118L;
-    
+
     private String duelID;
     private String opponent;
     private List<Quiz> quizzes = new LinkedList<Quiz>();

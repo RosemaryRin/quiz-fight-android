@@ -16,22 +16,30 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import android.widget.Button;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.games.Games;
-import com.google.android.gms.games.Player;
 import com.google.android.gms.games.PlayerBuffer;
 import com.google.android.gms.games.Players;
 import com.google.android.gms.games.leaderboard.LeaderboardScoreBuffer;
 import com.google.android.gms.games.leaderboard.LeaderboardVariant;
 import com.google.android.gms.games.leaderboard.Leaderboards;
 
-import butterknife.BindString;
-import butterknife.ButterKnife;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Random;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 import rogueone.quizfight.adapters.FriendListAdapter;
 import rogueone.quizfight.adapters.LeaderboardAdapter;
+import rogueone.quizfight.rest.api.NewDuel;
+import rogueone.quizfight.rest.pojo.Duel;
+import rogueone.quizfight.rest.pojo.Round;
 
 public class StartDuelActivity extends AppCompatActivity {
 
@@ -76,10 +84,40 @@ public class StartDuelActivity extends AppCompatActivity {
         findViewById(R.id.button_random_player).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(StartDuelActivity.this, DuelActivity.class);
-                startActivity(intent);
+                String[] topics = getRandomTopics().toArray(new String[3]); // 3 rounds
+                new NewDuel(new Duel(
+                        Games.getCurrentAccountName(application.getClient()),
+                        "matteodipirro@gmail.com", //FIXME to be removed
+                        Games.Players.getCurrentPlayer(application.getClient()).getDisplayName(),
+                        topics
+                )).call(new Callback<Round>() {
+                    @Override
+                    public void onResponse(Call<Round> call, Response<Round> response) {
+                        startDuel(response.body());
+                    }
+
+                    @Override
+                    public void onFailure(Call<Round> call, Throwable t) {
+                        Toast.makeText(StartDuelActivity.this, getString(R.string.unable_to_start_duel), Toast.LENGTH_LONG).show();
+                    }
+                });
             }
         });
+    }
+
+    private List<String> getRandomTopics() {
+        // shuffle for getting three random topics to be used during the duel
+        // those elements will be the first three in the
+        List<String> list = Arrays.asList(getResources().getStringArray(R.array.topics));
+        Collections.shuffle(list, new Random());
+        return list.subList(0, 3);
+    }
+
+    private void startDuel(@NonNull Round round) {
+        Intent intent = new Intent(StartDuelActivity.this, DuelActivity.class);
+        Log.d("ROUND", round.getQuestions().get(0).getOptions().size() + "");
+        intent.putExtra(getString(R.string.round), round);
+        startActivity(intent);
     }
 
     /**

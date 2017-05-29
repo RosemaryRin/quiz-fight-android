@@ -1,12 +1,18 @@
 package rogueone.quizfight;
 
+import butterknife.ButterKnife;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import rogueone.quizfight.loaders.SavedGamesLoader;
-import rogueone.quizfight.rest.AddToken;
+import rogueone.quizfight.models.Duel;
+import rogueone.quizfight.models.History;
+import rogueone.quizfight.rest.api.AddToken;
+import rogueone.quizfight.rest.api.GetPendingScores;
+import rogueone.quizfight.rest.pojo.Scores;
 import rogueone.quizfight.rest.pojo.User;
+import rogueone.quizfight.utils.SavedGames;
 
 import android.app.LoaderManager;
 import android.content.Intent;
@@ -18,6 +24,7 @@ import android.preference.PreferenceManager;
 import android.provider.Settings.Secure;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -30,9 +37,12 @@ import com.google.android.gms.games.snapshot.Snapshot;
 import com.google.firebase.iid.FirebaseInstanceId;
 
 import java.io.IOException;
+import java.util.Iterator;
+import java.util.List;
 
 import static rogueone.quizfight.NotificationFactory.getTargetActivity;
 import static rogueone.quizfight.utils.SavedGames.byteToHistory;
+import static rogueone.quizfight.utils.ScoresHelper.addPendingDuelsIfExist;
 
 /**
  * Created by mdipirro on 19/05/17.
@@ -50,6 +60,7 @@ public class SignInActivity extends AppCompatActivity implements
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        ButterKnife.bind(this);
 
         setContentView(R.layout.activity_sign_in);
 
@@ -148,18 +159,52 @@ public class SignInActivity extends AppCompatActivity implements
             application.setSnapshot(snapshot);
             // Read the byte content of the saved game.
             try {
-                application.setHistory(byteToHistory(snapshot.getSnapshotContents().readFully()));
+                History history = byteToHistory(snapshot.getSnapshotContents().readFully());
+                addPendingDuelsIfExist(this, history);
+                updateScores(history, snapshot, application);
             } catch (IOException e) {
                 errorToast(getApplicationContext().getString(R.string.unable_to_restore_saved_games));
             }
         } else {
             errorToast(getApplicationContext().getString(R.string.unable_to_restore_saved_games));
         }
-        startHomeActivity();
     }
 
     private void errorToast(String message) {
         Toast.makeText(this, message, Toast.LENGTH_LONG).show();
+    }
+
+    private void updateScores(@NonNull final History history, @NonNull final Snapshot snapshot,
+                              @NonNull final QuizFightApplication application) {
+        final List<Duel> inProgress = history.getInProgressDuels();
+        if (inProgress.size() > 0) {
+            String ids = "";
+            for (Duel duel : inProgress) {
+                ids += duel.getDuelID() + ",";
+            }
+            ids = ids.substring(0, ids.length() - 1);
+            new GetPendingScores(ids, Games.getCurrentAccountName(client)).call(new Callback<Scores>() {
+                @Override
+                public void onResponse(Call<Scores> call, Response<Scores> response) {
+                    if (response.isSuccessful()) {
+                        Iterator<List<Integer>> iterator = response.body().getDuelsScores().iterator();
+                        for (Duel duel : inProgress) {
+                            if (iterator.hasNext()) {
+                                duel.getScore().setOpponentScores(iterator.next());
+                            }
+                        }
+                        SavedGames.writeSnapshot(snapshot, history, "", client);
+                        application.setHistory(history);
+                    }
+                    startHomeActivity();
+                }
+
+                @Override
+                public void onFailure(Call<Scores> call, Throwable t) {}
+            });
+        } else {
+            startHomeActivity();
+        }
     }
 
     @Override

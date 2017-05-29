@@ -11,14 +11,24 @@ import java.util.List;
  */
 
 public class Duel implements Serializable {
-    private static final long serialVersionUID = 7791178934558046510L;
 
+    private String duelID;
     private String opponent;
     private List<Quiz> quizzes = new LinkedList<Quiz>();
 
-    public Duel (@NonNull String opponent, @NonNull List<Quiz> quizzes) {
+    public Duel (@NonNull String duelID, @NonNull String opponent, @NonNull List<Quiz> quizzes) {
+        this.duelID = duelID;
         this.opponent = opponent;
         this.quizzes = quizzes;
+    }
+
+    public Duel (@NonNull String duelID, @NonNull String opponent) {
+        this.duelID = duelID;
+        this.opponent = opponent;
+    }
+
+    public String getDuelID() {
+        return duelID;
     }
 
     public String getOpponent() {
@@ -40,5 +50,9 @@ public class Duel implements Serializable {
 
     public List<Quiz> getQuizzes() {
         return quizzes;
+    }
+
+    public void addQuiz(@NonNull Quiz quiz) {
+        quizzes.add(quiz);
     }
 }

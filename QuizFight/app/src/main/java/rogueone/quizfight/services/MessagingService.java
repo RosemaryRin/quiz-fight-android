@@ -4,17 +4,23 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.media.RingtoneManager;
 import android.net.Uri;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationCompat;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
+import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Set;
 
+import butterknife.BindString;
 import rogueone.quizfight.QuizFightApplication;
 import rogueone.quizfight.R;
 import rogueone.quizfight.SignInActivity;
@@ -57,6 +63,7 @@ public class MessagingService extends FirebaseMessagingService {
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, id, intent,
                 PendingIntent.FLAG_ONE_SHOT);
+        persistData(id, body);
 
         Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
@@ -78,6 +85,22 @@ public class MessagingService extends FirebaseMessagingService {
             if (!entry.getKey().equals(TITLE) && !entry.getKey().equals(MESSAGE)) {
                 intent.putExtra(entry.getKey(), entry.getValue());
             }
+        }
+    }
+
+    private void persistData(int id, @NonNull Map<String, String> body) {
+        if (id == 2) { // New duel notification
+            String duelIDString = getString(R.string.duel_id);
+            String opponentString = getString(R.string.opponent);
+            SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+            SharedPreferences.Editor editor = sharedPref.edit();
+            Set<String> opponents = sharedPref.getStringSet(opponentString, new LinkedHashSet<String>());
+            Set<String> pendingDuels = sharedPref.getStringSet(duelIDString, new LinkedHashSet<String>());
+            opponents.add(body.get(opponentString));
+            pendingDuels.add(body.get(duelIDString));
+            editor.putStringSet(duelIDString, pendingDuels);
+            editor.putStringSet(opponentString, opponents);
+            editor.apply();
         }
     }
 }

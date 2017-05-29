@@ -1,9 +1,11 @@
-package rogueone.quizfight.rest;
+package rogueone.quizfight.rest.api;
 
 import android.support.annotation.NonNull;
 
 import retrofit2.Call;
 import retrofit2.Callback;
+import rogueone.quizfight.rest.EndpointInterface;
+import rogueone.quizfight.rest.RetrofitHelper;
 
 /**
  * Created by mdipirro on 19/05/17.

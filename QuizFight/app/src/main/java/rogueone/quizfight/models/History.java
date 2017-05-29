@@ -4,6 +4,7 @@ import android.support.annotation.NonNull;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -11,20 +12,52 @@ import java.util.List;
  */
 
 public class History implements Serializable {
-    private static final long serialVersionUID = 290106142979256029L;
+    private static final long serialVersionUID = -5320592455096837718L;
 
     private List<Duel> duels = new ArrayList<>();
 
-    public List<Duel> getDuels() {
-        return duels;
+    public List<Duel> getCompletedDuels() {
+        List<Duel> inProgress = new ArrayList<>();
+        for(Duel duel : duels) {
+            if (duel.getQuizzes().size() == 3) {
+                inProgress.add(duel);
+            }
+        }
+        return inProgress;
     }
 
-    public List<Duel> getDuels(int n) {
-        if (n < duels.size()) {
-            return duels.subList(0, n);
-        } else {
-            return duels;
+    public List<Duel> getCompletedDuels(int n) {
+        List<Duel> inProgress = new ArrayList<>();
+        Iterator<Duel> iterator = duels.iterator();
+        while (iterator.hasNext() && inProgress.size() < n) {
+            Duel duel = iterator.next();
+            if (duel.getQuizzes().size() == 3) {
+                inProgress.add(duel);
+            }
         }
+        return inProgress;
+    }
+
+    public List<Duel> getInProgressDuels() {
+        List<Duel> inProgress = new ArrayList<>();
+        for(Duel duel : duels) {
+            if (duel.getQuizzes().size() < 3) {
+                inProgress.add(duel);
+            }
+        }
+        return inProgress;
+    }
+
+    public List<Duel> getInProgressDuels(int n) {
+        List<Duel> inProgress = new ArrayList<>();
+        Iterator<Duel> iterator = duels.iterator();
+        while (iterator.hasNext() && inProgress.size() < n) {
+            Duel duel = iterator.next();
+            if (duel.getQuizzes().size() < 3) {
+                inProgress.add(duel);
+            }
+        }
+        return inProgress;
     }
 
     public boolean isEmpty() {

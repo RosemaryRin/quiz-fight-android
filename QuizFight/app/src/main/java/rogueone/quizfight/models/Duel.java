@@ -11,25 +11,21 @@ import java.util.List;
  */
 
 public class Duel implements Serializable {
-    private static final long serialVersionUID = -6756798794233451204L;
+    private static final long serialVersionUID = 8344928931366336118L;
 
     private String duelID;
     private String opponent;
-    private Score score;
-    private List<Quiz> quizzes = new LinkedList<>();
+    private List<Quiz> quizzes = new LinkedList<Quiz>();
 
-    public Duel (@NonNull String duelID, @NonNull String opponent,
-                 @NonNull Score score, @NonNull List<Quiz> quizzes) {
+    public Duel (@NonNull String duelID, @NonNull String opponent, @NonNull List<Quiz> quizzes) {
         this.duelID = duelID;
         this.opponent = opponent;
-        this.score = score;
         this.quizzes = quizzes;
     }
 
     public Duel (@NonNull String duelID, @NonNull String opponent) {
         this.duelID = duelID;
         this.opponent = opponent;
-        this.score = new Score(0, 0);
     }
 
     public String getDuelID() {
@@ -41,7 +37,16 @@ public class Duel implements Serializable {
     }
 
     public Score getScore() {
-        return score;
+        int playerScore = 0, opponentScore = 0;
+
+        for (Quiz q : quizzes) {
+            Score quizScore = q.getScore();
+
+            playerScore += quizScore.getPlayerScore();
+            opponentScore += quizScore.getOpponentScore();
+        }
+
+        return new Score(playerScore, opponentScore);
     }
 
     public List<Quiz> getQuizzes() {

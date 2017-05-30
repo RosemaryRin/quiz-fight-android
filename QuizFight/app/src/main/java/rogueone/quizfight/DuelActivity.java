@@ -41,6 +41,7 @@ import rogueone.quizfight.fragments.MultipleChoiceFragment;
 import rogueone.quizfight.fragments.TrueFalseFragment;
 import rogueone.quizfight.models.Duel;
 import rogueone.quizfight.models.History;
+import rogueone.quizfight.models.Quiz;
 import rogueone.quizfight.rest.api.GetRound;
 import rogueone.quizfight.rest.api.SendRoundScore;
 import rogueone.quizfight.rest.pojo.Question;
@@ -79,6 +80,7 @@ public class DuelActivity extends SavedGamesActivity {
     @BindView(R.id.progressbar_timer) ProgressBar progressBar;
     private TrueFalseFragment trueFalseFragment;
     private MultipleChoiceFragment multipleChoiceFragment;
+    private AlertDialog dialog;
 
     @BindString(R.string.round) String roundString;
     @BindString(R.string.duel_id) String duelString;
@@ -133,14 +135,21 @@ public class DuelActivity extends SavedGamesActivity {
     }
 
     private void initDuel() {
-        duel = history.getDuelByID(round.getDuelID()).get(new Duel(round.getDuelID(), round.getOpponent()));
+        duel = history.getDuelByID(round.getDuelID());
+        if (duel.getQuizzes().size() < 3) {
+            duel.addQuiz(new Quiz());
+        }
 
-        setupTimer();
-        fragmentManager = getFragmentManager();
-        trueFalseFragment = ((TrueFalseFragment)fragmentManager.findFragmentById(R.id.fragment_true_false));
-        multipleChoiceFragment = ((MultipleChoiceFragment)fragmentManager.findFragmentById(R.id.fragment_multiple_choice));
+        if (duel != null) {
+            setupTimer();
+            fragmentManager = getFragmentManager();
+            trueFalseFragment = ((TrueFalseFragment)fragmentManager.findFragmentById(R.id.fragment_true_false));
+            multipleChoiceFragment = ((MultipleChoiceFragment)fragmentManager.findFragmentById(R.id.fragment_multiple_choice));
 
-        nextQuestion();
+            nextQuestion();
+        } else {
+            errorToast(errorRound);
+        }
     }
 
     private void setupTimer() {
@@ -237,10 +246,11 @@ public class DuelActivity extends SavedGamesActivity {
             public void onClick(DialogInterface dialog, int id) {
                 Intent intent = new Intent(DuelActivity.this, HomeActivity.class);
                 startActivity(intent);
+                finish();
             }
         });
 
-        AlertDialog dialog = builder.create();
+        dialog = builder.create();
         dialog.show();
     }
 
@@ -275,6 +285,12 @@ public class DuelActivity extends SavedGamesActivity {
                 answer(FOUR);
                 break;
         }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        dialog.dismiss();
     }
 
     @Override

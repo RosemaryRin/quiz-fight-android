@@ -7,12 +7,11 @@ package rogueone.quizfight;
 public class NotificationFactory {
     public static Class getTargetActivity(int id) {
         switch (id) {
-            case 1:
-                return HomeActivity.class;
             case 2:
             case 3:
                 return DuelActivity.class;
+            default:
+                return HomeActivity.class;
         }
-        return HomeActivity.class;
     }
 }

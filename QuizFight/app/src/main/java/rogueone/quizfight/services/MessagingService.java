@@ -30,6 +30,7 @@ import rogueone.quizfight.QuizFightApplication;
 import rogueone.quizfight.R;
 import rogueone.quizfight.SignInActivity;
 import rogueone.quizfight.models.BackgroundDuel;
+import rogueone.quizfight.models.RoundCompleted;
 
 import static rogueone.quizfight.NotificationFactory.getTargetActivity;
 
@@ -98,14 +99,14 @@ public class MessagingService extends FirebaseMessagingService {
         String duelIDString = getString(R.string.duel_id);
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
         SharedPreferences.Editor editor = sharedPref.edit();
+        Gson gson = new Gson();
         switch (id) {
             case 2:
                 String opponentString = getString(R.string.opponent);
                 String pendingString = getString(R.string.pending_duels);
 
                 String jsonPendingDuels = sharedPref.getString(pendingString, "");
-                Gson gson = new Gson();
-                List<BackgroundDuel> duels = null;
+                List<BackgroundDuel> duels;
                 if (!jsonPendingDuels.equals("")) {
                     Type listType = new TypeToken<List<BackgroundDuel>>(){}.getType();
                     duels = gson.fromJson(jsonPendingDuels, listType);
@@ -116,10 +117,24 @@ public class MessagingService extends FirebaseMessagingService {
                 editor.putString(pendingString, gson.toJson(duels));
                 break;
             case 3:
+            case 4:
                 String roundsString = getString(R.string.new_rounds);
-                Set<String> rounds = sharedPref.getStringSet(roundsString, new LinkedHashSet<String>());
-                rounds.add(body.get(duelIDString));
-                editor.putStringSet(duelIDString, rounds);
+                String answersString = getString(R.string.answers);
+                String jsonRoundCompleted = sharedPref.getString(roundsString, "");
+                List<RoundCompleted> rounds;
+                if (!jsonRoundCompleted.equals("")) {
+                    Type listType = new TypeToken<List<RoundCompleted>>(){}.getType();
+                    rounds = gson.fromJson(jsonRoundCompleted, listType);
+                } else {
+                    rounds = new ArrayList<>();
+                }
+                boolean[] answers = new boolean[5];
+                String[] answersStrings = body.get(answersString).split(",");
+                for (int i = 0; i < answersStrings.length; i++) {
+                    answers[i] = answersStrings[i].equals("true");
+                }
+                rounds.add(new RoundCompleted(body.get(duelIDString), answers));
+                editor.putString(roundsString, gson.toJson(rounds));
                 break;
         }
         editor.apply();

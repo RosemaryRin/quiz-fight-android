@@ -14,15 +14,14 @@ import java.util.Vector;
  */
 
 public class History implements Serializable {
+    private static final long serialVersionUID = 6770709444772834353L;
 
-
-    private static final long serialVersionUID = -5521619338531171092L;
     private List<Duel> duels = new ArrayList<>();
 
     public List<Duel> getCompletedDuels() {
-        List<Duel> inProgress = new Vector<>();
+        List<Duel> inProgress = new ArrayList<>();
         for(Duel duel : duels) {
-            if (duel.getQuizzes().size() == 3) {
+            if (duel.isCompleted()) {
                 inProgress.add(duel);
             }
         }
@@ -30,11 +29,12 @@ public class History implements Serializable {
     }
 
     public List<Duel> getCompletedDuels(int n) {
-        List<Duel> inProgress = new Vector<>();
+        List<Duel> inProgress = new ArrayList<>();
         Iterator<Duel> iterator = duels.iterator();
         while (iterator.hasNext() && inProgress.size() < n) {
             Duel duel = iterator.next();
-            if (duel.getQuizzes().size() == 3) {
+            Log.d("ROUNDH", duel.isCompleted() + "");
+            if (duel.isCompleted()) {
                 inProgress.add(duel);
             }
         }
@@ -42,9 +42,9 @@ public class History implements Serializable {
     }
 
     public List<Duel> getInProgressDuels() {
-        List<Duel> inProgress = new Vector<>();
+        List<Duel> inProgress = new ArrayList<>();
         for(Duel duel : duels) {
-            if (duel.getQuizzes().size() < 3) {
+            if (!duel.isCompleted()) {
                 inProgress.add(duel);
             }
         }
@@ -52,11 +52,11 @@ public class History implements Serializable {
     }
 
     public List<Duel> getInProgressDuels(int n) {
-        List<Duel> inProgress = new Vector<>();
+        List<Duel> inProgress = new ArrayList<>();
         Iterator<Duel> iterator = duels.iterator();
         while (iterator.hasNext() && inProgress.size() < n) {
             Duel duel = iterator.next();
-            if (duel.getQuizzes().size() < 3) {
+            if (!duel.isCompleted()) {
                 inProgress.add(duel);
             }
         }
@@ -68,13 +68,12 @@ public class History implements Serializable {
     }
 
     public void addDuel(@NonNull Duel duel) {
-        Log.d("DUELH", duel.getDuelID() + " " + duel.getOpponent());
         duels.add(duel);
     }
 
-    public Maybe<Duel> getDuelByID(@NonNull String id) {
+    public Duel getDuelByID(@NonNull String id) {
         int index = getDuelIndex(id);
-        return new Maybe<>((index != -1) ? duels.get(index) : null);
+        return (index != -1) ? duels.get(index) : null;
     }
 
     public void setDuelByID(@NonNull Duel duel) {
@@ -91,7 +90,6 @@ public class History implements Serializable {
         int index = 0;
         while (index < duels.size() && !found) {
             Duel duel = duels.get(index);
-            Log.d("DUEL", duel.getDuelID() + "");
             if (duel != null && duel.getDuelID().equals(id)) {
                 found = true;
             } else {

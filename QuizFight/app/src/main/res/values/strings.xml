@@ -39,6 +39,7 @@
     <string name="sign_out">Sign out</string>
     <string name="signed_in">signed_in</string>
     <string name="duel_id">duelID</string>
+    <string name="answers">answers</string>
     <string name="opponent">opponent</string>
     <string name="pending_duels">pending_duels</string>
     <string name="new_rounds">new_rounds</string>

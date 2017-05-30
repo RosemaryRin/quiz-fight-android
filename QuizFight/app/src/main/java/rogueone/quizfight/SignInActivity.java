@@ -5,20 +5,16 @@ import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import rogueone.quizfight.loaders.SavedGamesLoader;
 import rogueone.quizfight.models.BackgroundDuel;
 import rogueone.quizfight.models.Duel;
 import rogueone.quizfight.models.History;
 import rogueone.quizfight.models.Quiz;
+import rogueone.quizfight.models.RoundCompleted;
 import rogueone.quizfight.rest.api.AddToken;
-import rogueone.quizfight.rest.api.GetPendingScores;
-import rogueone.quizfight.rest.pojo.Question;
-import rogueone.quizfight.rest.pojo.Scores;
 import rogueone.quizfight.rest.pojo.User;
 import rogueone.quizfight.utils.SavedGames;
 
 import android.app.LoaderManager;
-import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.Loader;
@@ -27,7 +23,6 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.provider.Settings.Secure;
 import android.support.annotation.NonNull;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
@@ -160,7 +155,9 @@ public class SignInActivity extends SavedGamesActivity implements
                 History history = byteToHistory(snapshot.getSnapshotContents().readFully());
 
                 //SavedGames.writeSnapshot(snapshot, new History(), "", client);
-                addPendingDuelsIfExist(history, snapshot);
+                addPendingDuelsIfExist(history);
+                addCompletedRoundScores(history);
+                SavedGames.writeSnapshot(snapshot, history, "", client);
                 application.setHistory(history);
 
                 startHomeActivity();
@@ -176,7 +173,7 @@ public class SignInActivity extends SavedGamesActivity implements
         Toast.makeText(this, message, Toast.LENGTH_LONG).show();
     }
 
-    private void addPendingDuelsIfExist(History history, Snapshot snapshot) {
+    private void addPendingDuelsIfExist(History history) {
         if (history == null) {
             history = new History();
         }
@@ -184,7 +181,7 @@ public class SignInActivity extends SavedGamesActivity implements
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
         if (sharedPref.contains(pendingString)) {
             String jsonPendingDuels = sharedPref.getString(pendingString, "");
-            if (!pendingString.equals("")) {
+            if (!jsonPendingDuels.equals("")) {
                 Type listType = new TypeToken<List<BackgroundDuel>>(){}.getType();
                 List<BackgroundDuel> duels = new Gson().fromJson(jsonPendingDuels, listType);
                 for (BackgroundDuel duel : duels) {
@@ -194,43 +191,38 @@ public class SignInActivity extends SavedGamesActivity implements
                 SharedPreferences.Editor editor = sharedPref.edit();
                 editor.remove(pendingString);
                 editor.apply();
-                SavedGames.writeSnapshot(snapshot, history, "", client);
             }
         }
     }
 
-    /*private void updateScores(@NonNull final History history, @NonNull final Snapshot snapshot,
-                              @NonNull final QuizFightApplication application) {
-        final List<RESTDuel> inProgress = history.getInProgressDuels();
-        if (inProgress.size() > 0) {
-            String ids = "";
-            for (RESTDuel duel : inProgress) {
-                ids += duel.getDuelID() + ",";
-            }
-            ids = ids.substring(0, ids.length() - 1);
-            new GetPendingScores(ids, Games.getCurrentAccountName(client)).call(new Callback<Scores>() {
-                @Override
-                public void onResponse(Call<Scores> call, Response<Scores> response) {
-                    if (response.isSuccessful()) {
-                        Iterator<List<Integer>> iterator = response.body().getDuelsScores().iterator();
-                        for (RESTDuel duel : inProgress) {
-                            if (iterator.hasNext()) {
-                                duel.getScore().setOpponentScores(iterator.next());
-                            }
+    private void addCompletedRoundScores(History history) {
+        String roundsString = getString(R.string.new_rounds);
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+        if (sharedPref.contains(roundsString)) {
+            String jsonRoundCompleted = sharedPref.getString(roundsString, "");
+            if (!jsonRoundCompleted.equals("")) {
+                Type listType = new TypeToken<List<RoundCompleted>>(){}.getType();
+                List<RoundCompleted> rounds = new Gson().fromJson(jsonRoundCompleted, listType);
+                for (RoundCompleted round : rounds) {
+                    // Add every new round to history
+                    int index = 0;
+                    Duel duel = history.getDuelByID(round.getDuelID());
+                    Log.d("ROUNDSS", duel +"");
+                    if (duel != null) {
+                        for(rogueone.quizfight.models.Question question : duel.getCurrentQuiz().getQuestions()) {
+                            question.setOpponentAnswer(round.getAnswers()[index++]);
                         }
-                        SavedGames.writeSnapshot(snapshot, new History(), "", client);
-                        application.setHistory(history);
+                        duel.getCurrentQuiz().complete();
+                        Log.d("ROUNDS", duel.isCompleted() + "");
+                        history.setDuelByID(duel);
                     }
-                    startHomeActivity();
                 }
-
-                @Override
-                public void onFailure(Call<Scores> call, Throwable t) {}
-            });
-        } else {
-            startHomeActivity();
+                SharedPreferences.Editor editor = sharedPref.edit();
+                editor.remove(roundsString);
+                editor.apply();
+            }
         }
-    }*/
+    }
 
     @Override
     public void onLoaderReset(Loader<Snapshot> loader) {}

@@ -12,7 +12,7 @@ import java.util.List;
  */
 
 public class Duel implements Serializable {
-    private static final long serialVersionUID = 262823510829073970L;
+    private static final long serialVersionUID = 3830665748594826614L;
 
     private String duelID;
     private String opponent;
@@ -25,9 +25,7 @@ public class Duel implements Serializable {
     }
 
     public Duel (@NonNull String duelID, @NonNull String opponent) {
-        this.duelID = duelID;
-        this.opponent = opponent;
-        quizzes.add(new Quiz());
+        this(duelID, opponent, new Quiz());
     }
 
     public Duel(@NonNull String duelID, @NonNull String opponent, @NonNull Quiz quiz) {
@@ -66,13 +64,24 @@ public class Duel implements Serializable {
     }
 
     public Quiz getCurrentQuiz() {
-        if (quizzes.size() == 0) {
-            quizzes.add(new Quiz());
-        }
         return quizzes.get(quizzes.size() - 1);
     }
 
     public boolean isCompleted() {
-        return (quizzes.size() == 3);
+        return checkForQuizCompletion() && (quizzes.size() == 3);
+    }
+
+    public boolean newRoundAvailable() {
+        return checkForQuizCompletion() && (quizzes.size() < 3);
+    }
+
+    private boolean checkForQuizCompletion() {
+        boolean completed = true;
+        for (Quiz quiz : quizzes) {
+            Log.d("ROUNDC", completed + " " + quiz.isCompleted());
+            completed = completed && quiz.isCompleted();
+        }
+        Log.d("ROUNDD", completed + "");
+        return completed;
     }
 }

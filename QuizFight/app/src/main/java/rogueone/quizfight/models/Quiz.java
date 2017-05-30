@@ -11,9 +11,10 @@ import java.util.List;
  */
 
 public class Quiz implements Serializable {
-    private static final long serialVersionUID = 8581129064427857736L;
+    private static final long serialVersionUID = 4793650144614811370L;
 
     private List<Question> questions = new ArrayList<>(5);
+    private boolean completed;
 
     public Quiz() {}
 
@@ -38,5 +39,13 @@ public class Quiz implements Serializable {
         }
 
         return new Score(playerScore, opponentScore);
+    }
+
+    public boolean isCompleted() {
+        return completed;
+    }
+
+    public void complete() {
+        completed = true;
     }
 }

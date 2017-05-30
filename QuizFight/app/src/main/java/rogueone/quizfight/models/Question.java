@@ -9,9 +9,8 @@ import java.io.Serializable;
  */
 
 public class Question implements Serializable {
+    private static final long serialVersionUID = -2864338797321233141L;
 
-
-    private static final long serialVersionUID = 8631839101984474191L;
     private int difficulty;
     private boolean playerAnswer;
     private boolean opponentAnswer;
@@ -40,6 +39,10 @@ public class Question implements Serializable {
 
     public boolean getOpponentAnswer() {
         return opponentAnswer;
+    }
+
+    public void setOpponentAnswer(boolean answer) {
+        opponentAnswer = answer;
     }
 
     private int normalizeDifficulty(int difficulty) {

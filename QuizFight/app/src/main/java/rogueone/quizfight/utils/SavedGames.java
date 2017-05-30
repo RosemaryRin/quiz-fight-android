@@ -36,7 +36,7 @@ public class SavedGames {
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
-            Log.d("HISTORY exc", e.getMessage());
+//            Log.d("HISTORY exc", e.getMessage());
         } finally {
             try {
                 if (in != null) {

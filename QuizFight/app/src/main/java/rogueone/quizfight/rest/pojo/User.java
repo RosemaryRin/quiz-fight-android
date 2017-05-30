@@ -1,4 +1,4 @@
-package rogueone.quizfight.models;
+package rogueone.quizfight.rest.pojo;
 
 import android.support.annotation.NonNull;
 

@@ -3,7 +3,7 @@ package rogueone.quizfight.models;
 import android.support.annotation.NonNull;
 
 import java.io.Serializable;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -11,7 +11,10 @@ import java.util.List;
  */
 
 public class Quiz implements Serializable {
-    private List<Question> questions = new LinkedList<>();
+    private static final long serialVersionUID = 4793650144614811370L;
+
+    private List<Question> questions = new ArrayList<>(5);
+    private boolean completed;
 
     public Quiz() {}
 
@@ -25,5 +28,24 @@ public class Quiz implements Serializable {
 
     public List<Question> getQuestions() {
         return questions;
+    }
+
+    public Score getScore() {
+        int playerScore = 0, opponentScore = 0;
+
+        for (Question q : questions) {
+            playerScore += q.getPlayerScore();
+            opponentScore += q.getOpponentScore();
+        }
+
+        return new Score(playerScore, opponentScore);
+    }
+
+    public boolean isCompleted() {
+        return completed;
+    }
+
+    public void complete() {
+        completed = true;
     }
 }

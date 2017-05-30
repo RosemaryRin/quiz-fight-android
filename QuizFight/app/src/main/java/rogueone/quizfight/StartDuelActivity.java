@@ -1,9 +1,9 @@
 package rogueone.quizfight;
 
 import android.content.Intent;
+import android.content.Loader;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
 import android.support.v4.app.Fragment;
@@ -15,7 +15,27 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
 import android.widget.ListView;
+import android.widget.Toast;
+
+import com.google.android.gms.games.Games;
+import com.google.android.gms.games.snapshot.Snapshot;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Random;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import rogueone.quizfight.models.Duel;
+import rogueone.quizfight.models.History;
+import rogueone.quizfight.rest.api.NewDuel;
+import rogueone.quizfight.rest.pojo.RESTDuel;
+import rogueone.quizfight.rest.pojo.Round;
+import rogueone.quizfight.utils.SavedGames;
 
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
@@ -23,16 +43,10 @@ import com.facebook.FacebookException;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
 import com.facebook.HttpMethod;
-import com.facebook.login.LoginBehavior;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.facebook.AccessToken;
 import com.facebook.AccessTokenTracker;
-import com.google.android.gms.common.api.ResultCallback;
-import com.google.android.gms.games.Games;
-import com.google.android.gms.games.leaderboard.LeaderboardScoreBuffer;
-import com.google.android.gms.games.leaderboard.LeaderboardVariant;
-import com.google.android.gms.games.leaderboard.Leaderboards;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -40,10 +54,8 @@ import org.json.JSONException;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import rogueone.quizfight.adapters.FriendListAdapter;
-import rogueone.quizfight.adapters.LeaderboardAdapter;
 
-
-public class StartDuelActivity extends AppCompatActivity {
+public class StartDuelActivity extends SavedGamesActivity {
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -60,14 +72,12 @@ public class StartDuelActivity extends AppCompatActivity {
      */
     private ViewPager mViewPager;
 
-    private static QuizFightApplication application;
+    private QuizFightApplication application;
     private CallbackManager callbackManager;
-
-    private final static String LEADERBOARD_ID = "CgkIxZDJ2KMSEAIQAg";
+    private Snapshot snapshot;
     private final static String TAG = "StartDuelActivity";
 
     @BindView(R.id.login_button) LoginButton loginButton;
-
     private AccessToken accessToken;
     private AccessTokenTracker accessTokenTracker;
 
@@ -77,8 +87,13 @@ public class StartDuelActivity extends AppCompatActivity {
         setContentView(R.layout.activity_start_duel);
         ButterKnife.bind(this);
 
-        loginButton.setReadPermissions("email", "user_friends");
+        application = (QuizFightApplication)getApplication();
+        getGames();
+    }
 
+    private void setupUI() {
+
+        loginButton.setReadPermissions("email", "user_friends");
         callbackManager = CallbackManager.Factory.create();
 
         loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
@@ -120,7 +135,58 @@ public class StartDuelActivity extends AppCompatActivity {
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tablayout_startduel_tabs);
         tabLayout.setupWithViewPager(mViewPager);
 
-        application = (QuizFightApplication)getApplicationContext();
+        findViewById(R.id.button_random_player).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String[] topics = getRandomTopics().toArray(new String[3]); // 3 rounds
+                new NewDuel(new RESTDuel(
+                        Games.Players.getCurrentPlayer(application.getClient()).getDisplayName(),
+                        "elena.pullin95@gmail.com", //FIXME to be removed
+                        Games.Players.getCurrentPlayer(application.getClient()).getDisplayName(),
+                        topics
+                )).call(new Callback<Round>() {
+                    @Override
+                    public void onResponse(Call<Round> call, Response<Round> response) {
+                        startDuel(response.body());
+                    }
+
+                    @Override
+                    public void onFailure(Call<Round> call, Throwable t) {
+                        Toast.makeText(StartDuelActivity.this, getString(R.string.unable_to_start_duel), Toast.LENGTH_LONG).show();
+                    }
+                });
+            }
+        });
+    }
+
+    private List<String> getRandomTopics() {
+        // shuffle for getting three random topics to be used during the duel
+        // those elements will be the first three in the
+        List<String> list = Arrays.asList(getResources().getStringArray(R.array.topics));
+        Collections.shuffle(list, new Random());
+        return list.subList(0, 3);
+    }
+
+    private void startDuel(@NonNull Round round) {
+        // Add the new duel to the user's history
+        History history = application.getHistory();
+
+        Duel newDuel = new Duel(round.getDuelID(), round.getOpponent());
+        history.addDuel(newDuel);
+        SavedGames.writeSnapshot(snapshot, history, "", application.getClient());
+        application.setHistory(history);
+
+        // Begin with the first round
+        Intent intent = new Intent(StartDuelActivity.this, DuelActivity.class);
+        intent.putExtra(getString(R.string.round), round);
+        startActivity(intent);
+        finish();
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Snapshot> loader, Snapshot data) {
+        snapshot = data;
+        setupUI();
     }
 
     @Override
@@ -160,54 +226,45 @@ public class StartDuelActivity extends AppCompatActivity {
 
             if (getArguments().getInt(ARG_SECTION_NUMBER) == 1
                     && AccessToken.getCurrentAccessToken() != null) { // friends tab
-
                 friendsNamesRequest(rootView);
+            }
 
-                /* Games.Players.loadConnectedPlayers(application.getClient(), true).setResultCallback(
+            /*if (getArguments().getInt(ARG_SECTION_NUMBER) == 1) { // friends tab
+                Games.Players.loadConnectedPlayers(application.getClient(), true).setResultCallback(
                         new ResultCallback<Players.LoadPlayersResult>() {
                             @Override
                             public void onResult(@NonNull Players.LoadPlayersResult loadPlayersResult) {
                                 PlayerBuffer friends = loadPlayersResult.getPlayers();
-
                                 if (friends.getCount() > 0) {
                                     final ListView listView = (ListView) rootView.findViewById(R.id.listview_startduel_list);
-
                                     rootView.findViewById(R.id.textview_startduel_nouserstoshow).setVisibility(View.GONE);
                                     listView.setVisibility(View.VISIBLE);
-
                                     final FriendListAdapter listAdapter = new FriendListAdapter(getContext(), friends);
                                     listView.setAdapter(listAdapter);
                                 }
                             }
                         }
-                ); */
-
+                );
             }
-
             else { // leaderboard tab
-
-                Games.Leaderboards.loadPlayerCenteredScores(application.getClient(), LEADERBOARD_ID, LeaderboardVariant.TIME_SPAN_ALL_TIME, LeaderboardVariant.COLLECTION_PUBLIC, 10, true).setResultCallback(
+                Games.Leaderboards.loadPlayerCenteredScores(application.getClient(), getString(R.string.leaderboard_id), LeaderboardVariant.TIME_SPAN_ALL_TIME, LeaderboardVariant.COLLECTION_PUBLIC, 10, true).setResultCallback(
                         new ResultCallback<Leaderboards.LoadScoresResult>() {
                             @Override
                             public void onResult(@NonNull Leaderboards.LoadScoresResult loadScoresResult) {
                                 LeaderboardScoreBuffer leaderboard = loadScoresResult.getScores();
-
                                 Log.d("Debug", ""+leaderboard.getCount());
-
                                 if (leaderboard.getCount() > 0) {
                                     final ListView listView = (ListView) rootView.findViewById(R.id.listview_startduel_list);
-
                                     rootView.findViewById(R.id.textview_startduel_nouserstoshow).setVisibility(View.GONE);
                                     listView.setVisibility(View.VISIBLE);
-
                                     final LeaderboardAdapter listAdapter = new LeaderboardAdapter(getContext(), leaderboard);
                                     listView.setAdapter(listAdapter);
                                 }
                             }
                         }
                 );
+            }*/
 
-            }
             return rootView;
         }
 
@@ -264,7 +321,6 @@ public class StartDuelActivity extends AppCompatActivity {
         public Fragment getItem(int position) {
             // getItem is called to instantiate the fragment for the given page.
             // Return a PlaceholderFragment (defined as a static inner class below).
-            Log.d(TAG, "SectionsPageAdapter - getItem" + position);
             return StartDuelFragment.newInstance(position + 1);
         }
 
@@ -278,9 +334,9 @@ public class StartDuelActivity extends AppCompatActivity {
         public CharSequence getPageTitle(int position) {
             switch (position) {
                 case 0:
-                    return "FRIENDS";
+                    return getString(R.string.title_friends);
                 case 1:
-                    return "LEADERBOARD";
+                    return getString(R.string.title_leaderboard);
             }
             return null;
         }

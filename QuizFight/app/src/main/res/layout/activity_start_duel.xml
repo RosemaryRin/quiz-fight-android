@@ -9,6 +9,12 @@
     android:fitsSystemWindows="true"
     tools:context="rogueone.quizfight.StartDuelActivity">
 
+    <android.support.v4.view.ViewPager
+        android:id="@+id/viewpager_startduel_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+
     <android.support.design.widget.AppBarLayout
         android:id="@+id/appbarlayout_startduel_appbar"
         android:layout_width="match_parent"
@@ -31,6 +37,19 @@
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="30dp"
                 android:layout_marginBottom="30dp" />
+            <Button
+                android:id="@+id/button_random_player"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="end"
+                android:layout_marginEnd="10dip"
+                android:backgroundTint="@color/colorPrimaryDark"
+                android:drawableEnd="@drawable/random"
+                android:drawablePadding="10dip"
+                android:drawableRight="@drawable/random"
+                android:drawableTint="@color/common_google_signin_btn_text_dark_default"
+                android:text="@string/random_player"
+                android:layout_marginRight="10dip" />
 
         </android.support.v7.widget.Toolbar>
 
@@ -40,11 +59,5 @@
             android:layout_height="wrap_content" />
 
     </android.support.design.widget.AppBarLayout>
-
-    <android.support.v4.view.ViewPager
-        android:id="@+id/viewpager_startduel_content"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
 </android.support.design.widget.CoordinatorLayout>

@@ -24,7 +24,7 @@ public class DuelsHistoryActivity extends AppCompatActivity {
             findViewById(R.id.textview_duelshistory_noduels).setVisibility(View.GONE);
             listView.setVisibility(View.VISIBLE);
 
-            final DuelSummaryAdapter listAdapter = new DuelSummaryAdapter(this, history.getDuels());
+            final DuelSummaryAdapter listAdapter = new DuelSummaryAdapter(this, history.getCompletedDuels());
             listView.setAdapter(listAdapter);
         }
     }

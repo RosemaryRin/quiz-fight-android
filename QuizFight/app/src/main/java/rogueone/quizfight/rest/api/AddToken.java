@@ -1,10 +1,10 @@
-package rogueone.quizfight.rest;
+package rogueone.quizfight.rest.api;
 
 import android.support.annotation.NonNull;
 
 import okhttp3.ResponseBody;
 import retrofit2.Call;
-import rogueone.quizfight.models.User;
+import rogueone.quizfight.rest.pojo.User;
 
 /**
  * Created by mdipirro on 23/05/17.

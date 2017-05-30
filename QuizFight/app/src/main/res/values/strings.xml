@@ -7,6 +7,7 @@
 
     <string name="title_activity_start_duel">Start Duel</string>
     <string name="title_activity_duels_history">Duels History</string>
+    <string name="title_activity_duel">Duel</string>
 
     <string name="action_settings">Settings</string>
 
@@ -15,6 +16,7 @@
 
     <string name="home_usericondescription">User image</string>
     <string name="home_lastduels">Last duels:</string>
+    <string name="home_duels_in_progress">Duels in progress:</string>
     <string name="home_viewhistory">View all duels</string>
 
     <string name="duelshistory_duelshistory">Duels history:</string>
@@ -24,10 +26,66 @@
 
     <string name="unable_to_connect">Not able to connect to google client.</string>
     <string name="unable_to_restore_saved_games">Not able to restore previous duels.</string>
+    <string name="unable_to_start_duel">Not able to start a new duel.</string>
+    <string name="unable_to_start_round">Not able to start a new round.</string>
+
+    <string name="title_friends">FRIENDS</string>
+    <string name="title_leaderboard">LEADERBOARD</string>
+    <string name="random_player">Random</string>
+
+    <string name="score_dialog">You got %1$d points!</string>
+    <string name="round_completed">Round completed!</string>
+    <string name="ok">Ok</string>
 
     <string name="sign_out">Sign out</string>
     <string name="signed_in">signed_in</string>
+    <string name="duel_id">duelID</string>
+    <string name="answers">answers</string>
+    <string name="opponent">opponent</string>
+    <string name="pending_duels">pending_duels</string>
+    <string name="new_rounds">new_rounds</string>
 
-    <string name="leaderboard_id">asd</string>
+    <string name="leaderboard_id">CgkIxZDJ2KMSEAIQAg</string>
+    <string name="win_10_duels">CgkIxZDJ2KMSEAIQAw</string>
+    <string name="win_50_duels">CgkIxZDJ2KMSEAIQBw</string>
+    <string name="win_100_duels">CgkIxZDJ2KMSEAIQCA</string>
+    <string name="win_200_duels">CgkIxZDJ2KMSEAIQDA</string>
+    <string name="correct_answers_100">CgkIxZDJ2KMSEAIQCQ</string>
+    <string name="correct_answers_250">CgkIxZDJ2KMSEAIQCg</string>
+    <string name="correct_answers_500">CgkIxZDJ2KMSEAIQCw</string>
+    <string name="correct_answers_1000">CgkIxZDJ2KMSEAIQDQ</string>
+    <string name="score_15_points">CgkIxZDJ2KMSEAIQEQ</string>
+    <string name="score_30_points">CgkIxZDJ2KMSEAIQEA</string>
+    <string name="score_45_points">CgkIxZDJ2KMSEAIQDw</string>
+    <string name="duels_won">CgkIxZDJ2KMSEAIQDg</string>
+    <string name="corrects_answers">CgkIxZDJ2KMSEAIQBg</string>
+    <string name="round">round</string>
 
+    <string-array name="topics">
+        <item>General Knowledge</item>
+        <item>Entertainment: Books</item>
+        <item>Entertainment: Film</item>
+        <item>Entertainment: Music</item>
+        <item>Entertainment: Musicals &amp; Theatres</item>
+        <item>Entertainment: Television</item>
+        <item>Entertainment: Video Games</item>
+        <item>Entertainment: Board Games</item>
+        <item>Entertainment: Comics</item>
+        <item>Entertainment: Cartoon &amp; Animations</item>
+        <item>Entertainment: Japanese Anime &amp; Manga</item>
+        <item>Science &amp; Nature</item>
+        <item>Science: Computers</item>
+        <item>Science: Mathematics</item>
+        <item>Science: Gadgets</item>
+        <item>Mythology</item>
+        <item>Sports</item>
+        <item>Geography</item>
+        <item>History</item>
+        <item>Politics</item>
+        <item>Art</item>
+        <item>Celebrities</item>
+        <item>Animals</item>
+        <item>Vehicles</item>
+        <item>Science: Gadgets</item>
+    </string-array>
 </resources>

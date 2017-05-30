@@ -31,15 +31,58 @@
         tools:layout_constraintRight_creator="1"
         tools:layout_constraintTop_creator="1">
 
+        <LinearLayout
+            android:id="@+id/linearlayout_home_user"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/imageview_profile"
+                android:layout_width="48dp"
+                android:layout_height="match_parent"
+                android:contentDescription="@string/home_usericondescription"
+                app:srcCompat="@android:drawable/screen_background_light" />
+
+            <TextView
+                android:id="@+id/textview_home_username"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="20dp"
+                android:layout_weight="1"
+                android:textSize="24sp" />
+
+            <Button
+                android:id="@+id/sign_out_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="0"
+                android:onClick="signOut"
+                android:text="@string/sign_out" />
+        </LinearLayout>
+
         <TextView
-            android:id="@+id/textview_home_username"
-            android:layout_width="wrap_content"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:drawablePadding="10dp"
-            android:drawableStart="@mipmap/ic_launcher"
-            android:gravity="center"
-            android:textSize="24sp" />
+            android:id="@+id/textview_home_duels_in_progress"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="50dp"
+            android:text="@string/home_duels_in_progress"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/textview_home_no_duels_in_progress"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/all_noduels"
+            android:textAlignment="center" />
+
+        <ListView
+            android:id="@+id/listview_home_duels_in_progress"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone" />
 
         <TextView
             android:id="@+id/textview_home_lastview"
@@ -73,12 +116,6 @@
             android:visibility="gone" />
 
         <!-- FIXME Temporary -->
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/sign_out_button"
-            android:text="@string/sign_out"
-            android:onClick="signOut"/>
 
     </LinearLayout>
 

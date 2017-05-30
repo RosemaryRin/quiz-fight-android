@@ -1,6 +1,5 @@
 package rogueone.quizfight.utils;
 
-import android.graphics.Bitmap;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
@@ -8,6 +7,7 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
 import com.google.android.gms.games.Games;
 import com.google.android.gms.games.snapshot.Snapshot;
+import com.google.android.gms.games.snapshot.SnapshotContents;
 import com.google.android.gms.games.snapshot.SnapshotMetadataChange;
 import com.google.android.gms.games.snapshot.Snapshots;
 
@@ -34,7 +34,9 @@ public class SavedGames {
             in = new ObjectInputStream(bis);
             history = (History) in.readObject();
         } catch (ClassNotFoundException e) {
+            e.printStackTrace();
         } catch (IOException e) {
+//            Log.d("HISTORY exc", e.getMessage());
         } finally {
             try {
                 if (in != null) {
@@ -43,6 +45,7 @@ public class SavedGames {
             } catch (IOException ex) {
             }
         }
+        Log.d("DUELS", history + "");
         return history;
     }
 
@@ -72,14 +75,18 @@ public class SavedGames {
     ) { //TODO Bitmap screenshot?
 
         // Set the data payload for the snapshot
-        snapshot.getSnapshotContents().writeBytes(historyToByte(history));
+        SnapshotContents contents = snapshot.getSnapshotContents();
+        Log.d("DUELSS", contents + "");
+        if (contents != null) {
+            contents.writeBytes(historyToByte(history));
+            // Create the change operation
+            SnapshotMetadataChange metadataChange = new SnapshotMetadataChange.Builder()
+                    .setDescription(desc)
+                    .build();
 
-        // Create the change operation
-        SnapshotMetadataChange metadataChange = new SnapshotMetadataChange.Builder()
-                .setDescription(desc)
-                .build();
-
-        // Commit the operation
-        return Games.Snapshots.commitAndClose(client, snapshot, metadataChange);
+            return Games.Snapshots.commitAndClose(client, snapshot, metadataChange);
+        } else {
+            return null;
+        }
     }
 }

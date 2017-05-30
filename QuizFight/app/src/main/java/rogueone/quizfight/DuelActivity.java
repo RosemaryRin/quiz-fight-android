@@ -18,6 +18,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.games.Games;
 import com.google.android.gms.games.snapshot.Snapshot;
 
@@ -32,6 +33,7 @@ import butterknife.BindColor;
 import butterknife.BindString;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -40,8 +42,10 @@ import rogueone.quizfight.fragments.TrueFalseFragment;
 import rogueone.quizfight.models.Duel;
 import rogueone.quizfight.models.History;
 import rogueone.quizfight.rest.api.GetRound;
+import rogueone.quizfight.rest.api.SendRoundScore;
 import rogueone.quizfight.rest.pojo.Question;
 import rogueone.quizfight.rest.pojo.Round;
+import rogueone.quizfight.rest.pojo.RoundResult;
 import rogueone.quizfight.utils.SavedGames;
 
 /**
@@ -66,6 +70,7 @@ public class DuelActivity extends SavedGamesActivity {
     private int score;
     private History history;
     private Duel duel;
+    private boolean[] answers;
 
     private CountDownTimer timer;
 
@@ -78,6 +83,11 @@ public class DuelActivity extends SavedGamesActivity {
     @BindString(R.string.round) String roundString;
     @BindString(R.string.duel_id) String duelString;
     @BindString(R.string.unable_to_start_round) String errorRound;
+    @BindString(R.string.correct_answers_100) String answers100;
+    @BindString(R.string.correct_answers_250) String answers250;
+    @BindString(R.string.correct_answers_500) String answers500;
+    @BindString(R.string.correct_answers_1000) String answers1000;
+    @BindString(R.string.corrects_answers) String correctAnswers;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,6 +100,7 @@ public class DuelActivity extends SavedGamesActivity {
         getGames();
 
         count = 0; score = 0;
+        answers = new boolean[5];
     }
 
     private void setup() {
@@ -97,7 +108,6 @@ public class DuelActivity extends SavedGamesActivity {
 
         if (extras.containsKey(roundString)) {
             round = extras.getParcelable(roundString);
-            Log.d("DUEL", round.getDuelID() + " " + round.getOpponent());
             initDuel();
         } else {
             new GetRound(
@@ -153,9 +163,22 @@ public class DuelActivity extends SavedGamesActivity {
         timer.cancel();
         if (answer == currentQuestion.getAnswer()) {
             // TODO something green
+
+            answers[count] = true;
+            // Update achievements
+            GoogleApiClient client = application.getClient();
+            Games.Achievements.increment(client, answers100, 1);
+            Games.Achievements.increment(client, answers250, 1);
+            Games.Achievements.increment(client, answers500, 1);
+            Games.Achievements.increment(client, answers1000, 1);
+
+            // Update events
+            Games.Events.increment(client, correctAnswers, 1);
+
             score += currentQuestion.getDifficulty();
             saveAnswer(true);
         } else {
+            answers[count] = false;
             // TODO something red
             saveAnswer(false);
         }
@@ -189,6 +212,17 @@ public class DuelActivity extends SavedGamesActivity {
     }
 
     private void roundTerminated() {
+        new SendRoundScore(new RoundResult(
+                round.getDuelID(), round.getQuizID(),
+                Games.Players.getCurrentPlayer(application.getClient()).getDisplayName(),
+                answers, score
+        )).call(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {}
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {}
+        });
         history.setDuelByID(duel);
         SavedGames.writeSnapshot(snapshot, history, "", application.getClient());
         showScoreDialog();

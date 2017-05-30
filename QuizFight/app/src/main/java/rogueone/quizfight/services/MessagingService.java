@@ -95,33 +95,33 @@ public class MessagingService extends FirebaseMessagingService {
     }
 
     private void persistData(int id, @NonNull Map<String, String> body) {
-        if (id == 2) { // New duel notification
-            String duelIDString = getString(R.string.duel_id);
-            String opponentString = getString(R.string.opponent);
-            String pendingString = getString(R.string.pending_duels);
-            SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-            SharedPreferences.Editor editor = sharedPref.edit();
+        String duelIDString = getString(R.string.duel_id);
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        switch (id) {
+            case 2:
+                String opponentString = getString(R.string.opponent);
+                String pendingString = getString(R.string.pending_duels);
 
-            String jsonPendingDuels = sharedPref.getString(pendingString, "");
-            Gson gson = new Gson();
-            List<BackgroundDuel> duels = null;
-            if (!jsonPendingDuels.equals("")) {
-                Type listType = new TypeToken<List<BackgroundDuel>>(){}.getType();
-                duels = gson.fromJson(jsonPendingDuels, listType);
-            } else {
-                duels = new ArrayList<>();
-            }
-            duels.add(new BackgroundDuel(body.get(opponentString), body.get(duelIDString)));
-            editor.putString(pendingString, gson.toJson(duels));
-            editor.apply();
-
-            /*Set<String> opponents = sharedPref.getStringSet(opponentString, new LinkedHashSet<String>());
-            Set<String> pendingDuels = sharedPref.getStringSet(duelIDString, new LinkedHashSet<String>());
-            opponents.add(body.get(opponentString));
-            pendingDuels.add(body.get(duelIDString));
-            editor.putStringSet(duelIDString, pendingDuels);
-            editor.putStringSet(opponentString, opponents);
-            editor.apply();*/
+                String jsonPendingDuels = sharedPref.getString(pendingString, "");
+                Gson gson = new Gson();
+                List<BackgroundDuel> duels = null;
+                if (!jsonPendingDuels.equals("")) {
+                    Type listType = new TypeToken<List<BackgroundDuel>>(){}.getType();
+                    duels = gson.fromJson(jsonPendingDuels, listType);
+                } else {
+                    duels = new ArrayList<>();
+                }
+                duels.add(new BackgroundDuel(body.get(opponentString), body.get(duelIDString)));
+                editor.putString(pendingString, gson.toJson(duels));
+                break;
+            case 3:
+                String roundsString = getString(R.string.new_rounds);
+                Set<String> rounds = sharedPref.getStringSet(roundsString, new LinkedHashSet<String>());
+                rounds.add(body.get(duelIDString));
+                editor.putStringSet(duelIDString, rounds);
+                break;
         }
+        editor.apply();
     }
 }

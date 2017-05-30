@@ -10,8 +10,9 @@ public class NotificationFactory {
             case 1:
                 return HomeActivity.class;
             case 2:
+            case 3:
                 return DuelActivity.class;
         }
-        return SignInActivity.class;
+        return HomeActivity.class;
     }
 }

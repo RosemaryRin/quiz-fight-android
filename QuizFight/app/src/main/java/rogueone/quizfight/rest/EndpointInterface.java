@@ -36,6 +36,6 @@ public interface EndpointInterface {
     Call<Round> getRound(@Path("playerID") String player, @Path("duelID") String duels);
 
     @Headers({"Content-Type: application/json"})
-    @PUT("results")
+    @PUT("result")
     Call<ResponseBody> sendRoundScore(@Body RoundResult result);
 }

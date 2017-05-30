@@ -12,9 +12,8 @@ import java.util.List;
  */
 
 public class Duel implements Serializable {
+    private static final long serialVersionUID = 262823510829073970L;
 
-
-    private static final long serialVersionUID = 1342499902115047075L;
     private String duelID;
     private String opponent;
     private List<Quiz> quizzes = new ArrayList<Quiz>(3);
@@ -71,5 +70,9 @@ public class Duel implements Serializable {
             quizzes.add(new Quiz());
         }
         return quizzes.get(quizzes.size() - 1);
+    }
+
+    public boolean isCompleted() {
+        return (quizzes.size() == 3);
     }
 }

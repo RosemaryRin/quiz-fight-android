@@ -180,7 +180,6 @@ public class SignInActivity extends SavedGamesActivity implements
         if (history == null) {
             history = new History();
         }
-        //SavedGames.writeSnapshot(snapshot, new History(), "", client);
         String pendingString = getString(R.string.pending_duels);
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
         if (sharedPref.contains(pendingString)) {
@@ -197,24 +196,6 @@ public class SignInActivity extends SavedGamesActivity implements
                 editor.apply();
                 SavedGames.writeSnapshot(snapshot, history, "", client);
             }
-            /*// Get sets containing duel dares received by notifications
-            Set<String> opponentsS = sharedPref.getStringSet(opponentString, new LinkedHashSet<String>());
-            Set<String> pendingDuelsS = sharedPref.getStringSet(duelIDString, new LinkedHashSet<String>());
-
-            // Convert them to arrays for a easier management
-            String[] opponents = opponentsS.toArray(new String[opponentsS.size()]);
-            String[] pendingDuels = pendingDuelsS.toArray(new String[pendingDuelsS.size()]);
-
-            // Populate the History object with new duels
-            for (int i = 0; i < opponents.length; i++) {
-                history.addDuel(new RESTDuel(pendingDuels[i], opponents[i]));
-            }
-
-            // Commit changes
-            SharedPreferences.Editor editor = sharedPref.edit();
-            editor.remove(duelIDString);
-            editor.remove(opponentString);
-            editor.apply();*/
         }
     }
 

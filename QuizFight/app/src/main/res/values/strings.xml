@@ -41,8 +41,22 @@
     <string name="duel_id">duelID</string>
     <string name="opponent">opponent</string>
     <string name="pending_duels">pending_duels</string>
+    <string name="new_rounds">new_rounds</string>
 
     <string name="leaderboard_id">CgkIxZDJ2KMSEAIQAg</string>
+    <string name="win_10_duels">CgkIxZDJ2KMSEAIQAw</string>
+    <string name="win_50_duels">CgkIxZDJ2KMSEAIQBw</string>
+    <string name="win_100_duels">CgkIxZDJ2KMSEAIQCA</string>
+    <string name="win_200_duels">CgkIxZDJ2KMSEAIQDA</string>
+    <string name="correct_answers_100">CgkIxZDJ2KMSEAIQCQ</string>
+    <string name="correct_answers_250">CgkIxZDJ2KMSEAIQCg</string>
+    <string name="correct_answers_500">CgkIxZDJ2KMSEAIQCw</string>
+    <string name="correct_answers_1000">CgkIxZDJ2KMSEAIQDQ</string>
+    <string name="score_15_points">CgkIxZDJ2KMSEAIQEQ</string>
+    <string name="score_30_points">CgkIxZDJ2KMSEAIQEA</string>
+    <string name="score_45_points">CgkIxZDJ2KMSEAIQDw</string>
+    <string name="duels_won">CgkIxZDJ2KMSEAIQDg</string>
+    <string name="corrects_answers">CgkIxZDJ2KMSEAIQBg</string>
 
     <string name="round">round</string>
 

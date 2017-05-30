@@ -23,6 +23,7 @@ import com.facebook.FacebookException;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
 import com.facebook.HttpMethod;
+import com.facebook.login.LoginBehavior;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.facebook.AccessToken;
@@ -154,32 +155,13 @@ public class StartDuelActivity extends AppCompatActivity {
 
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+            Log.d(TAG, "StartDuelFragment - onCreate");
             final View rootView = inflater.inflate(R.layout.fragment_start_duel, container, false);
 
             if (getArguments().getInt(ARG_SECTION_NUMBER) == 1
                     && AccessToken.getCurrentAccessToken() != null) { // friends tab
 
-                new GraphRequest(
-                        AccessToken.getCurrentAccessToken(),
-                        "/me/friends",
-                        null,
-                        HttpMethod.GET,
-                        new GraphRequest.Callback() {
-                            public void onCompleted(GraphResponse response) {
-                                if (response != null) {
-                                    Log.d(TAG, "Friend list request completed");
-                                    try {
-                                        JSONArray friends = response.getJSONObject()
-                                                .getJSONArray("data");
-
-                                        setFriendsAdapter(friends, rootView);
-                                    } catch (JSONException e) {
-                                        e.printStackTrace();
-                                    }
-                                }
-                            }
-                        }
-                ).executeAsync();
+                friendsNamesRequest(rootView);
 
                 /* Games.Players.loadConnectedPlayers(application.getClient(), true).setResultCallback(
                         new ResultCallback<Players.LoadPlayersResult>() {
@@ -226,8 +208,30 @@ public class StartDuelActivity extends AppCompatActivity {
                 );
 
             }
-
             return rootView;
+        }
+
+        public void friendsNamesRequest(final View rootView) {
+            new GraphRequest(
+                    AccessToken.getCurrentAccessToken(),
+                    "/me/friends",
+                    null,
+                    HttpMethod.GET,
+                    new GraphRequest.Callback() {
+                        public void onCompleted(GraphResponse response) {
+                            if (response != null) {
+                                Log.d(TAG, "Friend list request completed");
+                                try {
+                                    JSONArray friends = response.getJSONObject()
+                                            .getJSONArray("data");
+                                    setFriendsAdapter(friends, rootView);
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }
+                    }
+            ).executeAsync();
         }
 
         private void setFriendsAdapter(JSONArray friends, View rootView) {
@@ -260,6 +264,7 @@ public class StartDuelActivity extends AppCompatActivity {
         public Fragment getItem(int position) {
             // getItem is called to instantiate the fragment for the given page.
             // Return a PlaceholderFragment (defined as a static inner class below).
+            Log.d(TAG, "SectionsPageAdapter - getItem" + position);
             return StartDuelFragment.newInstance(position + 1);
         }
 

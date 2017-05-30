@@ -1,6 +1,7 @@
 package rogueone.quizfight;
 
 import android.content.Intent;
+import android.content.Loader;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -16,16 +17,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import android.widget.ListView;
 import android.widget.Toast;
 
-import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.games.Games;
-import com.google.android.gms.games.PlayerBuffer;
-import com.google.android.gms.games.Players;
-import com.google.android.gms.games.leaderboard.LeaderboardScoreBuffer;
-import com.google.android.gms.games.leaderboard.LeaderboardVariant;
-import com.google.android.gms.games.leaderboard.Leaderboards;
+import com.google.android.gms.games.snapshot.Snapshot;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -35,13 +30,14 @@ import java.util.Random;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import rogueone.quizfight.adapters.FriendListAdapter;
-import rogueone.quizfight.adapters.LeaderboardAdapter;
+import rogueone.quizfight.models.Duel;
+import rogueone.quizfight.models.History;
 import rogueone.quizfight.rest.api.NewDuel;
-import rogueone.quizfight.rest.pojo.Duel;
+import rogueone.quizfight.rest.pojo.RESTDuel;
 import rogueone.quizfight.rest.pojo.Round;
+import rogueone.quizfight.utils.SavedGames;
 
-public class StartDuelActivity extends AppCompatActivity {
+public class StartDuelActivity extends SavedGamesActivity {
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -58,13 +54,19 @@ public class StartDuelActivity extends AppCompatActivity {
      */
     private ViewPager mViewPager;
 
-    private static QuizFightApplication application;
+    private QuizFightApplication application;
+    private Snapshot snapshot;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start_duel);
 
+        application = (QuizFightApplication)getApplication();
+        getGames();
+    }
+
+    private void setupUI() {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_startduel_toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -79,15 +81,13 @@ public class StartDuelActivity extends AppCompatActivity {
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tablayout_startduel_tabs);
         tabLayout.setupWithViewPager(mViewPager);
 
-        application = (QuizFightApplication)getApplicationContext();
-
         findViewById(R.id.button_random_player).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String[] topics = getRandomTopics().toArray(new String[3]); // 3 rounds
-                new NewDuel(new Duel(
+                new NewDuel(new RESTDuel(
                         Games.getCurrentAccountName(application.getClient()),
-                        "matteodipirro@gmail.com", //FIXME to be removed
+                        "elena.pullin95@gmail.com", //FIXME to be removed
                         Games.Players.getCurrentPlayer(application.getClient()).getDisplayName(),
                         topics
                 )).call(new Callback<Round>() {
@@ -114,10 +114,25 @@ public class StartDuelActivity extends AppCompatActivity {
     }
 
     private void startDuel(@NonNull Round round) {
+        // Add the new duel to the user's history
+        History history = application.getHistory();
+
+        Duel newDuel = new Duel(round.getDuelID(), round.getOpponent());
+        history.addDuel(newDuel);
+        SavedGames.writeSnapshot(snapshot, history, "", application.getClient());
+        application.setHistory(history);
+
+        // Begin with the first round
         Intent intent = new Intent(StartDuelActivity.this, DuelActivity.class);
-        Log.d("ROUND", round.getQuestions().get(0).getOptions().size() + "");
         intent.putExtra(getString(R.string.round), round);
         startActivity(intent);
+        finish();
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Snapshot> loader, Snapshot data) {
+        snapshot = data;
+        setupUI();
     }
 
     /**
@@ -148,7 +163,7 @@ public class StartDuelActivity extends AppCompatActivity {
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
             final View rootView = inflater.inflate(R.layout.fragment_start_duel, container, false);
 
-            if (getArguments().getInt(ARG_SECTION_NUMBER) == 1) { // friends tab
+            /*if (getArguments().getInt(ARG_SECTION_NUMBER) == 1) { // friends tab
 
                 Games.Players.loadConnectedPlayers(application.getClient(), true).setResultCallback(
                         new ResultCallback<Players.LoadPlayersResult>() {
@@ -193,7 +208,7 @@ public class StartDuelActivity extends AppCompatActivity {
                         }
                 );
 
-            }
+            }*/
 
             return rootView;
         }

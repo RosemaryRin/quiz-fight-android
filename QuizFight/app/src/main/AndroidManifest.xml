@@ -27,7 +27,8 @@
         </activity>
         <activity
             android:name=".HomeActivity"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/AppTheme.NoActionBar"
+            android:launchMode="singleTask">
         </activity>
         <activity
             android:name=".StartDuelActivity"
@@ -43,7 +44,8 @@
             android:name=".DuelActivity"
             android:label="@string/title_activity_duel"
             android:parentActivityName=".HomeActivity"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/AppTheme.NoActionBar"
+            android:noHistory="true">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="rogueone.quizfight.HomeActivity" />

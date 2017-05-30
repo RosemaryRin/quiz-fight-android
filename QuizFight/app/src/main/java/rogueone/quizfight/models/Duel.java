@@ -1,9 +1,10 @@
 package rogueone.quizfight.models;
 
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import java.io.Serializable;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -11,11 +12,12 @@ import java.util.List;
  */
 
 public class Duel implements Serializable {
-    private static final long serialVersionUID = 8344928931366336118L;
 
+
+    private static final long serialVersionUID = 1342499902115047075L;
     private String duelID;
     private String opponent;
-    private List<Quiz> quizzes = new LinkedList<Quiz>();
+    private List<Quiz> quizzes = new ArrayList<Quiz>(3);
 
     public Duel (@NonNull String duelID, @NonNull String opponent, @NonNull List<Quiz> quizzes) {
         this.duelID = duelID;
@@ -26,6 +28,13 @@ public class Duel implements Serializable {
     public Duel (@NonNull String duelID, @NonNull String opponent) {
         this.duelID = duelID;
         this.opponent = opponent;
+        quizzes.add(new Quiz());
+    }
+
+    public Duel(@NonNull String duelID, @NonNull String opponent, @NonNull Quiz quiz) {
+        this.duelID = duelID;
+        this.opponent = opponent;
+        quizzes.add(quiz);
     }
 
     public String getDuelID() {
@@ -55,5 +64,12 @@ public class Duel implements Serializable {
 
     public void addQuiz(@NonNull Quiz quiz) {
         quizzes.add(quiz);
+    }
+
+    public Quiz getCurrentQuiz() {
+        if (quizzes.size() == 0) {
+            quizzes.add(new Quiz());
+        }
+        return quizzes.get(quizzes.size() - 1);
     }
 }

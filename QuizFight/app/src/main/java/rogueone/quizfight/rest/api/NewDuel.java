@@ -3,7 +3,7 @@ package rogueone.quizfight.rest.api;
 import android.support.annotation.NonNull;
 
 import retrofit2.Call;
-import rogueone.quizfight.rest.pojo.Duel;
+import rogueone.quizfight.rest.pojo.RESTDuel;
 import rogueone.quizfight.rest.pojo.Round;
 
 /**
@@ -11,9 +11,9 @@ import rogueone.quizfight.rest.pojo.Round;
  */
 
 public class NewDuel extends APICaller<Round> {
-    private Duel duel;
+    private RESTDuel duel;
 
-    public NewDuel(@NonNull Duel duel) {
+    public NewDuel(@NonNull RESTDuel duel) {
         super();
         this.duel = duel;
     }

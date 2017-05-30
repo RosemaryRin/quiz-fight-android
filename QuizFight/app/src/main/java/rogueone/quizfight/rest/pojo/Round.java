@@ -13,12 +13,14 @@ public class Round implements Parcelable {
     private String duelID;
     private String quizID;
     private String topic;
+    private String opponent;
     private List<Question> questions;
 
     protected Round(Parcel in) {
         duelID = in.readString();
         quizID = in.readString();
         topic = in.readString();
+        opponent = in.readString();
         questions = in.createTypedArrayList(Question.CREATOR);
     }
 
@@ -32,6 +34,10 @@ public class Round implements Parcelable {
 
     public String getTopic() {
         return topic;
+    }
+
+    public String getOpponent() {
+        return opponent;
     }
 
     public List<Question> getQuestions() {
@@ -60,6 +66,7 @@ public class Round implements Parcelable {
         dest.writeString(duelID);
         dest.writeString(quizID);
         dest.writeString(topic);
+        dest.writeString(opponent);
         dest.writeTypedList(questions);
     }
 }

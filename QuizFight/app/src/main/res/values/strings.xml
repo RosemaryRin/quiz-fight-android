@@ -26,15 +26,21 @@
     <string name="unable_to_connect">Not able to connect to google client.</string>
     <string name="unable_to_restore_saved_games">Not able to restore previous duels.</string>
     <string name="unable_to_start_duel">Not able to start a new duel.</string>
+    <string name="unable_to_start_round">Not able to start a new round.</string>
 
     <string name="title_friends">FRIENDS</string>
     <string name="title_leaderboard">LEADERBOARD</string>
     <string name="random_player">Random</string>
 
+    <string name="score_dialog">You got %1$d points!</string>
+    <string name="round_completed">Round completed!</string>
+    <string name="ok">Ok</string>
+
     <string name="sign_out">Sign out</string>
     <string name="signed_in">signed_in</string>
     <string name="duel_id">duelID</string>
     <string name="opponent">opponent</string>
+    <string name="pending_duels">pending_duels</string>
 
     <string name="leaderboard_id">CgkIxZDJ2KMSEAIQAg</string>
 

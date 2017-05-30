@@ -9,39 +9,58 @@ import java.io.Serializable;
  */
 
 public class Question implements Serializable {
-    private static final long serialVersionUID = -5867619978268634461L;
 
-    private String question;
-    private String correctAnswer;
-    private String playerAnswer;
-    private String opponentAnswer;
 
-    public Question(@NonNull String question, @NonNull String answer) {
-        this.question = question;
-        this.correctAnswer = answer;
+    private static final long serialVersionUID = 8631839101984474191L;
+    private int difficulty;
+    private boolean playerAnswer;
+    private boolean opponentAnswer;
+
+    public Question(int difficulty) {
+        this(difficulty, false, false);
     }
 
-    public Question(@NonNull String question, @NonNull String correctAnswer, @NonNull String playerAnswer, @NonNull String opponentAnswer) {
-        this.question = question;
-        this.correctAnswer = correctAnswer;
-        this.playerAnswer = playerAnswer;
-        this.opponentAnswer = opponentAnswer;
+    public Question(int difficulty, boolean player, boolean opponent) {
+        this.difficulty = normalizeDifficulty(difficulty);
+        this.playerAnswer = player;
+        this.opponentAnswer = opponent;
     }
 
-    public String getQuestion() {
-        return question;
+    public Question(int difficulty, boolean player) {
+        this(difficulty, player, false);
     }
 
-    public String getCorrectAnswer() {
-        return correctAnswer;
+    public int getDifficulty() {
+        return difficulty;
     }
 
-    public String getPlayerAnswer() {
+    public boolean getPlayerAnswer() {
         return playerAnswer;
     }
 
-    public String getOpponentAnswer() {
+    public boolean getOpponentAnswer() {
         return opponentAnswer;
     }
 
+    private int normalizeDifficulty(int difficulty) {
+        if (difficulty < 1) {
+            return 1;
+        } else if (difficulty > 3) {
+            return 3;
+        } else {
+            return  difficulty;
+        }
+    }
+
+    public int getPlayerScore() {
+        return getScore(playerAnswer);
+    }
+
+    public int getOpponentScore() {
+        return getScore(opponentAnswer);
+    }
+
+    private int getScore(boolean correct) {
+        return (correct) ? difficulty : 0;
+    }
 }

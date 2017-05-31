@@ -62,6 +62,8 @@
 
     <string name="round">round</string>
 
+    <string name="difficulty">Difficulty:</string>
+
     <string-array name="topics">
         <item>General Knowledge</item>
         <item>Entertainment: Books</item>

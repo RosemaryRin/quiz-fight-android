@@ -5,18 +5,23 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.Resources;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationCompat;
+import android.util.Log;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
+import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -24,6 +29,8 @@ import butterknife.BindString;
 import rogueone.quizfight.QuizFightApplication;
 import rogueone.quizfight.R;
 import rogueone.quizfight.SignInActivity;
+import rogueone.quizfight.models.BackgroundDuel;
+import rogueone.quizfight.models.RoundCompleted;
 
 import static rogueone.quizfight.NotificationFactory.getTargetActivity;
 
@@ -54,10 +61,10 @@ public class MessagingService extends FirebaseMessagingService {
         String stringID = body.get("id");
         int id = (stringID != null) ? Integer.parseInt(stringID) : 0;
         Intent intent = new Intent(
-                this,
-                (((QuizFightApplication)getApplicationContext()).getClient() == null)
+                this,SignInActivity.class
+                /*(((QuizFightApplication)getApplicationContext()).getClient() == null)
                     ? SignInActivity.class
-                    : getTargetActivity(id)
+                    : getTargetActivity(id)*/
         );
         populateIntent(body, intent);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -89,18 +96,47 @@ public class MessagingService extends FirebaseMessagingService {
     }
 
     private void persistData(int id, @NonNull Map<String, String> body) {
-        if (id == 2) { // New duel notification
-            String duelIDString = getString(R.string.duel_id);
-            String opponentString = getString(R.string.opponent);
-            SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-            SharedPreferences.Editor editor = sharedPref.edit();
-            Set<String> opponents = sharedPref.getStringSet(opponentString, new LinkedHashSet<String>());
-            Set<String> pendingDuels = sharedPref.getStringSet(duelIDString, new LinkedHashSet<String>());
-            opponents.add(body.get(opponentString));
-            pendingDuels.add(body.get(duelIDString));
-            editor.putStringSet(duelIDString, pendingDuels);
-            editor.putStringSet(opponentString, opponents);
-            editor.apply();
+        String duelIDString = getString(R.string.duel_id);
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        Gson gson = new Gson();
+        switch (id) {
+            case 2:
+                String opponentString = getString(R.string.opponent);
+                String pendingString = getString(R.string.pending_duels);
+
+                String jsonPendingDuels = sharedPref.getString(pendingString, "");
+                List<BackgroundDuel> duels;
+                if (!jsonPendingDuels.equals("")) {
+                    Type listType = new TypeToken<List<BackgroundDuel>>(){}.getType();
+                    duels = gson.fromJson(jsonPendingDuels, listType);
+                } else {
+                    duels = new ArrayList<>();
+                }
+                duels.add(new BackgroundDuel(body.get(opponentString), body.get(duelIDString)));
+                editor.putString(pendingString, gson.toJson(duels));
+                break;
+            case 3:
+            case 4:
+                String roundsString = getString(R.string.new_rounds);
+                String answersString = getString(R.string.answers);
+                String jsonRoundCompleted = sharedPref.getString(roundsString, "");
+                List<RoundCompleted> rounds;
+                if (!jsonRoundCompleted.equals("")) {
+                    Type listType = new TypeToken<List<RoundCompleted>>(){}.getType();
+                    rounds = gson.fromJson(jsonRoundCompleted, listType);
+                } else {
+                    rounds = new ArrayList<>();
+                }
+                boolean[] answers = new boolean[5];
+                String[] answersStrings = body.get(answersString).split(",");
+                for (int i = 0; i < answersStrings.length; i++) {
+                    answers[i] = answersStrings[i].equals("true");
+                }
+                rounds.add(new RoundCompleted(body.get(duelIDString), answers));
+                editor.putString(roundsString, gson.toJson(rounds));
+                break;
         }
+        editor.apply();
     }
 }

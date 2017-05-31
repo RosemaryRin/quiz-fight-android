@@ -16,7 +16,6 @@ public class QuizFightApplication extends Application {
 
     private GoogleApiClient games;
     private History history;
-    private Snapshot snapshot;
 
     @Override
     public void onCreate() {
@@ -37,13 +36,5 @@ public class QuizFightApplication extends Application {
 
     public History getHistory() {
         return history;
-    }
-
-    public void setSnapshot(@NonNull Snapshot snapshot) {
-        this.snapshot = snapshot;
-    }
-
-    public Snapshot getSnapshot() {
-        return snapshot;
     }
 }

@@ -87,14 +87,24 @@ public class HomeActivity extends AppCompatActivity {
                 oldDuels_listview.setVisibility(View.VISIBLE);
                 final DuelSummaryAdapter complAdapter = new DuelSummaryAdapter(this, completedDuels);
                 oldDuels_listview.setAdapter(complAdapter);
+                complAdapter.notifyDataSetChanged();
             }
             if (duelsInProgress.size() > 0) {
                 findViewById(R.id.textview_home_no_duels_in_progress).setVisibility(View.GONE);
                 duelsInProgress_listview.setVisibility(View.VISIBLE);
                 final DuelSummaryAdapter progAdapter = new DuelSummaryAdapter(this, duelsInProgress);
                 duelsInProgress_listview.setAdapter(progAdapter);
+                progAdapter.notifyDataSetChanged();
             }
         }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        Log.d("HOME","onResume");
+        history = application.getHistory();
+        updateHistory();
     }
 
     //FIXME temporary

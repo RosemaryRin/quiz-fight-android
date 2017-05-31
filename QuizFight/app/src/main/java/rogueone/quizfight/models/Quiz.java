@@ -3,17 +3,23 @@ package rogueone.quizfight.models;
 import android.support.annotation.NonNull;
 
 import java.io.Serializable;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by mdipirro on 23/05/17.
+ * This class represents a quiz. It implements <tt>Serializable</tt> to be easily cast in a
+ * <tt>byte[]</tt>. It stores a <tt>List</tt> of questions and a boolean flag representing if it has
+ * been completed or not.
+ *
+ * @author Matteo Di Pirro
+ * @see Serializable
  */
 
 public class Quiz implements Serializable {
-    private static final long serialVersionUID = 8581129064427857736L;
+    private static final long serialVersionUID = 4793650144614811370L;
 
-    private List<Question> questions = new LinkedList<Question>();
+    private List<Question> questions = new ArrayList<>(5);
+    private boolean completed;
 
     public Quiz() {}
 
@@ -33,15 +39,18 @@ public class Quiz implements Serializable {
         int playerScore = 0, opponentScore = 0;
 
         for (Question q : questions) {
-            String correctAnswer = q.getCorrectAnswer();
-
-            if (q.getPlayerAnswer() == correctAnswer)
-                playerScore++;
-
-            if (q.getOpponentAnswer() == correctAnswer)
-                opponentScore++;
+            playerScore += q.getPlayerScore();
+            opponentScore += q.getOpponentScore();
         }
 
         return new Score(playerScore, opponentScore);
+    }
+
+    public boolean isCompleted() {
+        return completed;
+    }
+
+    public void complete() {
+        completed = true;
     }
 }

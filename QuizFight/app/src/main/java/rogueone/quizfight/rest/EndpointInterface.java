@@ -8,14 +8,17 @@ import retrofit2.http.Headers;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
 import retrofit2.http.Path;
-import retrofit2.http.Query;
-import rogueone.quizfight.rest.pojo.Duel;
+import rogueone.quizfight.rest.pojo.RESTDuel;
 import rogueone.quizfight.rest.pojo.Round;
+import rogueone.quizfight.rest.pojo.RoundResult;
 import rogueone.quizfight.rest.pojo.Scores;
 import rogueone.quizfight.rest.pojo.User;
 
 /**
- * Created by mdipirro on 19/05/17.
+ * This interface contains the signatures of every server call, using Retrofit annotations.
+ *
+ * @author Matteo Di Pirro
+ * @see retrofit2.Retrofit
  */
 
 public interface EndpointInterface {
@@ -25,9 +28,13 @@ public interface EndpointInterface {
 
     @Headers({"Content-Type: application/json"})
     @POST("fight")
-    Call<Round> newDuel(@Body Duel user);
+    Call<Round> newDuel(@Body RESTDuel user);
 
     @Headers({"Content-Type: application/json"})
-    @GET("scores/{playerID}/{duelID}")
-    Call<Scores> getPendingScores(@Path("playerID") String player, @Path("duelID") String duels);
+    @GET("fight/{playerID}/{duelID}")
+    Call<Round> getRound(@Path("playerID") String player, @Path("duelID") String duels);
+
+    @Headers({"Content-Type: application/json"})
+    @PUT("result")
+    Call<ResponseBody> sendRoundScore(@Body RoundResult result);
 }

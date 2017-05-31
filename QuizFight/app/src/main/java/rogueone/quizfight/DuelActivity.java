@@ -156,7 +156,7 @@ public class DuelActivity extends SavedGamesActivity {
     private void initDuel() {
         // The round has been retrieved, do some housekeeping
         duel = history.getDuelByID(round.getDuelID());
-        if (duel.getQuizzes().size() < 3) {
+        if (duel.getQuizzes().size() < 3 && duel.getCurrentQuiz().isCompleted()) {
             duel.addQuiz(new Quiz()); // Add a new duel if it's a new round
         }
 

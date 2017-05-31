@@ -21,6 +21,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import rogueone.quizfight.adapters.DuelSummaryAdapter;
+import rogueone.quizfight.listeners.DuelDetailListener;
 import rogueone.quizfight.models.Duel;
 import rogueone.quizfight.models.History;
 
@@ -88,6 +89,7 @@ public class HomeActivity extends AppCompatActivity {
                 final DuelSummaryAdapter complAdapter = new DuelSummaryAdapter(this, completedDuels);
                 oldDuels_listview.setAdapter(complAdapter);
                 complAdapter.notifyDataSetChanged();
+                oldDuels_listview.setOnItemClickListener(new DuelDetailListener(this));
             }
             if (duelsInProgress.size() > 0) {
                 findViewById(R.id.textview_home_no_duels_in_progress).setVisibility(View.GONE);
@@ -95,6 +97,7 @@ public class HomeActivity extends AppCompatActivity {
                 final DuelSummaryAdapter progAdapter = new DuelSummaryAdapter(this, duelsInProgress);
                 duelsInProgress_listview.setAdapter(progAdapter);
                 progAdapter.notifyDataSetChanged();
+                duelsInProgress_listview.setOnItemClickListener(new DuelDetailListener(this));
             }
         }
     }
@@ -102,7 +105,6 @@ public class HomeActivity extends AppCompatActivity {
     @Override
     public void onResume() {
         super.onResume();
-        Log.d("HOME","onResume");
         history = application.getHistory();
         updateHistory();
     }

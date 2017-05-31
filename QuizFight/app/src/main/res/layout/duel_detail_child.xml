@@ -12,7 +12,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_weight="0"
-        android:contentDescription="@string/dueldetail_questionicon" />
+        android:contentDescription="@string/dueldetail_questionicon"
+        android:tint="@color/tie_duel"
+        app:srcCompat="@drawable/dueldetail_unknown" />
 
     <TextView
         android:id="@+id/textview_dueldetailchild_question"
@@ -27,5 +29,7 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_weight="0"
-        android:contentDescription="@string/dueldetail_questionicon" />
+        android:contentDescription="@string/dueldetail_questionicon"
+        android:tint="@color/tie_duel"
+        app:srcCompat="@drawable/dueldetail_unknown" />
 </LinearLayout>

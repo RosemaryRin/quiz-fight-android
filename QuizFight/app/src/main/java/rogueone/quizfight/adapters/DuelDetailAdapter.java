@@ -80,8 +80,8 @@ public class DuelDetailAdapter extends BaseExpandableListAdapter {
         TextView round = (TextView) convertView.findViewById(R.id.textview_dueldetailgroup_roundtext);
         round.setText("Round " + (groupPosition + 1));
 
-        Score quizScore = quiz.getScore();
         TextView score = (TextView) convertView.findViewById(R.id.textview_dueldetailgroup_roundscore);
+        Score quizScore = quiz.getScore();
         score.setText(quizScore.getPlayerScore() + " - " + quizScore.getOpponentScore());
 
         return convertView;
@@ -97,23 +97,24 @@ public class DuelDetailAdapter extends BaseExpandableListAdapter {
         TextView questionText = (TextView) convertView.findViewById(R.id.textview_dueldetailchild_question);
         questionText.setText("Question " + (childPosition + 1));
 
-        // FIXME: set icons according to given answers, model doesn't provide necessary information yet
-        ImageView playerIcon = (ImageView) convertView.findViewById(R.id.imageview_dueldetialchild_playericon);
-        if (question.getPlayerAnswer() == question.getCorrectAnswer()) {
-            playerIcon.setImageResource(R.drawable.all_victory);
-            playerIcon.setColorFilter(ContextCompat.getColor(convertView.getContext(), R.color.won_duel));
-        } else {
-            playerIcon.setImageResource(R.drawable.all_defeat);
-            playerIcon.setColorFilter(ContextCompat.getColor(convertView.getContext(), R.color.lost_duel));
-        }
+        if (getGroup(groupPosition).isCompleted()) {
+            ImageView playerIcon = (ImageView) convertView.findViewById(R.id.imageview_dueldetialchild_playericon);
+            if (question.getPlayerAnswer()) {
+                playerIcon.setImageResource(R.drawable.all_victory);
+                playerIcon.setColorFilter(ContextCompat.getColor(convertView.getContext(), R.color.won_duel));
+            } else {
+                playerIcon.setImageResource(R.drawable.all_defeat);
+                playerIcon.setColorFilter(ContextCompat.getColor(convertView.getContext(), R.color.lost_duel));
+            }
 
-        ImageView opponentIcon = (ImageView) convertView.findViewById(R.id.imageview_dueldetialchild_opponenticon);
-        if (question.getOpponentAnswer() == question.getCorrectAnswer()) {
-            opponentIcon.setImageResource(R.drawable.all_victory);
-            opponentIcon.setColorFilter(ContextCompat.getColor(convertView.getContext(), R.color.won_duel));
-        } else {
-            opponentIcon.setImageResource(R.drawable.all_defeat);
-            opponentIcon.setColorFilter(ContextCompat.getColor(convertView.getContext(), R.color.lost_duel));
+            ImageView opponentIcon = (ImageView) convertView.findViewById(R.id.imageview_dueldetialchild_opponenticon);
+            if (question.getOpponentAnswer()) {
+                opponentIcon.setImageResource(R.drawable.all_victory);
+                opponentIcon.setColorFilter(ContextCompat.getColor(convertView.getContext(), R.color.won_duel));
+            } else {
+                opponentIcon.setImageResource(R.drawable.all_defeat);
+                opponentIcon.setColorFilter(ContextCompat.getColor(convertView.getContext(), R.color.lost_duel));
+            }
         }
 
         return convertView;

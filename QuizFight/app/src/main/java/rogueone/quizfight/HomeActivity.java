@@ -1,6 +1,7 @@
 package rogueone.quizfight;
 
 import android.content.Intent;
+import android.content.Loader;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
@@ -12,30 +13,45 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.images.ImageManager;
 import com.google.android.gms.games.Games;
+import com.google.android.gms.games.snapshot.Snapshot;
 
+import java.util.Iterator;
 import java.util.List;
 
+import butterknife.BindString;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 import rogueone.quizfight.adapters.DuelSummaryAdapter;
 import rogueone.quizfight.models.Duel;
 import rogueone.quizfight.models.History;
+import rogueone.quizfight.models.Question;
+import rogueone.quizfight.models.Quiz;
+import rogueone.quizfight.rest.api.GetProgress;
+import rogueone.quizfight.rest.pojo.PendingDuels;
+import rogueone.quizfight.utils.SavedGames;
 
-public class HomeActivity extends AppCompatActivity {
+public class HomeActivity extends SavedGamesActivity {
 
     private static final int DUELS_SHOWN = 5;
 
     private History history;
     private QuizFightApplication application;
+    private Snapshot snapshot;
 
     @BindView(R.id.textview_home_username) TextView username;
     @BindView(R.id.listview_home_lastduels) ListView oldDuels_listview;
     @BindView(R.id.imageview_profile) ImageView userProfileImage;
     @BindView(R.id.listview_home_duels_in_progress) ListView duelsInProgress_listview;
+
+    @BindString(R.string.unable_to_get_pending_duels) String callError;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,7 +91,58 @@ public class HomeActivity extends AppCompatActivity {
             }
         });
 
-        updateHistory();
+        getGames();
+    }
+
+    private void updatePendingDuels() {
+        String duelIDs = "";
+        for (Duel duel : history.getInProgressDuels()) {
+            duelIDs += duel.getDuelID() + ",";
+        }
+        duelIDs = (duelIDs.length() - 1 > 0) ? duelIDs.substring(0, duelIDs.length() - 1) : "a";
+        new GetProgress(
+                Games.Players.getCurrentPlayer(application.getClient()).getDisplayName(),
+                duelIDs
+        ).call(new Callback<PendingDuels>() {
+            @Override
+            public void onResponse(Call<PendingDuels> call, Response<PendingDuels> response) {
+                if (response.isSuccessful()) {
+                    for (PendingDuels.Duel pendingDuel : response.body().getPendingDuels()) {
+                        Duel duel = history.getDuelByID(pendingDuel.getDuelID());
+                        if (duel != null) { //existing duel
+                            int index = 0, currentQuizIndex = duel.getQuizzes().size() - 1;
+                            if (currentQuizIndex < pendingDuel.getAnswers().length &&
+                                    index < pendingDuel.getAnswers()[currentQuizIndex].length) {
+                                for (Question question : duel.getCurrentQuiz().getQuestions()) {
+                                    question.setOpponentAnswer(pendingDuel.getAnswers()[currentQuizIndex][index++]);
+                                }
+                                if (duel.getQuizzes().size() == 3) {
+                                    duel.getCurrentQuiz().complete();
+                                }
+                                history.setDuelByID(duel);
+                            }
+                        } else { // new duel
+                            history.addDuel(new Duel(pendingDuel.getDuelID(), pendingDuel.getOpponent()));
+                        }
+                    }
+                    application.setHistory(history);
+                    SavedGames.writeSnapshot(snapshot, history, "", application.getClient());
+                    updateHistory();
+                } else {
+                    errorToast(callError);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<PendingDuels> call, Throwable t) {
+                t.printStackTrace();
+                errorToast(callError);
+            }
+        });
+    }
+
+    private void errorToast(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_LONG).show();
     }
 
     private void updateHistory() {
@@ -119,5 +186,11 @@ public class HomeActivity extends AppCompatActivity {
         SharedPreferences.Editor editor = sharedPref.edit();
         editor.putBoolean(getString(R.string.signed_in), false);
         editor.apply();
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Snapshot> loader, Snapshot data) {
+        snapshot = data;
+        updatePendingDuels();
     }
 }

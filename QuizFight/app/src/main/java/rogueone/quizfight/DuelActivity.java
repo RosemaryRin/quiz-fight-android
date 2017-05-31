@@ -156,8 +156,8 @@ public class DuelActivity extends SavedGamesActivity {
     private void initDuel() {
         // The round has been retrieved, do some housekeeping
         duel = history.getDuelByID(round.getDuelID());
-        if (duel.getQuizzes().size() < 3) {
-            duel.addQuiz(new Quiz()); // Add a new duel if it's a new round
+        if (duel.getCurrentQuiz().isCompleted() && duel.getQuizzes().size() < 3) {
+            duel.addQuiz(new Quiz()); // Add a new quiz if there's a new round
         }
 
         if (duel != null) { // Everything ok, init the UI
@@ -200,7 +200,9 @@ public class DuelActivity extends SavedGamesActivity {
      * @param answer The answer. It may be 0, if the timer expired.
      */
     private void answer(int answer) {
-        timer.cancel(); // Stop the timer
+        if (timer != null) {
+            timer.cancel(); // Stop the timer
+        }
         if (answer == currentQuestion.getAnswer()) {
             // TODO something green
 
@@ -277,6 +279,9 @@ public class DuelActivity extends SavedGamesActivity {
             public void onFailure(Call<ResponseBody> call, Throwable t) {}
         });
         // Write the snapshot for updating the history
+        if (duel.getQuizzes().size() < 3) {
+            duel.getCurrentQuiz().complete();
+        }
         history.setDuelByID(duel);
         SavedGames.writeSnapshot(snapshot, history, "", application.getClient());
 
@@ -348,7 +353,9 @@ public class DuelActivity extends SavedGamesActivity {
     @Override
     public void onPause() {
         super.onPause();
-        dialog.dismiss(); // dismiss the dialog fo avoiding UI leaked exception
+        if (dialog != null) {
+            dialog.dismiss(); // dismiss the dialog fo avoiding UI leaked exception
+        }
     }
 
     @Override

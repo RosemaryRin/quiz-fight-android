@@ -8,9 +8,12 @@ import retrofit2.Response;
 import rogueone.quizfight.models.BackgroundDuel;
 import rogueone.quizfight.models.Duel;
 import rogueone.quizfight.models.History;
+import rogueone.quizfight.models.Question;
 import rogueone.quizfight.models.Quiz;
 import rogueone.quizfight.models.RoundCompleted;
 import rogueone.quizfight.rest.api.AddToken;
+import rogueone.quizfight.rest.api.GetProgress;
+import rogueone.quizfight.rest.pojo.PendingDuels;
 import rogueone.quizfight.rest.pojo.User;
 import rogueone.quizfight.utils.SavedGames;
 
@@ -149,18 +152,19 @@ public class SignInActivity extends SavedGamesActivity implements
     @Override
     public void onLoadFinished(Loader<Snapshot> loader, Snapshot snapshot) {
         if (snapshot != null) {
-            QuizFightApplication application = (QuizFightApplication)getApplicationContext();
+            QuizFightApplication application = (QuizFightApplication)getApplication();
             // Read the byte content of the saved game.
             try {
                 History history = byteToHistory(snapshot.getSnapshotContents().readFully());
-
+                updatePendingDuels(application, history, snapshot);
+                //application.setHistory(history);
                 //SavedGames.writeSnapshot(snapshot, new History(), "", client);
-                addPendingDuelsIfExist(history);
+                /*addPendingDuelsIfExist(history);
                 addCompletedRoundScores(history);
                 SavedGames.writeSnapshot(snapshot, history, "", client);
-                application.setHistory(history);
+                application.setHistory(history);*/
 
-                startHomeActivity();
+                //startHomeActivity();
             } catch (IOException e) {
                 errorToast(getApplicationContext().getString(R.string.unable_to_restore_saved_games));
             }
@@ -173,7 +177,56 @@ public class SignInActivity extends SavedGamesActivity implements
         Toast.makeText(this, message, Toast.LENGTH_LONG).show();
     }
 
-    private void addPendingDuelsIfExist(History history) {
+    private void updatePendingDuels(final QuizFightApplication application, final History history,
+                                    final Snapshot snapshot) {
+        String duelIDs = "";
+        for (Duel duel : history.getInProgressDuels()) {
+            duelIDs += duel.getDuelID() + ",";
+        }
+        duelIDs = (duelIDs.length() - 1 > 0) ? duelIDs.substring(0, duelIDs.length() - 1) : "a";
+        new GetProgress(
+                Games.Players.getCurrentPlayer(application.getClient()).getDisplayName(),
+                duelIDs
+        ).call(new Callback<PendingDuels>() {
+            @Override
+            public void onResponse(Call<PendingDuels> call, Response<PendingDuels> response) {
+                if (response.isSuccessful()) {
+                    for (PendingDuels.Duel pendingDuel : response.body().getPendingDuels()) {
+                        Duel duel = history.getDuelByID(pendingDuel.getDuelID());
+                        if (duel != null) { //existing duel
+                            int index = 0, currentQuizIndex = duel.getQuizzes().size() - 1;
+                            Log.d("PENDING", duel.getCurrentQuiz().getQuestions().size() + "");
+                            if (currentQuizIndex < pendingDuel.getAnswers().length &&
+                                    index < pendingDuel.getAnswers()[currentQuizIndex].length) {
+                                for (Question question : duel.getCurrentQuiz().getQuestions()) {
+                                    question.setOpponentAnswer(pendingDuel.getAnswers()[currentQuizIndex][index++]);
+                                }
+                                if (duel.getQuizzes().size() == 3) {
+                                    duel.getCurrentQuiz().complete();
+                                }
+                                history.setDuelByID(duel);
+                            }
+                        } else { // new duel
+                            history.addDuel(new Duel(pendingDuel.getDuelID(), pendingDuel.getOpponent()));
+                        }
+                    }
+                    application.setHistory(history);
+                    SavedGames.writeSnapshot(snapshot, history, "", application.getClient());
+                    startHomeActivity();
+                } else {
+                    errorToast(getApplicationContext().getString(R.string.unable_to_restore_saved_games));
+                }
+            }
+
+            @Override
+            public void onFailure(Call<PendingDuels> call, Throwable t) {
+                t.printStackTrace();
+                errorToast(getApplicationContext().getString(R.string.unable_to_restore_saved_games));
+            }
+        });
+    }
+
+    /*private void addPendingDuelsIfExist(History history) {
         if (history == null) {
             history = new History();
         }
@@ -222,7 +275,7 @@ public class SignInActivity extends SavedGamesActivity implements
                 editor.apply();
             }
         }
-    }
+    }*/
 
     @Override
     public void onLoaderReset(Loader<Snapshot> loader) {}

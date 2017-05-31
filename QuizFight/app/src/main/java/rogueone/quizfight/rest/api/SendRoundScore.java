@@ -7,7 +7,13 @@ import retrofit2.Call;
 import rogueone.quizfight.rest.pojo.RoundResult;
 
 /**
- * Created by mdipirro on 30/05/17.
+ * This class represents a PUT REST call to /results. It stores a <tt>RoundResult</tt>s corresponding
+ * to the round result. Since /results doesn't return any response (i.e. an empty body), <tt>ResponseBody</tt>
+ * is used as generic type.
+ *
+ * @see rogueone.quizfight.rest.api.APICaller
+ * @see rogueone.quizfight.rest.EndpointInterface
+ * @see RoundResult
  */
 
 public class SendRoundScore extends APICaller<ResponseBody> {

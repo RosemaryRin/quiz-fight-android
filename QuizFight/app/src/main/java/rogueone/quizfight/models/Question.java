@@ -1,11 +1,14 @@
 package rogueone.quizfight.models;
 
-import android.support.annotation.NonNull;
-
 import java.io.Serializable;
 
 /**
- * Created by mdipirro on 23/05/17.
+ * This class represents a question. It implements <tt>Serializable</tt> to be easily cast in a
+ * <tt>byte[]</tt>. It stores the question difficulty and two boolean flags representing whether
+ * the two users answered correctly or not.
+ *
+ * @author Matteo Di Pirro
+ * @see Serializable
  */
 
 public class Question implements Serializable {

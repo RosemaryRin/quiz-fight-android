@@ -50,20 +50,32 @@ import rogueone.quizfight.rest.pojo.RoundResult;
 import rogueone.quizfight.utils.SavedGames;
 
 /**
- * Created by mdipirro on 26/05/17.
+ * This class represents the Activity showed for answering to the questions of a certain duel. Since
+ * it stores the results in Google Saved Games, it extends <tt>SavedGamesActivity</tt> for automatically
+ * starting the loading at the beginning.
+ * At the end of the round the results are both sent to the server and saved in the player's history.
+ * The user is prompted a dialog showing her score and then redirected th the <tt>HomeActivity</tt>.
+ *
+ * This Activity may be started with a new duel request, tapping on a notification or on a 'Continue'
+ * button in the duel details Activity.
+ *
+ * @author Matteo Di Pirro
+ * @see SavedGamesActivity
  */
 
 public class DuelActivity extends SavedGamesActivity {
 
+    // Constants for the answer IDs
     private static final int ONE    = 1;
     private static final int TWO    = 2;
     private static final int THREE  = 3;
     private static final int FOUR   = 4;
+
     private static final int QUESTIONS_PER_ROUND = 5;
     private static final int ALLOWED_TIME = 20000;
 
     private QuizFightApplication application;
-    private Snapshot snapshot;
+    private Snapshot snapshot; // Loaded at the beginning
 
     private Round round;
     private Question currentQuestion;
@@ -73,7 +85,7 @@ public class DuelActivity extends SavedGamesActivity {
     private Duel duel;
     private boolean[] answers;
 
-    private CountDownTimer timer;
+    private CountDownTimer timer; // The timer
 
     private FragmentManager fragmentManager;
     @BindView(R.id.textview_question) TextView textView_question;
@@ -105,13 +117,17 @@ public class DuelActivity extends SavedGamesActivity {
         answers = new boolean[5];
     }
 
+    /**
+     * Setup every field required for this Activity. It cannot be invoked in onCreate since the Loader
+     * must load the user Snapshot.
+     */
     private void setup() {
         Bundle extras = getIntent().getExtras();
 
-        if (extras.containsKey(roundString)) {
+        if (extras.containsKey(roundString)) { // If the round is provided using Bundles
             round = extras.getParcelable(roundString);
             initDuel();
-        } else {
+        } else { // If the round has to be retrieved using a server call
             new GetRound(
                     extras.getString(duelString),
                     Games.getCurrentAccountName(application.getClient())
@@ -134,13 +150,17 @@ public class DuelActivity extends SavedGamesActivity {
         }
     }
 
+    /**
+     * Actually begin a new round for the current duel.
+     */
     private void initDuel() {
+        // The round has been retrieved, do some housekeeping
         duel = history.getDuelByID(round.getDuelID());
         if (duel.getQuizzes().size() < 3) {
-            duel.addQuiz(new Quiz());
+            duel.addQuiz(new Quiz()); // Add a new duel if it's a new round
         }
 
-        if (duel != null) {
+        if (duel != null) { // Everything ok, init the UI
             setupTimer();
             fragmentManager = getFragmentManager();
             trueFalseFragment = ((TrueFalseFragment)fragmentManager.findFragmentById(R.id.fragment_true_false));
@@ -152,6 +172,9 @@ public class DuelActivity extends SavedGamesActivity {
         }
     }
 
+    /**
+     * Setup the timer.
+     */
     private void setupTimer() {
         timer = new CountDownTimer(ALLOWED_TIME, 1000) {
             public void onTick(long millisUntilFinished) {
@@ -164,12 +187,20 @@ public class DuelActivity extends SavedGamesActivity {
         }.start();
     }
 
+    /**
+     * Show an error <tt>Toast</tt> if something went wrong
+     * @param message The message to bhe showed
+     */
     private void errorToast(@NonNull String message) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 
+    /**
+     * Handle a new answer saving its correctness and updating the UI.
+     * @param answer The answer. It may be 0, if the timer expired.
+     */
     private void answer(int answer) {
-        timer.cancel();
+        timer.cancel(); // Stop the timer
         if (answer == currentQuestion.getAnswer()) {
             // TODO something green
 
@@ -195,14 +226,22 @@ public class DuelActivity extends SavedGamesActivity {
         nextQuestion();
     }
 
+    /**
+     * Add a new answer to the current question of the current round
+     * @param correct
+     */
     private void saveAnswer(boolean correct) {
         duel.getCurrentQuiz().addQuestion(new rogueone.quizfight.models.Question(currentQuestion.getDifficulty(), correct));
     }
 
+    /**
+     * Show the next question to the user.
+     */
     private void nextQuestion() {
-        if (count < QUESTIONS_PER_ROUND) {
-            currentQuestion = round.getQuestions().get(count);
-            textView_question.setText(currentQuestion.getQuestion());
+        if (count < QUESTIONS_PER_ROUND) { // there are some more questions
+            currentQuestion = round.getQuestions().get(count); // get the next question
+            textView_question.setText(currentQuestion.getQuestion()); // show that...
+            //.. with the correct Fragment
             if (currentQuestion.isTrueOrFalse()) {
                 showHide(true, trueFalseFragment);
                 showHide(false, multipleChoiceFragment);
@@ -215,12 +254,17 @@ public class DuelActivity extends SavedGamesActivity {
                 multipleChoiceFragment.fillOptions(currentQuestion.getOptions());
             }
             timer.start();
-        } else {
+        } else { // every question has been answered, final housekeeping
             roundTerminated();
         }
     }
 
+    /**
+     * Do the final operations. It shows a <tt>Dialog</tt> with the score and saved the result both
+     * client and server side.
+     */
     private void roundTerminated() {
+        // Call the server for remote saving the result
         new SendRoundScore(new RoundResult(
                 round.getDuelID(), round.getQuizID(),
                 Games.Players.getCurrentPlayer(application.getClient()).getDisplayName(),
@@ -232,11 +276,16 @@ public class DuelActivity extends SavedGamesActivity {
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {}
         });
+        // Write the snapshot for updating the history
         history.setDuelByID(duel);
         SavedGames.writeSnapshot(snapshot, history, "", application.getClient());
+
         showScoreDialog();
     }
 
+    /**
+     * Show a dialog with the user's score.
+     */
     private void showScoreDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
@@ -254,6 +303,11 @@ public class DuelActivity extends SavedGamesActivity {
         dialog.show();
     }
 
+    /**
+     * Show and hide fragments according to the current question type.
+     * @param show true if the <tt>Fragment</tt> has to be shown, false if it has to be hide
+     * @param fragment The fragment
+     */
     private void showHide(boolean show, @NonNull Fragment fragment) {
         if (show) {
             fragmentManager.beginTransaction()
@@ -268,6 +322,10 @@ public class DuelActivity extends SavedGamesActivity {
         }
     }
 
+    /**
+     * Check the button ID for retrieving the answer.
+     * @param v The clicked view
+     */
     public void getAnswer(View v) {
         switch (v.getId()) {
             case R.id.button_choice_one:
@@ -290,15 +348,21 @@ public class DuelActivity extends SavedGamesActivity {
     @Override
     public void onPause() {
         super.onPause();
-        dialog.dismiss();
+        dialog.dismiss(); // dismiss the dialog fo avoiding UI leaked exception
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        timer.cancel();
+        timer.cancel(); // stop the timer
     }
 
+    /**
+     * Loading finished, save the loaded <tt>Snapshot</tt>. It calls <tt>setup</tt> for beginning
+     * the duel.
+     * @param loader The finished loader
+     * @param data The loaded data
+     */
     @Override
     public void onLoadFinished(Loader<Snapshot> loader, Snapshot data) {
         snapshot = data;

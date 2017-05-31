@@ -1,19 +1,15 @@
 package rogueone.quizfight.models;
 
-import android.support.annotation.NonNull;
-import android.util.Log;
-
 import java.io.Serializable;
-import java.util.Collections;
-import java.util.List;
-import java.util.Vector;
+
 
 /**
- * Created by mdipirro on 23/05/17.
+ * This class represents a score.
+ *
+ * @author Matteo Di Pirro
  */
 
-public class Score implements Serializable {
-    private static final long serialVersionUID = -3923326187155594196L;
+public class Score {
 
     private int player;
     private int opponent;

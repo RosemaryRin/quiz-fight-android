@@ -5,9 +5,11 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
- * Created by mdipirro on 19/05/17.
+ * This class is a helper class for retrieving a Retrofit instance. It automatically adds a GSON
+ * converter for encoding/decoding requests body.
  *
- * This class is a helper class for retrieving a Retrofit instance.
+ * @author Matteo Di Pirro
+ * @see Retrofit
  */
 
 public class RetrofitHelper {

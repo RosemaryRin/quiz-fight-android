@@ -3,7 +3,11 @@ package rogueone.quizfight.rest.pojo;
 import java.util.List;
 
 /**
- * Created by mdipirro on 31/05/17.
+ * This class represents a pending duel. It is used when HomeActivity asks the server for new duels
+ * or changes in the pending ones. A JSON with this type is returned. It is just a container of
+ * <tt>Duel</tt>s (see below).
+ *
+ * @author Matteo Di Pirro
  */
 
 public class PendingDuels {
@@ -13,6 +17,9 @@ public class PendingDuels {
         return pendingDuels;
     }
 
+    /**
+     * This private class actually contains the information about the pending duels.
+     */
     public static class Duel {
         private String duelID;
         private String opponent;

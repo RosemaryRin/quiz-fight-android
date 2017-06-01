@@ -16,7 +16,11 @@ import rogueone.quizfight.rest.api.AddToken;
 
 
 /**
- * Created by mdipirro on 19/05/17.
+ * This service handles the token changes. Every time a token changes (e.g. new installation / cache
+ * wipe) it sends the new value to the server (so that he user can go on receiving notifications).
+ *
+ * @author Matteo Di Pirro
+ * @see FirebaseInstanceIdService
  */
 
 public class CustomFirebaseInstanceID extends FirebaseInstanceIdService {
@@ -48,14 +52,10 @@ public class CustomFirebaseInstanceID extends FirebaseInstanceIdService {
                     Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID)
             )).call(new Callback<ResponseBody>() {
                 @Override
-                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                    // TODO
-                }
+                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {}
 
                 @Override
-                public void onFailure(Call<ResponseBody> call, Throwable t) {
-                    // TODO
-                }
+                public void onFailure(Call<ResponseBody> call, Throwable t) {}
             });
         }
     }

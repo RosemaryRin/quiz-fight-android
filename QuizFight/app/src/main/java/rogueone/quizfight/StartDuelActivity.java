@@ -88,7 +88,6 @@ public class StartDuelActivity extends SavedGamesActivity {
                 new NewDuel(new RESTDuel(
                         Games.Players.getCurrentPlayer(application.getClient()).getDisplayName(),
                         "elena.pullin95@gmail.com", //FIXME to be removed
-                        Games.Players.getCurrentPlayer(application.getClient()).getDisplayName(),
                         topics
                 )).call(new Callback<Round>() {
                     @Override

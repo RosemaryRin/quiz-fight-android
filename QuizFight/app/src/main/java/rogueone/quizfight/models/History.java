@@ -10,7 +10,11 @@ import java.util.List;
 import java.util.Vector;
 
 /**
- * Created by mdipirro on 23/05/17.
+ * This class represents the user's history saved in Google Saved Games. It implements
+ * <tt>Serializable</tt> to be easily cast in a <tt>byte[]</tt>. It stores a <tt>List</tt> of duels.
+ *
+ * @author Matteo Di Pirro
+ * @see Serializable
  */
 
 public class History implements Serializable {
@@ -33,7 +37,6 @@ public class History implements Serializable {
         Iterator<Duel> iterator = duels.iterator();
         while (iterator.hasNext() && inProgress.size() < n) {
             Duel duel = iterator.next();
-            Log.d("ROUNDH", duel.isCompleted() + "");
             if (duel.isCompleted()) {
                 inProgress.add(duel);
             }
@@ -76,6 +79,10 @@ public class History implements Serializable {
         return (index != -1) ? duels.get(index) : null;
     }
 
+    /**
+     * Duel setter. The duel ID is automatically retrieved using `duel`.
+     * @param duel The duel to be saved.
+     */
     public void setDuelByID(@NonNull Duel duel) {
         int index = getDuelIndex(duel.getDuelID());
         if (index != -1) {

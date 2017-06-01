@@ -7,7 +7,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by mdipirro on 23/05/17.
+ * This class represents a quiz. It implements <tt>Serializable</tt> to be easily cast in a
+ * <tt>byte[]</tt>. It stores a <tt>List</tt> of questions and a boolean flag representing if it has
+ * been completed or not.
+ *
+ * @author Matteo Di Pirro
+ * @see Serializable
  */
 
 public class Quiz implements Serializable {

@@ -15,7 +15,10 @@ import rogueone.quizfight.rest.pojo.Scores;
 import rogueone.quizfight.rest.pojo.User;
 
 /**
- * Created by mdipirro on 19/05/17.
+ * This interface contains the signatures of every server call, using Retrofit annotations.
+ *
+ * @author Matteo Di Pirro
+ * @see retrofit2.Retrofit
  */
 
 public interface EndpointInterface {
@@ -26,10 +29,6 @@ public interface EndpointInterface {
     @Headers({"Content-Type: application/json"})
     @POST("fight")
     Call<Round> newDuel(@Body RESTDuel user);
-
-    @Headers({"Content-Type: application/json"})
-    @GET("scores/{playerID}/{duelID}")
-    Call<Scores> getPendingScores(@Path("playerID") String player, @Path("duelID") String duels);
 
     @Headers({"Content-Type: application/json"})
     @GET("fight/{playerID}/{duelID}")

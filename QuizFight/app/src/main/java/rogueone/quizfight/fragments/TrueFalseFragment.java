@@ -16,10 +16,16 @@ import rogueone.quizfight.R;
 import rogueone.quizfight.rest.pojo.Option;
 
 /**
- * Created by mdipirro on 27/05/17.
+ * This class extends <tt>Fragment</tt> and implements <tt>QuestionFragment</tt>. It fills two
+ * buttons with the answer options.
+ *
+ * @author Matteo Di Pirro
+ * @see QuestionFragment
+ * @see Fragment
  */
 
 public class TrueFalseFragment extends Fragment implements QuestionFragment {
+    // The two buttons
     @BindView(R.id.button_tf_one) Button button_tf_one;
     @BindView(R.id.button_tf_two) Button button_tf_two;
 
@@ -31,6 +37,10 @@ public class TrueFalseFragment extends Fragment implements QuestionFragment {
         return v;
     }
 
+    /**
+     * Fill two buttons with two options contained in <tt>options</tt>.
+     * @param options A <tt>List</tt> of <tt>Options</tt> to be used for populating the layout.
+     */
     @Override
     public void fillOptions(@NonNull List<Option> options) {
         button_tf_one.setText(options.get(0).getOption());

@@ -28,6 +28,7 @@
     <string name="unable_to_restore_saved_games">Not able to restore previous duels.</string>
     <string name="unable_to_start_duel">Not able to start a new duel.</string>
     <string name="unable_to_start_round">Not able to start a new round.</string>
+    <string name="snapshot_error">Could not resolve snapshot conflicts</string>
 
     <string name="title_friends">FRIENDS</string>
     <string name="title_leaderboard">LEADERBOARD</string>

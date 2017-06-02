@@ -81,7 +81,6 @@ public class DuelActivity extends SavedGamesActivity {
     private Question currentQuestion;
     private int count;
     private int score;
-    private History history;
     private Duel duel;
     private boolean[] answers;
 
@@ -110,7 +109,6 @@ public class DuelActivity extends SavedGamesActivity {
         ButterKnife.bind(this);
 
         application = (QuizFightApplication)getApplication();
-        history = application.getHistory();
         getGames();
 
         count = 0; score = 0;
@@ -185,14 +183,6 @@ public class DuelActivity extends SavedGamesActivity {
                 answer(0);
             }
         }.start();
-    }
-
-    /**
-     * Show an error <tt>Toast</tt> if something went wrong
-     * @param message The message to bhe showed
-     */
-    private void errorToast(@NonNull String message) {
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 
     /**
@@ -279,6 +269,8 @@ public class DuelActivity extends SavedGamesActivity {
             public void onFailure(Call<ResponseBody> call, Throwable t) {}
         });
         // Write the snapshot for updating the history
+        // < 3 is needed because otherwise the duel would appear as complete. @see HomeActivity.updatePendingDuels
+        // There the duel is marked as complete if the opponent completed it as well.
         if (duel.getQuizzes().size() < 3) {
             duel.getCurrentQuiz().complete();
         }
@@ -365,14 +357,15 @@ public class DuelActivity extends SavedGamesActivity {
     }
 
     /**
-     * Loading finished, save the loaded <tt>Snapshot</tt>. It calls <tt>setup</tt> for beginning
-     * the duel.
-     * @param loader The finished loader
-     * @param data The loaded data
+     * Loading finished, call <tt>setup</tt> for beginning the duel.
+     * @param success true iff the Snapshot load succeeded.
      */
     @Override
-    public void onLoadFinished(Loader<Snapshot> loader, Snapshot data) {
-        snapshot = data;
-        setup();
+    protected void onLoadFinished(boolean success) {
+        if (success) {
+            setup();
+        } else {
+            errorToast(errorRound);
+        }
     }
 }

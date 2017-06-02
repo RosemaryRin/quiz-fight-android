@@ -1,7 +1,9 @@
 package rogueone.quizfight;
 
 /**
- * Created by mdipirro on 23/05/17.
+ * This Factory class is used to open the correct activity when a notification is received.
+ *
+ * @author Matteo Di Pirro
  */
 
 public class NotificationFactory {

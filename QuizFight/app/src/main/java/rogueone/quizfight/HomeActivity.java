@@ -1,26 +1,20 @@
 package rogueone.quizfight;
 
 import android.content.Intent;
-import android.content.Loader;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.images.ImageManager;
 import com.google.android.gms.games.Games;
-import com.google.android.gms.games.snapshot.Snapshot;
 
-import java.util.Iterator;
 import java.util.List;
 
 import butterknife.BindString;
@@ -31,20 +25,26 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import rogueone.quizfight.adapters.DuelSummaryAdapter;
 import rogueone.quizfight.models.Duel;
-import rogueone.quizfight.models.History;
 import rogueone.quizfight.models.Question;
-import rogueone.quizfight.models.Quiz;
 import rogueone.quizfight.rest.api.GetProgress;
 import rogueone.quizfight.rest.pojo.PendingDuels;
 import rogueone.quizfight.utils.SavedGames;
 
+/**
+ * This class shows the current situation to the user (pending and completed duels). It allows her
+ * to sign out and to start a new duel. At the very beginning and at every resume it asks the server
+ * for updates both in pending and new duels.
+ *
+ * @author Alex Beccaro
+ * @see SavedGamesActivity
+ */
 public class HomeActivity extends SavedGamesActivity {
 
     private static final int DUELS_SHOWN = 5;
 
-    private History history;
     private QuizFightApplication application;
-    private Snapshot snapshot;
+
+    private boolean signOutClicked = false;
 
     @BindView(R.id.textview_home_username) TextView username;
     @BindView(R.id.listview_home_lastduels) ListView oldDuels_listview;
@@ -60,7 +60,6 @@ public class HomeActivity extends SavedGamesActivity {
         ButterKnife.bind(this);
 
         application = (QuizFightApplication)getApplicationContext();
-        history = application.getHistory();
 
         // setting username from login
         username.setText(Games.Players.getCurrentPlayer(
@@ -94,12 +93,17 @@ public class HomeActivity extends SavedGamesActivity {
         getGames();
     }
 
+    /**
+     * Get updates from the server. If there are new duels or new rounds available write them to
+     * history, otherwise do nothing.
+     */
     private void updatePendingDuels() {
         String duelIDs = "";
         for (Duel duel : history.getInProgressDuels()) {
             duelIDs += duel.getDuelID() + ",";
         }
-        duelIDs = (duelIDs.length() - 1 > 0) ? duelIDs.substring(0, duelIDs.length() - 1) : "a";
+        // If there are no pending duels, send a dummy string just to fill in the parameter
+        duelIDs = (duelIDs.length() - 1 > 0) ? duelIDs.substring(0, duelIDs.length() - 1) : "dummy";
         new GetProgress(
                 Games.Players.getCurrentPlayer(application.getClient()).getDisplayName(),
                 duelIDs
@@ -110,12 +114,17 @@ public class HomeActivity extends SavedGamesActivity {
                     for (PendingDuels.Duel pendingDuel : response.body().getPendingDuels()) {
                         Duel duel = history.getDuelByID(pendingDuel.getDuelID());
                         if (duel != null) { //existing duel
+                            // Get the indexes for updating an existing duel
                             int index = 0, currentQuizIndex = duel.getQuizzes().size() - 1;
+                            // If the player completed the round (1st condition) and if the opponent
+                            // answered (2nd condition) save the result
                             if (currentQuizIndex < pendingDuel.getAnswers().length &&
                                     index < pendingDuel.getAnswers()[currentQuizIndex].length) {
+                                // For each new question save the opponent's answer
                                 for (Question question : duel.getCurrentQuiz().getQuestions()) {
                                     question.setOpponentAnswer(pendingDuel.getAnswers()[currentQuizIndex][index++]);
                                 }
+                                // If both the two players completed the duel, sets it as complete
                                 if (duel.getQuizzes().size() == 3) {
                                     duel.getCurrentQuiz().complete();
                                 }
@@ -125,7 +134,6 @@ public class HomeActivity extends SavedGamesActivity {
                             history.addDuel(new Duel(pendingDuel.getDuelID(), pendingDuel.getOpponent()));
                         }
                     }
-                    application.setHistory(history);
                     SavedGames.writeSnapshot(snapshot, history, "", application.getClient());
                     updateHistory();
                 } else {
@@ -139,10 +147,6 @@ public class HomeActivity extends SavedGamesActivity {
                 errorToast(callError);
             }
         });
-    }
-
-    private void errorToast(String message) {
-        Toast.makeText(this, message, Toast.LENGTH_LONG).show();
     }
 
     private void updateHistory() {
@@ -170,27 +174,39 @@ public class HomeActivity extends SavedGamesActivity {
     @Override
     public void onResume() {
         super.onResume();
-        Log.d("HOME","onResume");
-        history = application.getHistory();
-        updateHistory();
+        getGames();
     }
+
+    /* TODO To be tested
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        application.getClient().disconnect();
+    }*/
 
     //FIXME temporary
     public void signOut(View v) {
-        v.setEnabled(false); //prevent another click
-        GoogleApiClient client = application.getClient();
-        Games.signOut(client);
-        client.disconnect();
+        if (!signOutClicked) {
+            signOutClicked = true;
+            GoogleApiClient client = application.getClient();
+            Games.signOut(client);
+            client.disconnect();
 
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-        SharedPreferences.Editor editor = sharedPref.edit();
-        editor.putBoolean(getString(R.string.signed_in), false);
-        editor.apply();
+            SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+            SharedPreferences.Editor editor = sharedPref.edit();
+            editor.putBoolean(getString(R.string.signed_in), false);
+            editor.apply();
+
+            startActivity(new Intent(this, SignInActivity.class));
+        }
     }
 
     @Override
-    public void onLoadFinished(Loader<Snapshot> loader, Snapshot data) {
-        snapshot = data;
-        updatePendingDuels();
+    protected void onLoadFinished(boolean success) {
+        if (success) {
+            updatePendingDuels();
+        } else {
+            errorToast(callError);
+        }
     }
 }

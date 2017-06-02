@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.Set;
 
 import butterknife.BindString;
+import me.leolin.shortcutbadger.ShortcutBadger;
 import rogueone.quizfight.QuizFightApplication;
 import rogueone.quizfight.R;
 import rogueone.quizfight.SignInActivity;
@@ -46,6 +47,12 @@ import static rogueone.quizfight.NotificationFactory.getTargetActivity;
 public class MessagingService extends FirebaseMessagingService {
     private static final String TITLE = "title";
     private static final String MESSAGE = "message";
+
+    private static int notificationCount = 0;
+
+    public static void resetNotificationCount() {
+        notificationCount = 0;
+    }
 
     /**
      * If the message contains a title and a message show the proper notification.
@@ -68,6 +75,7 @@ public class MessagingService extends FirebaseMessagingService {
      * @param body FCM body received
      */
     private void sendNotification(@NonNull Map<String, String> body) {
+        notificationCount++;
         String stringID = body.get("id");
         int id = (stringID != null) ? Integer.parseInt(stringID) : 0;
         Intent intent = new Intent(
@@ -76,7 +84,6 @@ public class MessagingService extends FirebaseMessagingService {
                     ? SignInActivity.class
                     : getTargetActivity(id)*/
         );
-        // TODO Add Bridge for showing notification in launcher
         populateIntent(body, intent); // add every field in the notification to the Intent
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, id, intent,
@@ -91,6 +98,8 @@ public class MessagingService extends FirebaseMessagingService {
                 .setSound(defaultSoundUri)
                 .setContentIntent(pendingIntent)
                 .setSmallIcon(R.mipmap.ic_launcher); //FIXME LOGO!!
+
+        ShortcutBadger.applyCount(getApplicationContext(), notificationCount);
 
         NotificationManager notificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);

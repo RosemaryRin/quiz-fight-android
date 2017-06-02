@@ -47,7 +47,7 @@ public class SavedGames {
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
-
+            e.printStackTrace();
         } finally {
             try {
                 if (in != null) {
@@ -74,7 +74,7 @@ public class SavedGames {
             out.flush();
             data = bos.toByteArray();
         } catch (IOException ex) {
-
+            ex.printStackTrace();
         } finally {
             try {
                 bos.close();

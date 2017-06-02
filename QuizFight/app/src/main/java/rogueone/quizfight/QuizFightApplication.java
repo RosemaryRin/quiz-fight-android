@@ -19,7 +19,6 @@ import rogueone.quizfight.models.History;
 public class QuizFightApplication extends Application {
 
     private GoogleApiClient games;
-    private History history;
 
     @Override
     public void onCreate() {
@@ -32,13 +31,5 @@ public class QuizFightApplication extends Application {
 
     public GoogleApiClient getClient() {
         return games;
-    }
-
-    public void setHistory(@NonNull History history) {
-        this.history = history;
-    }
-
-    public History getHistory() {
-        return history;
     }
 }

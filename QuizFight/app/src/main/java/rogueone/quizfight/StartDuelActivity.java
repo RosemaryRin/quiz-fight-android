@@ -27,11 +27,12 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
+import butterknife.BindString;
+import butterknife.ButterKnife;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import rogueone.quizfight.models.Duel;
-import rogueone.quizfight.models.History;
 import rogueone.quizfight.rest.api.NewDuel;
 import rogueone.quizfight.rest.pojo.RESTDuel;
 import rogueone.quizfight.rest.pojo.Round;
@@ -55,12 +56,14 @@ public class StartDuelActivity extends SavedGamesActivity {
     private ViewPager mViewPager;
 
     private QuizFightApplication application;
-    private Snapshot snapshot;
+
+    @BindString(R.string.unable_to_start_duel) String duelError;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start_duel);
+        ButterKnife.bind(this);
 
         application = (QuizFightApplication)getApplication();
         getGames();
@@ -92,12 +95,16 @@ public class StartDuelActivity extends SavedGamesActivity {
                 )).call(new Callback<Round>() {
                     @Override
                     public void onResponse(Call<Round> call, Response<Round> response) {
-                        startDuel(response.body());
+                        if (response.isSuccessful()) {
+                            startDuel(response.body());
+                        } else {
+                            errorToast(duelError);
+                        }
                     }
 
                     @Override
                     public void onFailure(Call<Round> call, Throwable t) {
-                        Toast.makeText(StartDuelActivity.this, getString(R.string.unable_to_start_duel), Toast.LENGTH_LONG).show();
+                        errorToast(duelError);
                     }
                 });
             }
@@ -113,13 +120,9 @@ public class StartDuelActivity extends SavedGamesActivity {
     }
 
     private void startDuel(@NonNull Round round) {
-        // Add the new duel to the user's history
-        History history = application.getHistory();
-
         Duel newDuel = new Duel(round.getDuelID(), round.getOpponent());
         history.addDuel(newDuel);
         SavedGames.writeSnapshot(snapshot, history, "", application.getClient());
-        application.setHistory(history);
 
         // Begin with the first round
         Intent intent = new Intent(StartDuelActivity.this, DuelActivity.class);
@@ -129,9 +132,12 @@ public class StartDuelActivity extends SavedGamesActivity {
     }
 
     @Override
-    public void onLoadFinished(Loader<Snapshot> loader, Snapshot data) {
-        snapshot = data;
-        setupUI();
+    protected void onLoadFinished(boolean success) {
+        if (success) {
+            setupUI();
+        } else {
+            errorToast(duelError);
+        }
     }
 
     /**

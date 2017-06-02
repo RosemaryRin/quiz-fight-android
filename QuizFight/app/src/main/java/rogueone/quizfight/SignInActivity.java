@@ -1,20 +1,20 @@
 package rogueone.quizfight;
 
+import butterknife.BindString;
 import butterknife.ButterKnife;
+import me.leolin.shortcutbadger.ShortcutBadger;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import rogueone.quizfight.models.BackgroundDuel;
 import rogueone.quizfight.models.Duel;
 import rogueone.quizfight.models.History;
 import rogueone.quizfight.models.Question;
-import rogueone.quizfight.models.Quiz;
-import rogueone.quizfight.models.RoundCompleted;
 import rogueone.quizfight.rest.api.AddToken;
 import rogueone.quizfight.rest.api.GetProgress;
 import rogueone.quizfight.rest.pojo.PendingDuels;
 import rogueone.quizfight.rest.pojo.User;
+import rogueone.quizfight.services.MessagingService;
 import rogueone.quizfight.utils.SavedGames;
 
 import android.app.LoaderManager;
@@ -28,7 +28,6 @@ import android.provider.Settings.Secure;
 import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.View;
-import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
@@ -37,18 +36,14 @@ import com.google.android.gms.drive.Drive;
 import com.google.android.gms.games.Games;
 import com.google.android.gms.games.snapshot.Snapshot;
 import com.google.firebase.iid.FirebaseInstanceId;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-
-import java.io.IOException;
-import java.lang.reflect.Type;
-import java.util.List;
 
 import static rogueone.quizfight.NotificationFactory.getTargetActivity;
-import static rogueone.quizfight.utils.SavedGames.byteToHistory;
 
 /**
- * Created by mdipirro on 19/05/17.
+ * This class performs Google Games sign in. It sends the user's token to the server after a
+ * successful sign in, loads pending duels and starts HomeActivity after the loading.
+ *
+ * @author Matteo Di Pirro
  */
 
 public class SignInActivity extends SavedGamesActivity implements
@@ -58,6 +53,9 @@ public class SignInActivity extends SavedGamesActivity implements
     private static final int RESOLUTION = 2404;
 
     private GoogleApiClient client;
+
+    @BindString(R.string.unable_to_restore_saved_games) String savedGamesError;
+    @BindString(R.string.unable_to_connect) String connectionError;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,6 +82,9 @@ public class SignInActivity extends SavedGamesActivity implements
                 signIn();
             }
         });
+
+        MessagingService.resetNotificationCount();
+        ShortcutBadger.applyCount(this, 0);
     }
 
     private void signIn() {
@@ -106,7 +107,7 @@ public class SignInActivity extends SavedGamesActivity implements
         if (requestCode == RESOLUTION && resultCode == RESULT_OK){
             client.connect();
         }else{
-            errorToast(getApplicationContext().getString(R.string.unable_to_connect));
+            errorToast(connectionError);
         }
     }
 
@@ -150,132 +151,48 @@ public class SignInActivity extends SavedGamesActivity implements
     }
 
     @Override
-    public void onLoadFinished(Loader<Snapshot> loader, Snapshot snapshot) {
-        if (snapshot != null) {
-            QuizFightApplication application = (QuizFightApplication)getApplication();
-            // Read the byte content of the saved game.
-            try {
-                History history = byteToHistory(snapshot.getSnapshotContents().readFully());
-                updatePendingDuels(application, history, snapshot);
-                //application.setHistory(history);
-                //SavedGames.writeSnapshot(snapshot, new History(), "", client);
-                /*addPendingDuelsIfExist(history);
-                addCompletedRoundScores(history);
-                SavedGames.writeSnapshot(snapshot, history, "", client);
-                application.setHistory(history);*/
-
-                //startHomeActivity();
-            } catch (IOException e) {
-                errorToast(getApplicationContext().getString(R.string.unable_to_restore_saved_games));
-            }
+    protected void onLoadFinished(boolean success) {
+        if (success) {
+            updatePendingDuels();
+            //application.setHistory(history);
+            //SavedGames.writeSnapshot(snapshot, new History(), "", client);
+            /*addPendingDuelsIfExist(history);
+            addCompletedRoundScores(history);
+            SavedGames.writeSnapshot(snapshot, history, "", client);
+            application.setHistory(history);*/
         } else {
-            errorToast(getApplicationContext().getString(R.string.unable_to_restore_saved_games));
+            errorToast(savedGamesError);
         }
     }
 
-    private void errorToast(String message) {
-        Toast.makeText(this, message, Toast.LENGTH_LONG).show();
-    }
-
-    private void updatePendingDuels(final QuizFightApplication application, final History history,
-                                    final Snapshot snapshot) {
-        String duelIDs = "";
-        for (Duel duel : history.getInProgressDuels()) {
-            duelIDs += duel.getDuelID() + ",";
-        }
-        duelIDs = (duelIDs.length() - 1 > 0) ? duelIDs.substring(0, duelIDs.length() - 1) : "a";
+    private void updatePendingDuels() {
+        final QuizFightApplication application = (QuizFightApplication)getApplication();
         new GetProgress(
                 Games.Players.getCurrentPlayer(application.getClient()).getDisplayName(),
-                duelIDs
+                "dummy" // a dummy string just to fill in the parameter
         ).call(new Callback<PendingDuels>() {
             @Override
             public void onResponse(Call<PendingDuels> call, Response<PendingDuels> response) {
                 if (response.isSuccessful()) {
                     for (PendingDuels.Duel pendingDuel : response.body().getPendingDuels()) {
-                        Duel duel = history.getDuelByID(pendingDuel.getDuelID());
-                        if (duel != null) { //existing duel
-                            int index = 0, currentQuizIndex = duel.getQuizzes().size() - 1;
-                            Log.d("PENDING", duel.getCurrentQuiz().getQuestions().size() + "");
-                            if (currentQuizIndex < pendingDuel.getAnswers().length &&
-                                    index < pendingDuel.getAnswers()[currentQuizIndex].length) {
-                                for (Question question : duel.getCurrentQuiz().getQuestions()) {
-                                    question.setOpponentAnswer(pendingDuel.getAnswers()[currentQuizIndex][index++]);
-                                }
-                                if (duel.getQuizzes().size() == 3) {
-                                    duel.getCurrentQuiz().complete();
-                                }
-                                history.setDuelByID(duel);
-                            }
-                        } else { // new duel
+                        if (history.getDuelByID(pendingDuel.getDuelID()) == null) {
                             history.addDuel(new Duel(pendingDuel.getDuelID(), pendingDuel.getOpponent()));
                         }
                     }
-                    application.setHistory(history);
                     SavedGames.writeSnapshot(snapshot, history, "", application.getClient());
                     startHomeActivity();
                 } else {
-                    errorToast(getApplicationContext().getString(R.string.unable_to_restore_saved_games));
+                    errorToast(savedGamesError);
                 }
             }
 
             @Override
             public void onFailure(Call<PendingDuels> call, Throwable t) {
                 t.printStackTrace();
-                errorToast(getApplicationContext().getString(R.string.unable_to_restore_saved_games));
+                errorToast(savedGamesError);
             }
         });
     }
-
-    /*private void addPendingDuelsIfExist(History history) {
-        if (history == null) {
-            history = new History();
-        }
-        String pendingString = getString(R.string.pending_duels);
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-        if (sharedPref.contains(pendingString)) {
-            String jsonPendingDuels = sharedPref.getString(pendingString, "");
-            if (!jsonPendingDuels.equals("")) {
-                Type listType = new TypeToken<List<BackgroundDuel>>(){}.getType();
-                List<BackgroundDuel> duels = new Gson().fromJson(jsonPendingDuels, listType);
-                for (BackgroundDuel duel : duels) {
-                    // Add every pending duel to history
-                    history.addDuel(new Duel(duel.getDuelID(), duel.getOpponent()));
-                }
-                SharedPreferences.Editor editor = sharedPref.edit();
-                editor.remove(pendingString);
-                editor.apply();
-            }
-        }
-    }
-
-    private void addCompletedRoundScores(History history) {
-        String roundsString = getString(R.string.new_rounds);
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-        if (sharedPref.contains(roundsString)) {
-            String jsonRoundCompleted = sharedPref.getString(roundsString, "");
-            if (!jsonRoundCompleted.equals("")) {
-                Type listType = new TypeToken<List<RoundCompleted>>(){}.getType();
-                List<RoundCompleted> rounds = new Gson().fromJson(jsonRoundCompleted, listType);
-                for (RoundCompleted round : rounds) {
-                    // Add every new round to history
-                    int index = 0;
-                    Duel duel = history.getDuelByID(round.getDuelID());
-                    Log.d("ROUNDSS", duel +"");
-                    if (duel != null) {
-                        for(rogueone.quizfight.models.Question question : duel.getCurrentQuiz().getQuestions()) {
-                            question.setOpponentAnswer(round.getAnswers()[index++]);
-                        }
-                        duel.getCurrentQuiz().complete();
-                        Log.d("ROUNDS", duel.isCompleted() + "");
-                        history.setDuelByID(duel);
-                    }
-                }
-                SharedPreferences.Editor editor = sharedPref.edit();
-                editor.remove(roundsString);
-                editor.apply();
-            }
-        }
-    }*/
 
     @Override
     public void onLoaderReset(Loader<Snapshot> loader) {}
@@ -303,6 +220,10 @@ public class SignInActivity extends SavedGamesActivity implements
         }
     }
 
+    /**
+     * Save a successful sign in in the <tt>SharedPreference</tt>s so that a silent sign in can be
+     * performed if the user reopen the application without signing out.
+     */
     private void saveSuccessfulSignIn() {
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
         SharedPreferences.Editor editor = sharedPref.edit();

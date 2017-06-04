@@ -44,19 +44,29 @@ public class FriendListAdapter extends ArrayAdapter<JSONObject> {
         return friends.length();
     }
 
+    public String getFacebookId(int position) {
+        String facebookId = "";
+        try {
+            JSONObject friend = friends.getJSONObject(position);
+            facebookId = friend.getString("id");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return facebookId;
+    }
+
     @Override
     public @NonNull View getView(final int position, @Nullable View convertView, @NonNull ViewGroup parent) {
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View rowView = inflater.inflate(R.layout.friend_row, parent, false);
-
-        ImageView iconView = (ImageView) rowView.findViewById(R.id.imageview_friendrow_icon);
-
-        TextView nameView = (TextView) rowView.findViewById(R.id.textview_friendrow_name);
+        final View rowView = inflater.inflate(R.layout.friend_row, parent, false);
+        final ImageView iconView = (ImageView) rowView.findViewById(R.id.imageview_friendrow_icon);
+        final TextView nameView = (TextView) rowView.findViewById(R.id.textview_friendrow_name);
+        String friend_id;
 
         try {
             JSONObject data = friends.getJSONObject(position);
             String friend_name = data.getString("name");
-            String friend_id = data.getString("id");
+            friend_id = data.getString("id");
             nameView.setText(friend_name);
             new PictureDownloadTask(iconView).execute(friend_id);
         } catch (JSONException e) {

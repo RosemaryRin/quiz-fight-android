@@ -13,6 +13,14 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.facebook.AccessToken;
+import com.facebook.AccessTokenTracker;
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
+import com.facebook.Profile;
+import com.facebook.login.LoginResult;
+import com.facebook.login.widget.LoginButton;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.images.ImageManager;
 import com.google.android.gms.games.Games;
@@ -21,21 +29,31 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 import rogueone.quizfight.adapters.DuelSummaryAdapter;
 import rogueone.quizfight.models.Duel;
 import rogueone.quizfight.models.History;
+import rogueone.quizfight.rest.api.sendFacebookId;
+import rogueone.quizfight.rest.pojo.User;
 
 public class HomeActivity extends AppCompatActivity {
 
     private static final int DUELS_SHOWN = 5;
+    private static final String TAG = "HomeActivity";
 
     private History history;
     private QuizFightApplication application;
+    private CallbackManager callbackManager;
+    private AccessToken accessToken;
+    private AccessTokenTracker accessTokenTracker;
 
     @BindView(R.id.textview_home_username) TextView username;
     @BindView(R.id.listview_home_lastduels) ListView oldDuels_listview;
     @BindView(R.id.imageview_profile) ImageView userProfileImage;
     @BindView(R.id.listview_home_duels_in_progress) ListView duelsInProgress_listview;
+    @BindView(R.id.login_button) LoginButton loginButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +63,48 @@ public class HomeActivity extends AppCompatActivity {
 
         application = (QuizFightApplication)getApplicationContext();
         history = application.getHistory();
+        loginButton.setReadPermissions("email", "user_friends");
+
+        callbackManager = CallbackManager.Factory.create();
+
+        loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
+            @Override
+            public void onSuccess(LoginResult loginResult) {
+                Log.d(TAG, "Facebook login request success");
+                accessToken = AccessToken.getCurrentAccessToken();
+                new sendFacebookId(
+                        Games.Players.getCurrentPlayer(application.getClient()).getDisplayName(),
+                        Profile.getCurrentProfile().getId())
+                        .call(new Callback<User>() {
+                            @Override
+                            public void onResponse(Call<User> call, Response<User> response) {
+                                Log.d(TAG, response.message());
+                            }
+
+                            @Override
+                            public void onFailure(Call<User> call, Throwable t) {
+                                t.printStackTrace();
+                            }
+                        });
+            }
+
+            @Override
+            public void onCancel() {
+                Log.d(TAG, "Facebook login request Canceled");
+            }
+
+            @Override
+            public void onError(FacebookException error) {
+                Log.d(TAG, "Facebook login request Error");
+            }
+        });
+
+        accessTokenTracker = new AccessTokenTracker() {
+            @Override
+            protected void onCurrentAccessTokenChanged(AccessToken oldAccessToken, AccessToken currentAccessToken) {
+                accessToken = currentAccessToken;
+            }
+        };
 
         // setting username from login
         username.setText(Games.Players.getCurrentPlayer(
@@ -76,6 +136,12 @@ public class HomeActivity extends AppCompatActivity {
         });
 
         updateHistory();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        callbackManager.onActivityResult(requestCode, resultCode, data);
     }
 
     private void updateHistory() {

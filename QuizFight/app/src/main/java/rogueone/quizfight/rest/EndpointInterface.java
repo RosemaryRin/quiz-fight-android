@@ -37,4 +37,14 @@ public interface EndpointInterface {
     @Headers({"Content-Type: application/json"})
     @PUT("result")
     Call<ResponseBody> sendRoundScore(@Body RoundResult result);
+
+    @Headers({"Content-Type: application/json"})
+    @PUT("users/{googleUsername}/{facebookId}")
+    Call<User> sendFacebookId(@Path("googleUsername") String googleUsername,
+                                      @Path("facebookId") String facebookId);
+
+    @Headers({"Content-Type: application/json"})
+    @GET("users/{facebookId}")
+    Call<User> getGoogleUsername(@Path("facebookId") String facebookId);
+
 }

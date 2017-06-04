@@ -16,6 +16,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -33,25 +34,20 @@ import retrofit2.Response;
 import rogueone.quizfight.models.Duel;
 import rogueone.quizfight.models.History;
 import rogueone.quizfight.rest.api.NewDuel;
+import rogueone.quizfight.rest.api.getGoogleUsername;
 import rogueone.quizfight.rest.pojo.RESTDuel;
 import rogueone.quizfight.rest.pojo.Round;
+import rogueone.quizfight.rest.pojo.User;
 import rogueone.quizfight.utils.SavedGames;
 
-import com.facebook.CallbackManager;
-import com.facebook.FacebookCallback;
-import com.facebook.FacebookException;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
 import com.facebook.HttpMethod;
-import com.facebook.login.LoginResult;
-import com.facebook.login.widget.LoginButton;
 import com.facebook.AccessToken;
-import com.facebook.AccessTokenTracker;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 
-import butterknife.BindView;
 import butterknife.ButterKnife;
 import rogueone.quizfight.adapters.FriendListAdapter;
 
@@ -73,13 +69,10 @@ public class StartDuelActivity extends SavedGamesActivity {
     private ViewPager mViewPager;
 
     private QuizFightApplication application;
-    private CallbackManager callbackManager;
     private Snapshot snapshot;
     private final static String TAG = "StartDuelActivity";
 
-    @BindView(R.id.login_button) LoginButton loginButton;
-    private AccessToken accessToken;
-    private AccessTokenTracker accessTokenTracker;
+    private ListView listView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,34 +85,6 @@ public class StartDuelActivity extends SavedGamesActivity {
     }
 
     private void setupUI() {
-
-        loginButton.setReadPermissions("email", "user_friends");
-        callbackManager = CallbackManager.Factory.create();
-
-        loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
-            @Override
-            public void onSuccess(LoginResult loginResult) {
-                Log.d(TAG, "Facebook login request success");
-                accessToken = AccessToken.getCurrentAccessToken();
-            }
-
-            @Override
-            public void onCancel() {
-                Log.d(TAG, "Facebook login request Canceled");
-            }
-
-            @Override
-            public void onError(FacebookException error) {
-                Log.d(TAG, "Facebook login request Error");
-            }
-        });
-
-        accessTokenTracker = new AccessTokenTracker() {
-            @Override
-            protected void onCurrentAccessTokenChanged(AccessToken oldAccessToken, AccessToken currentAccessToken) {
-                accessToken = currentAccessToken;
-            }
-        };
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_startduel_toolbar);
         setSupportActionBar(toolbar);
@@ -138,23 +103,54 @@ public class StartDuelActivity extends SavedGamesActivity {
         findViewById(R.id.button_random_player).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String[] topics = getRandomTopics().toArray(new String[3]); // 3 rounds
-                new NewDuel(new RESTDuel(
-                        Games.Players.getCurrentPlayer(application.getClient()).getDisplayName(),
-                        "elena.pullin95@gmail.com", //FIXME to be removed
-                        Games.Players.getCurrentPlayer(application.getClient()).getDisplayName(),
-                        topics
-                )).call(new Callback<Round>() {
+                createDuel("elena.pullin95@gmail.com"); //FIXME to be removed
+            }
+        });
+
+        listView = (ListView) findViewById(R.id.listview_startduel_list);
+
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Log.d("LIST SIZE", String.valueOf(listView.getCount()));
+                FriendListAdapter friendListAdapter = (FriendListAdapter) listView.getAdapter();
+                String facebookId = friendListAdapter.getFacebookId(position);
+                Log.d("FACEBOOK ID", facebookId);
+                new getGoogleUsername(facebookId).call(new Callback<User>() {
                     @Override
-                    public void onResponse(Call<Round> call, Response<Round> response) {
-                        startDuel(response.body());
+                    public void onResponse(Call<User> call, Response<User> response) {
+                        if (response != null) {
+                            String username = response.body().getUsername();
+                            createDuel(username);
+                        }
                     }
 
                     @Override
-                    public void onFailure(Call<Round> call, Throwable t) {
+                    public void onFailure(Call<User> call, Throwable t) {
                         Toast.makeText(StartDuelActivity.this, getString(R.string.unable_to_start_duel), Toast.LENGTH_LONG).show();
                     }
                 });
+            }
+        });
+    }
+
+    public void createDuel(String opponentUsername) {
+        String[] topics = getRandomTopics().toArray(new String[3]); // 3 rounds
+        new NewDuel(new RESTDuel(
+                Games.Players.getCurrentPlayer(application.getClient()).getDisplayName(),
+                opponentUsername,
+                Games.Players.getCurrentPlayer(application.getClient()).getDisplayName(),
+                topics
+        )).call(new Callback<Round>() {
+            @Override
+            public void onResponse(Call<Round> call, Response<Round> response) {
+                startDuel(response.body());
+            }
+
+            @Override
+            public void onFailure(Call<Round> call, Throwable t) {
+                Toast.makeText(StartDuelActivity.this, getString(R.string.unable_to_start_duel), Toast.LENGTH_LONG).show();
             }
         });
     }
@@ -189,12 +185,6 @@ public class StartDuelActivity extends SavedGamesActivity {
         setupUI();
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        callbackManager.onActivityResult(requestCode, resultCode, data);
-    }
-
     /**
      * A fragment containing a list of possible opponents.
      */
@@ -204,6 +194,7 @@ public class StartDuelActivity extends SavedGamesActivity {
          * fragment.
          */
         private static final String ARG_SECTION_NUMBER = "section_number";
+        private ListView listView;
 
         public StartDuelFragment() {}
 
@@ -268,7 +259,7 @@ public class StartDuelActivity extends SavedGamesActivity {
             return rootView;
         }
 
-        public void friendsNamesRequest(final View rootView) {
+        private void friendsNamesRequest(final View rootView) {
             new GraphRequest(
                     AccessToken.getCurrentAccessToken(),
                     "/me/friends",
@@ -292,7 +283,7 @@ public class StartDuelActivity extends SavedGamesActivity {
         }
 
         private void setFriendsAdapter(JSONArray friends, View rootView) {
-            final ListView listView = (ListView) rootView
+            listView = (ListView) rootView
                     .findViewById(R.id.listview_startduel_list);
 
             rootView.findViewById(R.id.textview_startduel_nouserstoshow)
@@ -302,9 +293,9 @@ public class StartDuelActivity extends SavedGamesActivity {
 
             final FriendListAdapter listAdapter =
                     new FriendListAdapter(getContext(), friends);
+
             listView.setAdapter(listAdapter);
         }
-
     }
 
     /**

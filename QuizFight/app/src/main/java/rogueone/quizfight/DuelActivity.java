@@ -81,7 +81,6 @@ public class DuelActivity extends SavedGamesActivity {
     private Question currentQuestion;
     private int count;
     private int score;
-    private History history;
     private Duel duel;
     private boolean[] answers;
 
@@ -110,7 +109,6 @@ public class DuelActivity extends SavedGamesActivity {
         ButterKnife.bind(this);
 
         application = (QuizFightApplication)getApplication();
-        history = application.getHistory();
         getGames();
 
         count = 0; score = 0;
@@ -156,8 +154,8 @@ public class DuelActivity extends SavedGamesActivity {
     private void initDuel() {
         // The round has been retrieved, do some housekeeping
         duel = history.getDuelByID(round.getDuelID());
-        if (duel.getQuizzes().size() < 3 && duel.getCurrentQuiz().isCompleted()) {
-            duel.addQuiz(new Quiz()); // Add a new duel if it's a new round
+        if (duel.getCurrentQuiz().isCompleted() && duel.getQuizzes().size() < 3) {
+            duel.addQuiz(new Quiz()); // Add a new quiz if there's a new round
         }
 
         if (duel != null) { // Everything ok, init the UI
@@ -188,19 +186,13 @@ public class DuelActivity extends SavedGamesActivity {
     }
 
     /**
-     * Show an error <tt>Toast</tt> if something went wrong
-     * @param message The message to bhe showed
-     */
-    private void errorToast(@NonNull String message) {
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
-    }
-
-    /**
      * Handle a new answer saving its correctness and updating the UI.
      * @param answer The answer. It may be 0, if the timer expired.
      */
     private void answer(int answer) {
-        timer.cancel(); // Stop the timer
+        if (timer != null) {
+            timer.cancel(); // Stop the timer
+        }
         if (answer == currentQuestion.getAnswer()) {
             // TODO something green
 
@@ -277,6 +269,11 @@ public class DuelActivity extends SavedGamesActivity {
             public void onFailure(Call<ResponseBody> call, Throwable t) {}
         });
         // Write the snapshot for updating the history
+        // < 3 is needed because otherwise the duel would appear as complete. @see HomeActivity.updatePendingDuels
+        // There the duel is marked as complete if the opponent completed it as well.
+        if (duel.getQuizzes().size() < 3) {
+            duel.getCurrentQuiz().complete();
+        }
         history.setDuelByID(duel);
         SavedGames.writeSnapshot(snapshot, history, "", application.getClient());
 
@@ -348,7 +345,9 @@ public class DuelActivity extends SavedGamesActivity {
     @Override
     public void onPause() {
         super.onPause();
-        dialog.dismiss(); // dismiss the dialog fo avoiding UI leaked exception
+        if (dialog != null) {
+            dialog.dismiss(); // dismiss the dialog fo avoiding UI leaked exception
+        }
     }
 
     @Override
@@ -358,14 +357,15 @@ public class DuelActivity extends SavedGamesActivity {
     }
 
     /**
-     * Loading finished, save the loaded <tt>Snapshot</tt>. It calls <tt>setup</tt> for beginning
-     * the duel.
-     * @param loader The finished loader
-     * @param data The loaded data
+     * Loading finished, call <tt>setup</tt> for beginning the duel.
+     * @param success true iff the Snapshot load succeeded.
      */
     @Override
-    public void onLoadFinished(Loader<Snapshot> loader, Snapshot data) {
-        snapshot = data;
-        setup();
+    protected void onLoadFinished(boolean success) {
+        if (success) {
+            setup();
+        } else {
+            errorToast(errorRound);
+        }
     }
 }

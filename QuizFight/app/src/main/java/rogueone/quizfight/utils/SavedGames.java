@@ -22,10 +22,21 @@ import java.io.ObjectOutputStream;
 import rogueone.quizfight.models.History;
 
 /**
- * Created by mdipirro on 25/05/17.
+ * This class has basically the responsibility to serialize and deserialize a byte[] (corresponding
+ * to a raw <tt>History</tt> object) into a structured History object. It also handles the entire
+ * write process to a Google Games Snapshot.
+ *
+ * @author Matteo Di Pirro
+ * @see java.io.Serializable
+ * @see rogueone.quizfight.loaders.SavedGamesLoader
  */
 
 public class SavedGames {
+    /**
+     * Given a byte[] get a structured History object.
+     * @param data The raw data
+     * @return A structured History object.
+     */
     public static History byteToHistory(byte[] data) {
         ByteArrayInputStream bis = new ByteArrayInputStream(data);
         ObjectInput in = null;
@@ -36,7 +47,7 @@ public class SavedGames {
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
-//            Log.d("HISTORY exc", e.getMessage());
+            e.printStackTrace();
         } finally {
             try {
                 if (in != null) {
@@ -45,10 +56,14 @@ public class SavedGames {
             } catch (IOException ex) {
             }
         }
-        Log.d("DUELS", history + "");
         return history;
     }
 
+    /**
+     * Given a structured History object get a raw byte[].
+     * @param history The history
+     * @return Raw data
+     */
     public static byte[] historyToByte(@NonNull History history) {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         ObjectOutput out = null;
@@ -59,7 +74,7 @@ public class SavedGames {
             out.flush();
             data = bos.toByteArray();
         } catch (IOException ex) {
-
+            ex.printStackTrace();
         } finally {
             try {
                 bos.close();
@@ -70,13 +85,20 @@ public class SavedGames {
         return data;
     }
 
+    /**
+     * Write to the Snapshot.
+     * @param snapshot The snapshot
+     * @param history The history to be wrote.
+     * @param desc The saving description.
+     * @param client The GoogleApiClient representing the logged user.
+     * @return The result.
+     */
     public static PendingResult<Snapshots.CommitSnapshotResult> writeSnapshot(
             Snapshot snapshot, History history, String desc, GoogleApiClient client
     ) { //TODO Bitmap screenshot?
 
         // Set the data payload for the snapshot
         SnapshotContents contents = snapshot.getSnapshotContents();
-        Log.d("DUELSS", contents + "");
         if (contents != null) {
             contents.writeBytes(historyToByte(history));
             // Create the change operation

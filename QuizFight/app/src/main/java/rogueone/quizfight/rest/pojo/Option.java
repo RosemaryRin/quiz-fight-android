@@ -4,7 +4,12 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 /**
- * Created by mdipirro on 27/05/17.
+ * This class represents an Option (i.e. a possible answer to a question). Every <tt>Option</tt> has
+ * an ID (from 1 to 4) and a string representing the actual answer. The class implements Parcelable
+ * to be passed in a Bundle.
+ *
+ * @author Matteo Di Pirro
+ * @see Parcelable
  */
 
 public class Option implements Parcelable {

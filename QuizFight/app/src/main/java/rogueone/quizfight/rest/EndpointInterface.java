@@ -8,10 +8,10 @@ import retrofit2.http.Headers;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
 import retrofit2.http.Path;
+import rogueone.quizfight.rest.pojo.PendingDuels;
 import rogueone.quizfight.rest.pojo.RESTDuel;
 import rogueone.quizfight.rest.pojo.Round;
 import rogueone.quizfight.rest.pojo.RoundResult;
-import rogueone.quizfight.rest.pojo.Scores;
 import rogueone.quizfight.rest.pojo.User;
 
 /**
@@ -47,4 +47,6 @@ public interface EndpointInterface {
     @GET("users/{facebookId}")
     Call<User> getGoogleUsername(@Path("facebookId") String facebookId);
 
+    @GET("result/{playerID}/{ids}")
+    Call<PendingDuels> getProgress(@Path("playerID") String player, @Path("ids") String duelIDs);
 }

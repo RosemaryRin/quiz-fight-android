@@ -1,7 +1,6 @@
 package rogueone.quizfight;
 
 import android.content.Intent;
-import android.content.Loader;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
 import android.support.v7.widget.Toolbar;
@@ -18,7 +17,6 @@ import android.view.ViewGroup;
 
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import com.google.android.gms.games.Games;
 import com.google.android.gms.games.snapshot.Snapshot;
@@ -28,11 +26,12 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
+import butterknife.BindString;
+import butterknife.ButterKnife;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import rogueone.quizfight.models.Duel;
-import rogueone.quizfight.models.History;
 import rogueone.quizfight.rest.api.NewDuel;
 import rogueone.quizfight.rest.api.getGoogleUsername;
 import rogueone.quizfight.rest.pojo.RESTDuel;
@@ -73,6 +72,8 @@ public class StartDuelActivity extends SavedGamesActivity {
     private final static String TAG = "StartDuelActivity";
 
     private ListView listView;
+
+    @BindString(R.string.unable_to_start_duel) String duelError;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -128,7 +129,7 @@ public class StartDuelActivity extends SavedGamesActivity {
 
                     @Override
                     public void onFailure(Call<User> call, Throwable t) {
-                        Toast.makeText(StartDuelActivity.this, getString(R.string.unable_to_start_duel), Toast.LENGTH_LONG).show();
+                        errorToast(duelError);
                     }
                 });
             }
@@ -140,7 +141,6 @@ public class StartDuelActivity extends SavedGamesActivity {
         new NewDuel(new RESTDuel(
                 Games.Players.getCurrentPlayer(application.getClient()).getDisplayName(),
                 opponentUsername,
-                Games.Players.getCurrentPlayer(application.getClient()).getDisplayName(),
                 topics
         )).call(new Callback<Round>() {
             @Override
@@ -150,7 +150,7 @@ public class StartDuelActivity extends SavedGamesActivity {
 
             @Override
             public void onFailure(Call<Round> call, Throwable t) {
-                Toast.makeText(StartDuelActivity.this, getString(R.string.unable_to_start_duel), Toast.LENGTH_LONG).show();
+                errorToast(duelError);
             }
         });
     }
@@ -164,13 +164,9 @@ public class StartDuelActivity extends SavedGamesActivity {
     }
 
     private void startDuel(@NonNull Round round) {
-        // Add the new duel to the user's history
-        History history = application.getHistory();
-
         Duel newDuel = new Duel(round.getDuelID(), round.getOpponent());
         history.addDuel(newDuel);
         SavedGames.writeSnapshot(snapshot, history, "", application.getClient());
-        application.setHistory(history);
 
         // Begin with the first round
         Intent intent = new Intent(StartDuelActivity.this, DuelActivity.class);
@@ -180,9 +176,12 @@ public class StartDuelActivity extends SavedGamesActivity {
     }
 
     @Override
-    public void onLoadFinished(Loader<Snapshot> loader, Snapshot data) {
-        snapshot = data;
-        setupUI();
+    protected void onLoadFinished(boolean success) {
+        if (success) {
+            setupUI();
+        } else {
+            errorToast(duelError);
+        }
     }
 
     /**

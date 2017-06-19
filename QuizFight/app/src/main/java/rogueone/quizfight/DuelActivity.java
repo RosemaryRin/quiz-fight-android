@@ -75,7 +75,6 @@ public class DuelActivity extends SavedGamesActivity {
     private static final int ALLOWED_TIME = 20000;
 
     private QuizFightApplication application;
-    private Snapshot snapshot; // Loaded at the beginning
 
     private Round round;
     private Question currentQuestion;
@@ -132,6 +131,7 @@ public class DuelActivity extends SavedGamesActivity {
             ).call(new Callback<Round>() {
                 @Override
                 public void onResponse(Call<Round> call, Response<Round> response) {
+                    Log.d("RESPONSE", response.message() + " " + response.code());
                     if (response.isSuccessful()) {
                         round = response.body();
                         initDuel();
@@ -142,6 +142,7 @@ public class DuelActivity extends SavedGamesActivity {
 
                 @Override
                 public void onFailure(Call<Round> call, Throwable t) {
+                    t.printStackTrace();
                     errorToast(errorRound);
                 }
             });
@@ -353,7 +354,9 @@ public class DuelActivity extends SavedGamesActivity {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        timer.cancel(); // stop the timer
+        if (timer != null) {
+            timer.cancel(); // stop the timer
+        }
     }
 
     /**

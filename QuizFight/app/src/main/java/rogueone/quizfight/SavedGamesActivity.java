@@ -62,7 +62,7 @@ public abstract class SavedGamesActivity extends AppCompatActivity implements
     @Override
     public void onLoadFinished(Loader<Snapshot> loader, Snapshot snapshot) {
         this.snapshot = snapshot;
-        if (snapshot != null) {
+        if (snapshot != null && snapshot.getSnapshotContents() != null) {
             try {
                 history = byteToHistory(snapshot.getSnapshotContents().readFully());
                 onLoadFinished(true);

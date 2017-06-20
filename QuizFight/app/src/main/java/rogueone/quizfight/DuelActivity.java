@@ -75,7 +75,6 @@ public class DuelActivity extends SavedGamesActivity {
     private static final int ALLOWED_TIME = 20000;
 
     private QuizFightApplication application;
-    private Snapshot snapshot; // Loaded at the beginning
 
     private Round round;
     private Question currentQuestion;

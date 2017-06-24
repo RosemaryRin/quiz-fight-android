@@ -99,6 +99,9 @@ public class DuelActivity extends SavedGamesActivity {
     @BindString(R.string.correct_answers_250) String answers250;
     @BindString(R.string.correct_answers_500) String answers500;
     @BindString(R.string.correct_answers_1000) String answers1000;
+    @BindString(R.string.score_15_points) String points15;
+    @BindString(R.string.score_30_points) String points30;
+    @BindString(R.string.score_45_points) String points45;
     @BindString(R.string.corrects_answers) String correctAnswers;
 
     @Override
@@ -274,6 +277,18 @@ public class DuelActivity extends SavedGamesActivity {
         // There the duel is marked as complete if the opponent completed it as well.
         if (duel.getQuizzes().size() < 3) {
             duel.getCurrentQuiz().complete();
+        } else { // Duel completed, let's check if an achievement may be updated
+            GoogleApiClient client = application.getClient();
+            if (score == 45) {
+                Games.Achievements.increment(client, points15, 1);
+                Games.Achievements.increment(client, points30, 1);
+                Games.Achievements.increment(client, points45, 1);
+            } else if (score >= 30) {
+                Games.Achievements.increment(client, points15, 1);
+                Games.Achievements.increment(client, points30, 1);
+            } else if (score >= 15) {
+                Games.Achievements.increment(client, points15, 1);
+            } // otherwise no achievements will be updated
         }
         history.setDuelByID(duel);
         SavedGames.writeSnapshot(snapshot, history, "", application.getClient());

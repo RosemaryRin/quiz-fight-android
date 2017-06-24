@@ -53,6 +53,11 @@ public class HomeActivity extends SavedGamesActivity {
     @BindView(R.id.listview_home_duels_in_progress) ListView duelsInProgress_listview;
 
     @BindString(R.string.unable_to_get_pending_duels) String callError;
+    @BindString(R.string.win_10_duels) String win10;
+    @BindString(R.string.win_50_duels) String win50;
+    @BindString(R.string.win_100_duels) String win100;
+    @BindString(R.string.win_200_duels) String win200;
+    @BindString(R.string.duels_won) String duelsWon;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -128,6 +133,12 @@ public class HomeActivity extends SavedGamesActivity {
                                 // If both the two players completed the duel, sets it as complete
                                 if (duel.getQuizzes().size() == 3) {
                                     duel.getCurrentQuiz().complete();
+                                    GoogleApiClient client = application.getClient();
+                                    Games.Achievements.increment(client, win10, 1);
+                                    Games.Achievements.increment(client, win50, 1);
+                                    Games.Achievements.increment(client, win100, 1);
+                                    Games.Achievements.increment(client, win200, 1);
+                                    Games.Events.increment(client, duelsWon, 1);
                                 }
                                 history.setDuelByID(duel);
                             }

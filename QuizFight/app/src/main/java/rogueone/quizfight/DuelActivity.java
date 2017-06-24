@@ -352,10 +352,18 @@ public class DuelActivity extends SavedGamesActivity {
     }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
+    public void onStop() {
+        super.onStop();
         if (timer != null) {
             timer.cancel(); // stop the timer
+        }
+        // Close the round as a surrender if the user hasn't answered every question
+        if (count < QUESTIONS_PER_ROUND) {
+            for (int i = 0; i < QUESTIONS_PER_ROUND; i++) {
+                answers[i] = false;
+            }
+            score = 0;
+            roundTerminated();
         }
     }
 

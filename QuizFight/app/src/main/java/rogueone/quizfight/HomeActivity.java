@@ -27,6 +27,7 @@ import rogueone.quizfight.adapters.DuelSummaryAdapter;
 import rogueone.quizfight.models.Duel;
 import rogueone.quizfight.models.History;
 import rogueone.quizfight.models.Question;
+import rogueone.quizfight.models.Score;
 import rogueone.quizfight.rest.api.GetProgress;
 import rogueone.quizfight.rest.pojo.PendingDuels;
 import rogueone.quizfight.utils.SavedGames;
@@ -134,11 +135,14 @@ public class HomeActivity extends SavedGamesActivity {
                                 if (duel.getQuizzes().size() == 3) {
                                     duel.getCurrentQuiz().complete();
                                     GoogleApiClient client = application.getClient();
-                                    Games.Achievements.increment(client, win10, 1);
-                                    Games.Achievements.increment(client, win50, 1);
-                                    Games.Achievements.increment(client, win100, 1);
-                                    Games.Achievements.increment(client, win200, 1);
-                                    Games.Events.increment(client, duelsWon, 1);
+                                    Score score = duel.getScore();
+                                    if (score.getPlayerScore() > score.getOpponentScore()) {
+                                        Games.Achievements.increment(client, win10, 1);
+                                        Games.Achievements.increment(client, win50, 1);
+                                        Games.Achievements.increment(client, win100, 1);
+                                        Games.Achievements.increment(client, win200, 1);
+                                        Games.Events.increment(client, duelsWon, 1);
+                                    }
                                 }
                                 history.setDuelByID(duel);
                             }

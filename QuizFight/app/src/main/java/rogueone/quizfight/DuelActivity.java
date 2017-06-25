@@ -103,6 +103,8 @@ public class DuelActivity extends SavedGamesActivity {
     @BindString(R.string.score_30_points) String points30;
     @BindString(R.string.score_45_points) String points45;
     @BindString(R.string.corrects_answers) String correctAnswers;
+    @BindString(R.string.rounds_played) String roundsPlayed;
+    @BindString(R.string.questions_answered) String questionsAnswered;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -156,6 +158,7 @@ public class DuelActivity extends SavedGamesActivity {
      * Actually begin a new round for the current duel.
      */
     private void initDuel() {
+        Games.Events.increment(application.getClient(), roundsPlayed, 1);
         // The round has been retrieved, do some housekeeping
         duel = history.getDuelByID(round.getDuelID());
         if (duel.getCurrentQuiz().isCompleted() && duel.getQuizzes().size() < 3) {
@@ -194,6 +197,8 @@ public class DuelActivity extends SavedGamesActivity {
      * @param answer The answer. It may be 0, if the timer expired.
      */
     private void answer(int answer) {
+        GoogleApiClient client = application.getClient();
+        Games.Events.increment(client, questionsAnswered, 1);
         if (timer != null) {
             timer.cancel(); // Stop the timer
         }
@@ -202,7 +207,6 @@ public class DuelActivity extends SavedGamesActivity {
 
             answers[count] = true;
             // Update achievements
-            GoogleApiClient client = application.getClient();
             Games.Achievements.increment(client, answers100, 1);
             Games.Achievements.increment(client, answers250, 1);
             Games.Achievements.increment(client, answers500, 1);

@@ -56,6 +56,7 @@ public class SignInActivity extends SavedGamesActivity implements
 
     @BindString(R.string.unable_to_restore_saved_games) String savedGamesError;
     @BindString(R.string.unable_to_connect) String connectionError;
+    @BindString(R.string.duels_played) String duelsPlayed;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -165,6 +166,10 @@ public class SignInActivity extends SavedGamesActivity implements
         }
     }
 
+    /**
+     * Add new duels data so that if the user taps on the notification she is able to play the first
+     * round.
+     */
     private void updatePendingDuels() {
         final QuizFightApplication application = (QuizFightApplication)getApplication();
         new GetProgress(
@@ -176,6 +181,7 @@ public class SignInActivity extends SavedGamesActivity implements
                 if (response.isSuccessful()) {
                     for (PendingDuels.Duel pendingDuel : response.body().getPendingDuels()) {
                         if (history.getDuelByID(pendingDuel.getDuelID()) == null) {
+                            Games.Events.increment(application.getClient(), duelsPlayed, 1);
                             history.addDuel(new Duel(pendingDuel.getDuelID(), pendingDuel.getOpponent()));
                         }
                     }

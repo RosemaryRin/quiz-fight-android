@@ -59,6 +59,8 @@ public class HomeActivity extends SavedGamesActivity {
     @BindString(R.string.win_100_duels) String win100;
     @BindString(R.string.win_200_duels) String win200;
     @BindString(R.string.duels_won) String duelsWon;
+    @BindString(R.string.rounds_won) String roundsWon;
+    @BindString(R.string.duels_played) String duelsPlayed;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -118,6 +120,7 @@ public class HomeActivity extends SavedGamesActivity {
             @Override
             public void onResponse(Call<PendingDuels> call, Response<PendingDuels> response) {
                 if (response.isSuccessful()) {
+                    GoogleApiClient client = application.getClient();
                     for (PendingDuels.Duel pendingDuel : response.body().getPendingDuels()) {
                         Duel duel = history.getDuelByID(pendingDuel.getDuelID());
                         if (duel != null) { //existing duel
@@ -131,10 +134,13 @@ public class HomeActivity extends SavedGamesActivity {
                                 for (Question question : duel.getCurrentQuiz().getQuestions()) {
                                     question.setOpponentAnswer(pendingDuel.getAnswers()[currentQuizIndex][index++]);
                                 }
-                                // If both the two players completed the duel, sets it as complete
+                                Score roundScore = duel.getCurrentQuiz().getScore();
+                                if (roundScore.getPlayerScore() > roundScore.getOpponentScore()) {
+                                    Games.Events.increment(client, roundsWon, 1);
+                                }
+                                // If both the two players completed the duel, set it as complete
                                 if (duel.getQuizzes().size() == 3) {
                                     duel.getCurrentQuiz().complete();
-                                    GoogleApiClient client = application.getClient();
                                     Score score = duel.getScore();
                                     if (score.getPlayerScore() > score.getOpponentScore()) {
                                         Games.Achievements.increment(client, win10, 1);
@@ -148,6 +154,7 @@ public class HomeActivity extends SavedGamesActivity {
                             }
                         } else { // new duel
                             history.addDuel(new Duel(pendingDuel.getDuelID(), pendingDuel.getOpponent()));
+                            Games.Events.increment(client, duelsPlayed, 1);
                         }
                     }
                     SavedGames.writeSnapshot(snapshot, history, "", application.getClient());

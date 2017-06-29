@@ -158,10 +158,10 @@ public class HomeActivity extends SavedGamesActivity {
                         }
                     }
                     SavedGames.writeSnapshot(snapshot, history, "", application.getClient());
-                    updateHistory();
                 } else {
                     errorToast(callError);
                 }
+                updateHistory();
             }
 
             @Override

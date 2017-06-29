@@ -36,8 +36,7 @@ public class SavedGamesLoader extends AsyncTaskLoader<Snapshot> {
      */
     @Override
     protected void onStartLoading() {
-        // implicit call loadInBackground
-        forceLoad();
+        forceLoad(); // implicitly call loadInBackground
     }
 
     /**

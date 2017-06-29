@@ -1,9 +1,11 @@
 package rogueone.quizfight;
 
+import android.app.FragmentManager;
 import android.app.LoaderManager;
 import android.content.Loader;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.Toast;
@@ -12,8 +14,10 @@ import com.google.android.gms.games.snapshot.Snapshot;
 
 import java.io.IOException;
 
+import rogueone.quizfight.fragments.SavedGamesFragment;
 import rogueone.quizfight.loaders.SavedGamesLoader;
 import rogueone.quizfight.models.History;
+import rogueone.quizfight.utils.SavedGames;
 
 import static rogueone.quizfight.utils.SavedGames.byteToHistory;
 
@@ -36,6 +40,10 @@ import static rogueone.quizfight.utils.SavedGames.byteToHistory;
 public abstract class SavedGamesActivity extends AppCompatActivity implements
     LoaderManager.LoaderCallbacks<Snapshot> {
     private static final int SAVED_GAMES_LOADER = 1;
+    private static final String SAVED_GAMES_FRAGMENT = "SavedGamesFragment";
+
+    private SavedGamesFragment savedGamesFragment;
+    protected boolean configurationChanged;
 
     protected Snapshot snapshot;
     protected History history = new History();
@@ -43,6 +51,16 @@ public abstract class SavedGamesActivity extends AppCompatActivity implements
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        savedGamesFragment = (SavedGamesFragment) getFragmentManager().findFragmentByTag(SAVED_GAMES_FRAGMENT);
+        if (savedGamesFragment != null) {
+            history = savedGamesFragment.getHistory();
+            snapshot = savedGamesFragment.getSnapshot();
+            configurationChanged = true;
+        } else {
+            savedGamesFragment = new SavedGamesFragment();
+            getFragmentManager().beginTransaction().add(savedGamesFragment, SAVED_GAMES_FRAGMENT).commit();
+        }
     }
 
     @Override
@@ -65,6 +83,8 @@ public abstract class SavedGamesActivity extends AppCompatActivity implements
         if (snapshot != null && snapshot.getSnapshotContents() != null) {
             try {
                 history = byteToHistory(snapshot.getSnapshotContents().readFully());
+                savedGamesFragment.setSnapshot(snapshot);
+                savedGamesFragment.setHistory(history);
                 onLoadFinished(true);
             } catch (IOException e) {
                 e.printStackTrace();
@@ -79,7 +99,7 @@ public abstract class SavedGamesActivity extends AppCompatActivity implements
      * Starts the loading.
      */
     protected void getGames() {
-        getLoaderManager().initLoader(SAVED_GAMES_LOADER, null, this);
+        getLoaderManager().restartLoader(SAVED_GAMES_LOADER, null, this);
     }
 
     /**

@@ -36,7 +36,9 @@ import rogueone.quizfight.adapters.DuelSummaryAdapter;
 import rogueone.quizfight.models.Duel;
 import rogueone.quizfight.rest.api.sendFacebookId;
 import rogueone.quizfight.rest.pojo.User;
+import rogueone.quizfight.models.History;
 import rogueone.quizfight.models.Question;
+import rogueone.quizfight.models.Score;
 import rogueone.quizfight.rest.api.GetProgress;
 import rogueone.quizfight.rest.pojo.PendingDuels;
 import rogueone.quizfight.utils.SavedGames;
@@ -68,6 +70,13 @@ public class HomeActivity extends SavedGamesActivity {
     @BindView(R.id.login_button) LoginButton loginButton;
 
     @BindString(R.string.unable_to_get_pending_duels) String callError;
+    @BindString(R.string.win_10_duels) String win10;
+    @BindString(R.string.win_50_duels) String win50;
+    @BindString(R.string.win_100_duels) String win100;
+    @BindString(R.string.win_200_duels) String win200;
+    @BindString(R.string.duels_won) String duelsWon;
+    @BindString(R.string.rounds_won) String roundsWon;
+    @BindString(R.string.duels_played) String duelsPlayed;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -169,6 +178,7 @@ public class HomeActivity extends SavedGamesActivity {
             @Override
             public void onResponse(Call<PendingDuels> call, Response<PendingDuels> response) {
                 if (response.isSuccessful()) {
+                    GoogleApiClient client = application.getClient();
                     for (PendingDuels.Duel pendingDuel : response.body().getPendingDuels()) {
                         Duel duel = history.getDuelByID(pendingDuel.getDuelID());
                         if (duel != null) { //existing duel
@@ -182,21 +192,34 @@ public class HomeActivity extends SavedGamesActivity {
                                 for (Question question : duel.getCurrentQuiz().getQuestions()) {
                                     question.setOpponentAnswer(pendingDuel.getAnswers()[currentQuizIndex][index++]);
                                 }
-                                // If both the two players completed the duel, sets it as complete
+                                Score roundScore = duel.getCurrentQuiz().getScore();
+                                if (roundScore.getPlayerScore() > roundScore.getOpponentScore()) {
+                                    Games.Events.increment(client, roundsWon, 1);
+                                }
+                                // If both the two players completed the duel, set it as complete
                                 if (duel.getQuizzes().size() == 3) {
                                     duel.getCurrentQuiz().complete();
+                                    Score score = duel.getScore();
+                                    if (score.getPlayerScore() > score.getOpponentScore()) {
+                                        Games.Achievements.increment(client, win10, 1);
+                                        Games.Achievements.increment(client, win50, 1);
+                                        Games.Achievements.increment(client, win100, 1);
+                                        Games.Achievements.increment(client, win200, 1);
+                                        Games.Events.increment(client, duelsWon, 1);
+                                    }
                                 }
                                 history.setDuelByID(duel);
                             }
                         } else { // new duel
                             history.addDuel(new Duel(pendingDuel.getDuelID(), pendingDuel.getOpponent()));
+                            Games.Events.increment(client, duelsPlayed, 1);
                         }
                     }
                     SavedGames.writeSnapshot(snapshot, history, "", application.getClient());
-                    updateHistory();
                 } else {
                     errorToast(callError);
                 }
+                updateHistory();
             }
 
             @Override

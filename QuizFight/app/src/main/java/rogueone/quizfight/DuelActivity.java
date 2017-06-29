@@ -8,6 +8,7 @@ import android.content.Loader;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.annotation.NonNull;
+import android.support.annotation.StringDef;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -83,6 +84,8 @@ public class DuelActivity extends SavedGamesActivity {
     private Duel duel;
     private boolean[] answers;
 
+    private int availableTime;
+
     private CountDownTimer timer; // The timer
 
     private FragmentManager fragmentManager;
@@ -94,6 +97,10 @@ public class DuelActivity extends SavedGamesActivity {
 
     @BindString(R.string.round) String roundString;
     @BindString(R.string.duel_id) String duelString;
+    @BindString(R.string.count) String countString;
+    @BindString(R.string.score) String scoreString;
+    @BindString(R.string.answers) String answersString;
+    @BindString(R.string.available_time) String availableTimeString;
     @BindString(R.string.unable_to_start_round) String errorRound;
     @BindString(R.string.correct_answers_100) String answers100;
     @BindString(R.string.correct_answers_250) String answers250;
@@ -112,11 +119,33 @@ public class DuelActivity extends SavedGamesActivity {
         setContentView(R.layout.activity_duel);
         ButterKnife.bind(this);
 
-        application = (QuizFightApplication)getApplication();
-        getGames();
+        availableTime = ALLOWED_TIME;
 
-        count = 0; score = 0;
-        answers = new boolean[5];
+        application = (QuizFightApplication)getApplication();
+
+        if (configurationChanged) {
+            count = savedInstanceState.getInt(countString);
+            score = savedInstanceState.getInt(scoreString);
+            answers = savedInstanceState.getBooleanArray(answersString);
+            round = savedInstanceState.getParcelable(roundString);
+            availableTime = savedInstanceState.getInt(availableTimeString);
+
+            initDuel();
+        } else {
+            getGames();
+
+            count = 0; score = 0;
+            answers = new boolean[5];
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putInt(countString, count);
+        outState.putInt(scoreString, score);
+        outState.putBooleanArray(answersString, answers);
+        outState.putParcelable(roundString, round);
+        outState.putInt(availableTimeString, availableTime);
     }
 
     /**
@@ -158,10 +187,10 @@ public class DuelActivity extends SavedGamesActivity {
      * Actually begin a new round for the current duel.
      */
     private void initDuel() {
-        Games.Events.increment(application.getClient(), roundsPlayed, 1);
         // The round has been retrieved, do some housekeeping
         duel = history.getDuelByID(round.getDuelID());
-        if (duel.getCurrentQuiz().isCompleted() && duel.getQuizzes().size() < 3) {
+        if (duel.getCurrentQuiz().isCompleted() && duel.getQuizzes().size() < 3 && !configurationChanged) {
+            Games.Events.increment(application.getClient(), roundsPlayed, 1);
             duel.addQuiz(new Quiz()); // Add a new quiz if there's a new round
         }
 
@@ -181,9 +210,11 @@ public class DuelActivity extends SavedGamesActivity {
      * Setup the timer.
      */
     private void setupTimer() {
-        timer = new CountDownTimer(ALLOWED_TIME, 1000) {
+        timer = new CountDownTimer(availableTime, 1000) {
             public void onTick(long millisUntilFinished) {
-                progressBar.setProgress((int)millisUntilFinished * 100 / ALLOWED_TIME);
+                availableTime = (int)millisUntilFinished * 100 / ALLOWED_TIME;
+                progressBar.setProgress(availableTime);
+
             }
 
             public void onFinish() {
@@ -201,6 +232,7 @@ public class DuelActivity extends SavedGamesActivity {
         Games.Events.increment(client, questionsAnswered, 1);
         if (timer != null) {
             timer.cancel(); // Stop the timer
+            availableTime = ALLOWED_TIME;
         }
         if (answer == currentQuestion.getAnswer()) {
             // TODO something green

@@ -45,6 +45,10 @@
     <string name="opponent">opponent</string>
     <string name="pending_duels">pending_duels</string>
     <string name="new_rounds">new_rounds</string>
+    <string name="round">round</string>
+    <string name="count">count</string>
+    <string name="score">score</string>
+    <string name="available_time">allowed_time</string>
 
     <string name="leaderboard_id">CgkIxZDJ2KMSEAIQAg</string>
     <string name="win_10_duels">CgkIxZDJ2KMSEAIQAw</string>
@@ -64,8 +68,6 @@
     <string name="rounds_played">CgkIxZDJ2KMSEAIQEw</string>
     <string name="rounds_won">CgkIxZDJ2KMSEAIQFA</string>
     <string name="duels_played">CgkIxZDJ2KMSEAIQFQ</string>
-
-    <string name="round">round</string>
 
     <string-array name="topics">
         <item>General Knowledge</item>

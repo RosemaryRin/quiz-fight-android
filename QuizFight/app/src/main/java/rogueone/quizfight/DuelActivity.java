@@ -102,7 +102,7 @@ public class DuelActivity extends SavedGamesActivity {
     @BindString(R.string.score_15_points) String points15;
     @BindString(R.string.score_30_points) String points30;
     @BindString(R.string.score_45_points) String points45;
-    @BindString(R.string.corrects_answers) String correctAnswers;
+    @BindString(R.string.correct_answers) String correctAnswers;
     @BindString(R.string.rounds_played) String roundsPlayed;
     @BindString(R.string.questions_answered) String questionsAnswered;
 

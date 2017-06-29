@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -99,7 +100,7 @@ public class HomeActivity extends SavedGamesActivity {
             }
         });
 
-        getGames();
+        //getGames(); --> Invoked in onResume
     }
 
     /**
@@ -194,10 +195,16 @@ public class HomeActivity extends SavedGamesActivity {
         }
     }
 
+
+
     @Override
     public void onResume() {
         super.onResume();
-        getGames();
+        if (configurationChanged) {
+            updateHistory();
+        } else {
+            getGames();
+        }
     }
 
     /* TODO To be tested

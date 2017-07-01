@@ -78,8 +78,13 @@ public abstract class SavedGamesActivity extends AppCompatActivity implements
     /**
      * Starts the loading.
      */
-    protected void getGames() {
-        getLoaderManager().initLoader(SAVED_GAMES_LOADER, null, this);
+    protected boolean getGames() {
+        QuizFightApplication application = (QuizFightApplication) getApplication();
+        if (application != null && application.getClient() != null && application.getClient().isConnected()) {
+            getLoaderManager().initLoader(SAVED_GAMES_LOADER, null, this);
+            return true;
+        }
+        return false;
     }
 
     /**

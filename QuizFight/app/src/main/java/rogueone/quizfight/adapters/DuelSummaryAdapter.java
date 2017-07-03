@@ -4,6 +4,9 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
+import android.util.DisplayMetrics;
+import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -57,5 +60,12 @@ public class DuelSummaryAdapter extends ArrayAdapter<Duel> {
         scoreView.setText(playerScore + " - " + opponentScore);
 
         return rowView;
+    }
+
+    public int getRowHeight(ViewGroup listView) {
+        View listItem = getView(0, null, listView);
+        int height = listItem.getLayoutParams().height;
+
+        return height;
     }
 }

@@ -41,7 +41,8 @@
                 android:drawablePadding="10dip"
                 android:drawableRight="@drawable/random"
                 android:drawableTint="@color/common_google_signin_btn_text_dark_default"
-                android:text="@string/random_player" />
+                android:text="@string/random_player"
+                android:layout_marginRight="10dip" />
 
         </android.support.v7.widget.Toolbar>
 

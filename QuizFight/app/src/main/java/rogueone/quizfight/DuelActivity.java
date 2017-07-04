@@ -77,13 +77,11 @@ public class DuelActivity extends SavedGamesActivity {
     private static final int ALLOWED_TIME = 20000;
 
     private QuizFightApplication application;
-    private Snapshot snapshot; // Loaded at the beginning
 
     private Round round;
     private Question currentQuestion;
     private int count;
     private int score;
-    private History history;
     private Duel duel;
     private boolean[] answers;
 
@@ -104,7 +102,12 @@ public class DuelActivity extends SavedGamesActivity {
     @BindString(R.string.correct_answers_250) String answers250;
     @BindString(R.string.correct_answers_500) String answers500;
     @BindString(R.string.correct_answers_1000) String answers1000;
-    @BindString(R.string.corrects_answers) String correctAnswers;
+    @BindString(R.string.score_15_points) String points15;
+    @BindString(R.string.score_30_points) String points30;
+    @BindString(R.string.score_45_points) String points45;
+    @BindString(R.string.correct_answers) String correctAnswers;
+    @BindString(R.string.rounds_played) String roundsPlayed;
+    @BindString(R.string.questions_answered) String questionsAnswered;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -113,7 +116,6 @@ public class DuelActivity extends SavedGamesActivity {
         ButterKnife.bind(this);
 
         application = (QuizFightApplication)getApplication();
-        history = application.getHistory();
         getGames();
 
         count = 0; score = 0;
@@ -137,6 +139,7 @@ public class DuelActivity extends SavedGamesActivity {
             ).call(new Callback<Round>() {
                 @Override
                 public void onResponse(Call<Round> call, Response<Round> response) {
+                    Log.d("RESPONSE", response.message() + " " + response.code());
                     if (response.isSuccessful()) {
                         round = response.body();
                         initDuel();
@@ -147,6 +150,7 @@ public class DuelActivity extends SavedGamesActivity {
 
                 @Override
                 public void onFailure(Call<Round> call, Throwable t) {
+                    t.printStackTrace();
                     errorToast(errorRound);
                 }
             });
@@ -157,10 +161,11 @@ public class DuelActivity extends SavedGamesActivity {
      * Actually begin a new round for the current duel.
      */
     private void initDuel() {
+        Games.Events.increment(application.getClient(), roundsPlayed, 1);
         // The round has been retrieved, do some housekeeping
         duel = history.getDuelByID(round.getDuelID());
-        if (duel.getQuizzes().size() < 3 && duel.getCurrentQuiz().isCompleted()) {
-            duel.addQuiz(new Quiz()); // Add a new duel if it's a new round
+        if (duel.getCurrentQuiz().isCompleted() && duel.getQuizzes().size() < 3) {
+            duel.addQuiz(new Quiz()); // Add a new quiz if there's a new round
         }
 
         if (duel != null) { // Everything ok, init the UI
@@ -191,25 +196,20 @@ public class DuelActivity extends SavedGamesActivity {
     }
 
     /**
-     * Show an error <tt>Toast</tt> if something went wrong
-     * @param message The message to bhe showed
-     */
-    private void errorToast(@NonNull String message) {
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
-    }
-
-    /**
      * Handle a new answer saving its correctness and updating the UI.
      * @param answer The answer. It may be 0, if the timer expired.
      */
     private void answer(int answer) {
-        timer.cancel(); // Stop the timer
+        GoogleApiClient client = application.getClient();
+        Games.Events.increment(client, questionsAnswered, 1);
+        if (timer != null) {
+            timer.cancel(); // Stop the timer
+        }
         if (answer == currentQuestion.getAnswer()) {
             // TODO something green
 
             answers[count] = true;
             // Update achievements
-            GoogleApiClient client = application.getClient();
             Games.Achievements.increment(client, answers100, 1);
             Games.Achievements.increment(client, answers250, 1);
             Games.Achievements.increment(client, answers500, 1);
@@ -298,6 +298,23 @@ public class DuelActivity extends SavedGamesActivity {
             public void onFailure(Call<ResponseBody> call, Throwable t) {}
         });
         // Write the snapshot for updating the history
+        // < 3 is needed because otherwise the duel would appear as complete. @see HomeActivity.updatePendingDuels
+        // There the duel is marked as complete if the opponent completed it as well.
+        if (duel.getQuizzes().size() < 3) {
+            duel.getCurrentQuiz().complete();
+        } else { // Duel completed, let's check if an achievement may be updated
+            GoogleApiClient client = application.getClient();
+            if (score == 45) {
+                Games.Achievements.increment(client, points15, 1);
+                Games.Achievements.increment(client, points30, 1);
+                Games.Achievements.increment(client, points45, 1);
+            } else if (score >= 30) {
+                Games.Achievements.increment(client, points15, 1);
+                Games.Achievements.increment(client, points30, 1);
+            } else if (score >= 15) {
+                Games.Achievements.increment(client, points15, 1);
+            } // otherwise no achievements will be updated
+        }
         history.setDuelByID(duel);
         SavedGames.writeSnapshot(snapshot, history, "", application.getClient());
 
@@ -369,24 +386,37 @@ public class DuelActivity extends SavedGamesActivity {
     @Override
     public void onPause() {
         super.onPause();
-        dialog.dismiss(); // dismiss the dialog fo avoiding UI leaked exception
+        if (dialog != null) {
+            dialog.dismiss(); // dismiss the dialog fo avoiding UI leaked exception
+        }
     }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
-        timer.cancel(); // stop the timer
+    public void onStop() {
+        super.onStop();
+        if (timer != null) {
+            timer.cancel(); // stop the timer
+        }
+        // Close the round as a surrender if the user hasn't answered every question
+        if (count < QUESTIONS_PER_ROUND) {
+            for (int i = 0; i < QUESTIONS_PER_ROUND; i++) {
+                answers[i] = false;
+            }
+            score = 0;
+            roundTerminated();
+        }
     }
 
     /**
-     * Loading finished, save the loaded <tt>Snapshot</tt>. It calls <tt>setup</tt> for beginning
-     * the duel.
-     * @param loader The finished loader
-     * @param data The loaded data
+     * Loading finished, call <tt>setup</tt> for beginning the duel.
+     * @param success true iff the Snapshot load succeeded.
      */
     @Override
-    public void onLoadFinished(Loader<Snapshot> loader, Snapshot data) {
-        snapshot = data;
-        setup();
+    protected void onLoadFinished(boolean success) {
+        if (success) {
+            setup();
+        } else {
+            errorToast(errorRound);
+        }
     }
 }

@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.Set;
 
 import butterknife.BindString;
+import me.leolin.shortcutbadger.ShortcutBadger;
 import rogueone.quizfight.QuizFightApplication;
 import rogueone.quizfight.R;
 import rogueone.quizfight.SignInActivity;
@@ -35,13 +36,29 @@ import rogueone.quizfight.models.RoundCompleted;
 import static rogueone.quizfight.NotificationFactory.getTargetActivity;
 
 /**
- * Created by mdipirro on 20/05/17.
+ * This service receives every notification which has been sent to the user corresponding to the
+ * current token. It basically parses the notification body and shows a new notification. CLicking on
+ * this notification will open different activities based on the notification ID.
+ *
+ * @author Matteo Di Pirro
+ * @see FirebaseMessagingService
  */
 
 public class MessagingService extends FirebaseMessagingService {
     private static final String TITLE = "title";
     private static final String MESSAGE = "message";
 
+    private static int notificationCount = 0;
+
+    public static void resetNotificationCount() {
+        notificationCount = 0;
+    }
+
+    /**
+     * If the message contains a title and a message show the proper notification.
+     *
+     * @param remoteMessage The message which has been received.
+     */
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
         Map<String, String> body = remoteMessage.getData();
@@ -58,6 +75,7 @@ public class MessagingService extends FirebaseMessagingService {
      * @param body FCM body received
      */
     private void sendNotification(@NonNull Map<String, String> body) {
+        notificationCount++;
         String stringID = body.get("id");
         int id = (stringID != null) ? Integer.parseInt(stringID) : 0;
         Intent intent = new Intent(
@@ -66,12 +84,12 @@ public class MessagingService extends FirebaseMessagingService {
                     ? SignInActivity.class
                     : getTargetActivity(id)*/
         );
-        populateIntent(body, intent);
+        populateIntent(body, intent); // add every field in the notification to the Intent
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, id, intent,
                 PendingIntent.FLAG_ONE_SHOT);
-        persistData(id, body);
 
+        // Compose the notification
         Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
                 .setContentTitle(body.get(TITLE))
@@ -81,62 +99,25 @@ public class MessagingService extends FirebaseMessagingService {
                 .setContentIntent(pendingIntent)
                 .setSmallIcon(R.mipmap.ic_launcher); //FIXME LOGO!!
 
+        ShortcutBadger.applyCount(getApplicationContext(), notificationCount);
+
         NotificationManager notificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
         notificationManager.notify(id, notificationBuilder.build());
     }
 
+    /**
+     * Parse the message body and add every field (but <tt>title</tt> and <tt>message</tt> to the
+     * Intent object.
+     * @param body Message body.
+     * @param intent New activity Intent.
+     */
     private void populateIntent(@NonNull Map<String, String> body, @NonNull Intent intent) {
         for (Map.Entry<String, String> entry : body.entrySet()) {
             if (!entry.getKey().equals(TITLE) && !entry.getKey().equals(MESSAGE)) {
                 intent.putExtra(entry.getKey(), entry.getValue());
             }
         }
-    }
-
-    private void persistData(int id, @NonNull Map<String, String> body) {
-        String duelIDString = getString(R.string.duel_id);
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-        SharedPreferences.Editor editor = sharedPref.edit();
-        Gson gson = new Gson();
-        switch (id) {
-            case 2:
-                String opponentString = getString(R.string.opponent);
-                String pendingString = getString(R.string.pending_duels);
-
-                String jsonPendingDuels = sharedPref.getString(pendingString, "");
-                List<BackgroundDuel> duels;
-                if (!jsonPendingDuels.equals("")) {
-                    Type listType = new TypeToken<List<BackgroundDuel>>(){}.getType();
-                    duels = gson.fromJson(jsonPendingDuels, listType);
-                } else {
-                    duels = new ArrayList<>();
-                }
-                duels.add(new BackgroundDuel(body.get(opponentString), body.get(duelIDString)));
-                editor.putString(pendingString, gson.toJson(duels));
-                break;
-            case 3:
-            case 4:
-                String roundsString = getString(R.string.new_rounds);
-                String answersString = getString(R.string.answers);
-                String jsonRoundCompleted = sharedPref.getString(roundsString, "");
-                List<RoundCompleted> rounds;
-                if (!jsonRoundCompleted.equals("")) {
-                    Type listType = new TypeToken<List<RoundCompleted>>(){}.getType();
-                    rounds = gson.fromJson(jsonRoundCompleted, listType);
-                } else {
-                    rounds = new ArrayList<>();
-                }
-                boolean[] answers = new boolean[5];
-                String[] answersStrings = body.get(answersString).split(",");
-                for (int i = 0; i < answersStrings.length; i++) {
-                    answers[i] = answersStrings[i].equals("true");
-                }
-                rounds.add(new RoundCompleted(body.get(duelIDString), answers));
-                editor.putString(roundsString, gson.toJson(rounds));
-                break;
-        }
-        editor.apply();
     }
 }

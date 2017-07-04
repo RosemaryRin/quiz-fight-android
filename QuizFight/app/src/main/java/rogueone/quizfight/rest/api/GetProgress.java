@@ -1,7 +1,9 @@
 package rogueone.quizfight.rest.api;
 
+import android.support.annotation.NonNull;
+
 import retrofit2.Call;
-import rogueone.quizfight.rest.pojo.Round;
+import rogueone.quizfight.rest.pojo.PendingDuels;
 
 /**
  * This class represents a GET REST call to /fight. It stores two <tt>String</tt>s corresponding
@@ -10,21 +12,22 @@ import rogueone.quizfight.rest.pojo.Round;
  *
  * @see rogueone.quizfight.rest.api.APICaller
  * @see rogueone.quizfight.rest.EndpointInterface
- * @see Round
+ * @see PendingDuels
  */
 
-public class GetRound extends APICaller<Round> {
-    private String duelID;
+public class GetProgress extends APICaller<PendingDuels> {
     private String playerID;
+    private String duelIDs;
 
-    public GetRound(String duelID, String user) {
+    public GetProgress(@NonNull String player, @NonNull String duelIDs) {
         super();
-        this.duelID = duelID;
-        playerID = user;
+        playerID = player;
+        this.duelIDs = duelIDs;
     }
 
     @Override
-    protected Call<Round> getActualMethod() {
-        return apiService.getRound(playerID, duelID);
+    protected Call<PendingDuels> getActualMethod() {
+        return apiService.getProgress(playerID, duelIDs);
     }
+
 }

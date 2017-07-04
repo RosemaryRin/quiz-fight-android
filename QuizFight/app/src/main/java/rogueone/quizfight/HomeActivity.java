@@ -284,8 +284,11 @@ public class HomeActivity extends SavedGamesActivity {
             editor.putBoolean(getString(R.string.signed_in), false);
             editor.apply();
 
-            startActivity(new Intent(this, SignInActivity.class));
         }
+    }
+
+    public void showLeaderboard(View v) {
+        startActivity(new Intent(this, LeaderboardActivity.class));
     }
 
     @Override

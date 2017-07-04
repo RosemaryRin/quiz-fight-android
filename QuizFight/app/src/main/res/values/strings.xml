@@ -8,6 +8,7 @@
     <string name="title_activity_start_duel">Start Duel</string>
     <string name="title_activity_duels_history">Duels History</string>
     <string name="title_activity_duel">Duel</string>
+    <string name="title_activity_leaderboard">Leaderboard</string>
 
     <string name="action_settings">Settings</string>
 

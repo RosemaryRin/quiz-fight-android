@@ -2,19 +2,12 @@ package rogueone.quizfight;
 
 import android.app.Application;
 import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 
 import com.facebook.FacebookSdk;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.games.Games;
-import com.google.android.gms.games.snapshot.Snapshot;
-
-import rogueone.quizfight.models.History;
 
 /**
  * This class extends the Application class and is used for storing objects and share them across

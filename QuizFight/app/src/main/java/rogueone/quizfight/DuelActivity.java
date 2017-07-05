@@ -5,8 +5,10 @@ import android.app.FragmentManager;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.Loader;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -94,7 +96,10 @@ public class DuelActivity extends SavedGamesActivity {
 
     @BindString(R.string.round) String roundString;
     @BindString(R.string.duel_id) String duelString;
+    @BindString(R.string.quiz_id) String quizString;
+    @BindString(R.string.score) String scoreString;
     @BindString(R.string.unable_to_start_round) String errorRound;
+    @BindString(R.string.hasDisconnected) String hasDisconnected;
     @BindString(R.string.correct_answers_100) String answers100;
     @BindString(R.string.correct_answers_250) String answers250;
     @BindString(R.string.correct_answers_500) String answers500;
@@ -238,7 +243,7 @@ public class DuelActivity extends SavedGamesActivity {
      * Show the next question to the user.
      */
     private void nextQuestion() {
-        if (count < QUESTIONS_PER_ROUND) { // there are some more questions
+        if (count < QUESTIONS_PER_ROUND && application.checkConnection(this.getBaseContext())) { // there are some more questions
             currentQuestion = round.getQuestions().get(count); // get the next question
             textView_question.setText(currentQuestion.getQuestion()); // show that...
             //.. with the correct Fragment
@@ -255,8 +260,27 @@ public class DuelActivity extends SavedGamesActivity {
             }
             timer.start();
         } else { // every question has been answered, final housekeeping
-            roundTerminated();
+            if (application.checkConnection(this.getBaseContext())) {
+                roundTerminated();
+            }
+            else {
+                saveSurrender();
+            }
         }
+    }
+
+    /**
+     * The player has disconnected, so this is considered as a surrender.
+     */
+    public void saveSurrender() {
+        errorToast("DISCONNECTION LOST");
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putBoolean(hasDisconnected, true);
+        editor.putString(duelString, round.getDuelID());
+        editor.putString(quizString, round.getQuizID());
+        editor.putInt(scoreString, score);
+        editor.apply();
     }
 
     /**

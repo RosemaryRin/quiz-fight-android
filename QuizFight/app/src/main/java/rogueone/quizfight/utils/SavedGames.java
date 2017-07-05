@@ -96,9 +96,11 @@ public class SavedGames {
     public static PendingResult<Snapshots.CommitSnapshotResult> writeSnapshot(
             Snapshot snapshot, History history, String desc, GoogleApiClient client
     ) { //TODO Bitmap screenshot?
-
-        // Set the data payload for the snapshot
-        SnapshotContents contents = snapshot.getSnapshotContents();
+        SnapshotContents contents = null;
+        if (snapshot != null) {
+            // Set the data payload for the snapshot
+            contents = snapshot.getSnapshotContents();
+        }
         if (contents != null) {
             contents.writeBytes(historyToByte(history));
             // Create the change operation

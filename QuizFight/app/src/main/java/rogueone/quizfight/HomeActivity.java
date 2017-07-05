@@ -29,12 +29,15 @@ import java.util.List;
 import butterknife.BindString;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import rogueone.quizfight.adapters.DuelSummaryAdapter;
 import rogueone.quizfight.models.Duel;
+import rogueone.quizfight.rest.api.SendRoundScore;
 import rogueone.quizfight.rest.api.sendFacebookId;
+import rogueone.quizfight.rest.pojo.RoundResult;
 import rogueone.quizfight.rest.pojo.User;
 import rogueone.quizfight.models.History;
 import rogueone.quizfight.models.Question;
@@ -70,10 +73,14 @@ public class HomeActivity extends SavedGamesActivity {
     @BindView(R.id.login_button) LoginButton loginButton;
 
     @BindString(R.string.unable_to_get_pending_duels) String callError;
+    @BindString(R.string.hasDisconnected) String hasDisconnected;
     @BindString(R.string.win_10_duels) String win10;
     @BindString(R.string.win_50_duels) String win50;
     @BindString(R.string.win_100_duels) String win100;
     @BindString(R.string.win_200_duels) String win200;
+    @BindString(R.string.score_15_points) String points15;
+    @BindString(R.string.score_30_points) String points30;
+    @BindString(R.string.score_45_points) String points45;
     @BindString(R.string.duels_won) String duelsWon;
     @BindString(R.string.rounds_won) String roundsWon;
     @BindString(R.string.duels_played) String duelsPlayed;
@@ -85,6 +92,12 @@ public class HomeActivity extends SavedGamesActivity {
         ButterKnife.bind(this);
 
         application = (QuizFightApplication)getApplicationContext();
+
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+        if (sharedPref.getBoolean(getString(R.string.hasDisconnected), true)) {
+            interruptedDuel(sharedPref);
+        }
+
         loginButton.setReadPermissions("email", "user_friends");
 
         callbackManager = CallbackManager.Factory.create();
@@ -258,6 +271,39 @@ public class HomeActivity extends SavedGamesActivity {
         }
     }
 
+    private void interruptedDuel(SharedPreferences sharedPref) {
+        String duelId = sharedPref.getString(getString(R.string.duel_id), "Not available");
+        String quizId = sharedPref.getString(getString(R.string.quiz_id), "Not available");
+        int old_score = sharedPref.getInt(getString(R.string.score), 0);
+        boolean[] answers = {false, false, false, false, false};
+        // Call the server for remote saving the result
+        new SendRoundScore(new RoundResult(
+                duelId, quizId,
+                Games.Players.getCurrentPlayer(application.getClient()).getDisplayName(),
+                answers, 0
+        )).call(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {}
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {}
+        });
+        GoogleApiClient client = application.getClient();
+        if (old_score == 45) {
+            Games.Achievements.increment(client, points15, 1);
+            Games.Achievements.increment(client, points30, 1);
+            Games.Achievements.increment(client, points45, 1);
+        } else if (old_score >= 30) {
+            Games.Achievements.increment(client, points15, 1);
+            Games.Achievements.increment(client, points30, 1);
+        } else if (old_score >= 15) {
+            Games.Achievements.increment(client, points15, 1);
+        }
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putBoolean(hasDisconnected, false);
+        updatePendingDuels();
+    }
+
     @Override
     public void onResume() {
         super.onResume();
@@ -278,12 +324,10 @@ public class HomeActivity extends SavedGamesActivity {
             GoogleApiClient client = application.getClient();
             Games.signOut(client);
             client.disconnect();
-
             SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
             SharedPreferences.Editor editor = sharedPref.edit();
             editor.putBoolean(getString(R.string.signed_in), false);
             editor.apply();
-
             startActivity(new Intent(this, SignInActivity.class));
         }
     }

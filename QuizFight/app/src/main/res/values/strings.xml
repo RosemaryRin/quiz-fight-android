@@ -41,11 +41,15 @@
 
     <string name="sign_out">Sign out</string>
     <string name="signed_in">signed_in</string>
-    <string name="duel_id">duelID</string>
+    <string name="duel_id">duelId</string>
+    <string name="quiz_id">quizId</string>
+    <string name="score">score</string>
     <string name="answers">answers</string>
     <string name="opponent">opponent</string>
     <string name="pending_duels">pending_duels</string>
     <string name="new_rounds">new_rounds</string>
+    <string name="hasDisconnected">hasDisconnected</string>
+
 
     <string name="leaderboard_id">CgkIxZDJ2KMSEAIQAg</string>
     <string name="win_10_duels">CgkIxZDJ2KMSEAIQAw</string>

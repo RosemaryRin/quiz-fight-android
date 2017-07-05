@@ -90,7 +90,6 @@ public class StartDuelActivity extends SavedGamesActivity {
                 String[] topics = getRandomTopics().toArray(new String[3]); // 3 rounds
                 new NewDuel(new RESTDuel(
                         Games.Players.getCurrentPlayer(application.getClient()).getDisplayName(),
-                        "elena.pullin95@gmail.com", //FIXME to be removed
                         topics
                 )).call(new Callback<Round>() {
                     @Override

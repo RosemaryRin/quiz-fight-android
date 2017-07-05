@@ -19,7 +19,6 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.google.android.gms.games.Games;
-import com.google.android.gms.games.snapshot.Snapshot;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -47,7 +46,6 @@ import com.facebook.AccessToken;
 import org.json.JSONArray;
 import org.json.JSONException;
 
-import butterknife.ButterKnife;
 import rogueone.quizfight.adapters.FriendListAdapter;
 
 public class StartDuelActivity extends SavedGamesActivity {
@@ -67,7 +65,7 @@ public class StartDuelActivity extends SavedGamesActivity {
      */
     private ViewPager mViewPager;
 
-    private QuizFightApplication application;
+    private static QuizFightApplication application;
     private final static String TAG = "StartDuelActivity";
 
     private ListView listView;
@@ -133,7 +131,7 @@ public class StartDuelActivity extends SavedGamesActivity {
                     public void onFailure(Call<User> call, Throwable t) {
                         errorToast(duelError);
                     }
-                });
+                }, application);
             }
         });
     }
@@ -154,7 +152,7 @@ public class StartDuelActivity extends SavedGamesActivity {
             public void onFailure(Call<Round> call, Throwable t) {
                 errorToast(duelError);
             }
-        });
+        }, application);
     }
 
     private List<String> getRandomTopics() {
@@ -217,7 +215,8 @@ public class StartDuelActivity extends SavedGamesActivity {
             final View rootView = inflater.inflate(R.layout.fragment_start_duel, container, false);
 
             if (getArguments().getInt(ARG_SECTION_NUMBER) == 1
-                    && AccessToken.getCurrentAccessToken() != null) { // friends tab
+                    && AccessToken.getCurrentAccessToken() != null
+                    && application.checkConnection(getContext())) { // friends tab
                 friendsNamesRequest(rootView);
             }
 

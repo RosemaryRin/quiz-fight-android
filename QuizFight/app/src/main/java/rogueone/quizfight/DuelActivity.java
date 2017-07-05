@@ -150,7 +150,7 @@ public class DuelActivity extends SavedGamesActivity {
                     t.printStackTrace();
                     errorToast(errorRound);
                 }
-            });
+            }, application);
         }
     }
 
@@ -275,7 +275,7 @@ public class DuelActivity extends SavedGamesActivity {
 
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {}
-        });
+        }, application);
         // Write the snapshot for updating the history
         // < 3 is needed because otherwise the duel would appear as complete. @see HomeActivity.updatePendingDuels
         // There the duel is marked as complete if the opponent completed it as well.

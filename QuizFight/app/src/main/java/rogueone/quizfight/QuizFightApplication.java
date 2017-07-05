@@ -1,6 +1,9 @@
 package rogueone.quizfight;
 
 import android.app.Application;
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.support.annotation.NonNull;
 
 import com.facebook.FacebookSdk;
@@ -33,5 +36,25 @@ public class QuizFightApplication extends Application {
 
     public GoogleApiClient getClient() {
         return games;
+    }
+
+    /**
+     * General function to check connection
+     * @param context
+     */
+    public boolean checkConnection(Context context) {
+        boolean status = false;
+        try {
+            ConnectivityManager cm =
+                    (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+            NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+
+            status = activeNetwork != null &&
+                    activeNetwork.isConnectedOrConnecting();
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+        return status;
     }
 }

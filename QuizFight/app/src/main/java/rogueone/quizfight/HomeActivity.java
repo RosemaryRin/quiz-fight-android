@@ -107,7 +107,7 @@ public class HomeActivity extends SavedGamesActivity {
                             public void onFailure(Call<User> call, Throwable t) {
                                 t.printStackTrace();
                             }
-                        });
+                        }, application);
             }
 
             @Override
@@ -227,7 +227,7 @@ public class HomeActivity extends SavedGamesActivity {
                 t.printStackTrace();
                 errorToast(callError);
             }
-        });
+        }, application);
     }
 
     @Override

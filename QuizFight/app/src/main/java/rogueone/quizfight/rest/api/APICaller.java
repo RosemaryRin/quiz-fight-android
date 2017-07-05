@@ -36,7 +36,7 @@ public abstract class APICaller<T> {
             api.enqueue(callback);
         }
         else {
-            Toast.makeText(application.getBaseContext(),
+            Toast.makeText(application.getApplicationContext(),
                     "YOU ARE NOT CONNECTED",
                     Toast.LENGTH_LONG).show();
         }

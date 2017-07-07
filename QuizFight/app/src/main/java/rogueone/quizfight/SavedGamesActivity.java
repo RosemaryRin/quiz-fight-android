@@ -80,7 +80,11 @@ public abstract class SavedGamesActivity extends AppCompatActivity implements
      * Starts the loading.
      */
     protected void getGames() {
-        getLoaderManager().restartLoader(SAVED_GAMES_LOADER, null, this);
+        if (snapshot != null) {
+            getLoaderManager().restartLoader(SAVED_GAMES_LOADER, null, this);
+        } else {
+            getLoaderManager().initLoader(SAVED_GAMES_LOADER, null, this);
+        }
     }
 
     /**

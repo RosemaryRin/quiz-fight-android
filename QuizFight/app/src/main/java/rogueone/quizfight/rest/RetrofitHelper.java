@@ -1,6 +1,9 @@
 package rogueone.quizfight.rest;
 
 
+import java.util.concurrent.TimeUnit;
+
+import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
@@ -16,9 +19,15 @@ public class RetrofitHelper {
     private static final String BASE_URL = "https://quiz-fight.herokuapp.com/";
 
     public static EndpointInterface getAPIService() {
+        final OkHttpClient okHttpClient = new OkHttpClient.Builder()
+                .readTimeout(120, TimeUnit.SECONDS)
+                .connectTimeout(120, TimeUnit.SECONDS)
+                .build();
+
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
+                .client(okHttpClient)
                 .build();
         return retrofit.create(EndpointInterface.class);
     }

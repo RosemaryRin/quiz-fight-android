@@ -68,7 +68,6 @@ public class StartDuelActivity extends SavedGamesActivity {
     private ViewPager mViewPager;
 
     private QuizFightApplication application;
-    private Snapshot snapshot;
     private final static String TAG = "StartDuelActivity";
 
     private ListView listView;
@@ -121,9 +120,12 @@ public class StartDuelActivity extends SavedGamesActivity {
                 new getGoogleUsername(facebookId).call(new Callback<User>() {
                     @Override
                     public void onResponse(Call<User> call, Response<User> response) {
-                        if (response != null) {
+                        if (response.isSuccessful()) {
                             String username = response.body().getUsername();
                             createDuel(username);
+                        }
+                        else {
+                            errorToast(duelError);
                         }
                     }
 

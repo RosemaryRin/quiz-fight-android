@@ -68,6 +68,7 @@ public class HomeActivity extends SavedGamesActivity {
     @BindView(R.id.imageview_profile) ImageView userProfileImage;
     @BindView(R.id.listview_home_duels_in_progress) ListView duelsInProgress_listview;
     @BindView(R.id.login_button) LoginButton loginButton;
+    @BindView(R.id.stats_button) Button statsButton;
 
     @BindString(R.string.unable_to_get_pending_duels) String callError;
     @BindString(R.string.win_10_duels) String win10;
@@ -154,6 +155,13 @@ public class HomeActivity extends SavedGamesActivity {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(v.getContext(), StartDuelActivity.class));
+            }
+        });
+
+        statsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(HomeActivity.this, StatsActivity.class));
             }
         });
 

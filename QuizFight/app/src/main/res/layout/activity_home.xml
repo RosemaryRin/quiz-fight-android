@@ -71,6 +71,12 @@
             android:layout_marginTop="30dp"
             android:layout_marginBottom="30dp" />
 
+        <Button
+            android:id="@+id/stats_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/show_stats"/>
+
         <TextView
             android:id="@+id/textview_home_duels_in_progress"
             android:layout_width="match_parent"

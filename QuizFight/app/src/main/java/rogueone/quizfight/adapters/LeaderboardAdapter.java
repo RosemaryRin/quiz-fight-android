@@ -1,12 +1,9 @@
 package rogueone.quizfight.adapters;
 
-/**
- * Created by Becks on 24/05/17.
- */
-
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,16 +13,18 @@ import android.widget.TextView;
 import com.google.android.gms.games.leaderboard.LeaderboardScore;
 import com.google.android.gms.games.leaderboard.LeaderboardScoreBuffer;
 
+import java.util.List;
+
 import rogueone.quizfight.R;
 
 public class LeaderboardAdapter extends ArrayAdapter<LeaderboardScore> {
     private final Context context;
-    private final LeaderboardScoreBuffer scores;
+    private final List<LeaderboardScore> entries;
 
-    public LeaderboardAdapter(Context context, LeaderboardScoreBuffer scores) {
-        super(context, -1);
+    public LeaderboardAdapter(@NonNull Context context, @NonNull List<LeaderboardScore> entries) {
+        super(context, -1, entries);
         this.context = context;
-        this.scores = scores;
+        this.entries = entries;
     }
 
     @Override
@@ -34,13 +33,15 @@ public class LeaderboardAdapter extends ArrayAdapter<LeaderboardScore> {
         View rowView = inflater.inflate(R.layout.leaderboard_row, parent, false);
 
         TextView rankView = (TextView) rowView.findViewById(R.id.textview_toprankedrow_rank);
-        rankView.setText(scores.get(position).getDisplayRank());
+        rankView.setText(entries.get(position).getDisplayRank());
+
+//      Uri urlimage = entries.get(position).getScoreHolderHiResImageUri();
 
         TextView nameView = (TextView) rowView.findViewById(R.id.textview_toprankedrow_name);
-        nameView.setText(scores.get(position).getScoreHolderDisplayName());
+        nameView.setText(entries.get(position).getScoreHolderDisplayName());
 
         TextView scoreView = (TextView) rowView.findViewById(R.id.textview_toprankedrow_score);
-        scoreView.setText(scores.get(position).getDisplayScore());
+        scoreView.setText(entries.get(position).getDisplayScore());
 
         return rowView;
     }

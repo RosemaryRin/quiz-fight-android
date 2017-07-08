@@ -289,8 +289,7 @@ public class HomeActivity extends SavedGamesActivity {
     }
 
     public void showLeaderboard(View v) {
-//        startActivity(new Intent(this, LeaderboardActivity.class));
-        startActivityForResult(Games.Leaderboards.getLeaderboardIntent(application.getClient(), getString(R.string.leaderboard_id), LeaderboardVariant.TIME_SPAN_ALL_TIME, LeaderboardVariant.COLLECTION_PUBLIC), 100);
+        startActivity(new Intent(this, LeaderboardActivity.class));
     }
 
     @Override

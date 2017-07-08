@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/linearlayout_toprankedrow_maincontainer"
     android:layout_width="match_parent"
     android:layout_height="64dip"
@@ -16,6 +17,13 @@
         android:layout_weight="0"
         android:gravity="center"
         android:textAlignment="center" />
+
+    <ImageView
+        android:id="@+id/imageview_toprankedrow_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_weight="0"
+        android:contentDescription="@string/home_usericondescription" />
 
     <TextView
         android:id="@+id/textview_toprankedrow_name"
@@ -35,4 +43,5 @@
         android:layout_weight="0"
         android:gravity="center"
         android:textAlignment="center" />
+
 </LinearLayout>

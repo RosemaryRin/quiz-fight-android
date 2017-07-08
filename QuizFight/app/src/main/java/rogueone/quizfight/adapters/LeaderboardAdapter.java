@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.android.gms.games.leaderboard.LeaderboardScore;
@@ -35,7 +36,9 @@ public class LeaderboardAdapter extends ArrayAdapter<LeaderboardScore> {
         TextView rankView = (TextView) rowView.findViewById(R.id.textview_toprankedrow_rank);
         rankView.setText(entries.get(position).getDisplayRank());
 
-//      Uri urlimage = entries.get(position).getScoreHolderHiResImageUri();
+        // TODO: fix error on uri
+//        ImageView iconView = (ImageView) rowView.findViewById(R.id.imageview_toprankedrow_icon);
+//        iconView.setImageURI(entries.get(position).getScoreHolderHiResImageUri());
 
         TextView nameView = (TextView) rowView.findViewById(R.id.textview_toprankedrow_name);
         nameView.setText(entries.get(position).getScoreHolderDisplayName());

@@ -114,6 +114,7 @@ public class FriendListAdapter extends ArrayAdapter<JSONObject> {
             }
             Bitmap bitmap = null;
             try {
+                Log.d(TAG, "Friends pic request");
                 int increment;
                 byte[] data;
                 InputStream in = null;
@@ -144,7 +145,6 @@ public class FriendListAdapter extends ArrayAdapter<JSONObject> {
                         outStream.toByteArray(), 0, data.length);
                 in.close();
                 outStream.close();
-                Log.d(TAG, "Friends pic request");
             } catch (IOException e) {
                 e.printStackTrace();
             }

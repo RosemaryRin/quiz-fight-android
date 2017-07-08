@@ -1,7 +1,6 @@
 package rogueone.quizfight;
 
 import butterknife.BindString;
-import butterknife.BindView;
 import butterknife.ButterKnife;
 import me.leolin.shortcutbadger.ShortcutBadger;
 import okhttp3.ResponseBody;
@@ -26,7 +25,6 @@ import android.preference.PreferenceManager;
 import android.provider.Settings.Secure;
 import android.support.annotation.NonNull;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.ProgressBar;
 
 import com.google.android.gms.common.ConnectionResult;

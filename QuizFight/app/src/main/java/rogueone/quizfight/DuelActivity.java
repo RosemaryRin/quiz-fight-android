@@ -264,6 +264,8 @@ public class DuelActivity extends SavedGamesActivity {
      * client and server side.
      */
     private void roundTerminated() {
+        // Set round played for this player
+        duel.getCurrentQuiz().played();
         // Call the server for remote saving the result
         new SendRoundScore(new RoundResult(
                 round.getDuelID(), round.getQuizID(),

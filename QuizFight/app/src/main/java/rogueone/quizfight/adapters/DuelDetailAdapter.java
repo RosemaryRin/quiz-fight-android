@@ -76,13 +76,21 @@ public class DuelDetailAdapter extends BaseExpandableListAdapter {
             convertView = inflater.inflate(R.layout.duel_detail_group, null);
 
         Quiz quiz = getGroup(groupPosition);
+        boolean pendingRound = !bothPlayedRound(groupPosition);
+        Log.d("Debug", "completed = " + quiz.isCompleted());
 
         TextView round = (TextView) convertView.findViewById(R.id.textview_dueldetailgroup_roundtext);
         round.setText("Round " + (groupPosition + 1));
 
         TextView score = (TextView) convertView.findViewById(R.id.textview_dueldetailgroup_roundscore);
         Score quizScore = quiz.getScore();
-        score.setText(quizScore.getPlayerScore() + " - " + quizScore.getOpponentScore());
+        if (pendingRound)
+            if (quiz.isPlayed())
+                score.setText(quizScore.getPlayerScore() + " - ?");
+            else
+                score.setText("? - ?");
+        else
+            score.setText(quizScore.getPlayerScore() + " - " + quizScore.getOpponentScore());
 
         return convertView;
     }
@@ -92,12 +100,14 @@ public class DuelDetailAdapter extends BaseExpandableListAdapter {
         if (convertView == null)
             convertView = inflater.inflate(R.layout.duel_detail_child, null);
 
+        Quiz quiz = getGroup(groupPosition);
         Question question = getChild(groupPosition, childPosition);
+        boolean pendingRound = !bothPlayedRound(groupPosition);
 
         TextView questionText = (TextView) convertView.findViewById(R.id.textview_dueldetailchild_question);
         questionText.setText("Question " + (childPosition + 1));
 
-        if (getGroup(groupPosition).isCompleted()) {
+        if (quiz.isPlayed()) { // player already played this round
             ImageView playerIcon = (ImageView) convertView.findViewById(R.id.imageview_dueldetialchild_playericon);
             if (question.getPlayerAnswer()) {
                 playerIcon.setImageResource(R.drawable.all_victory);
@@ -106,7 +116,8 @@ public class DuelDetailAdapter extends BaseExpandableListAdapter {
                 playerIcon.setImageResource(R.drawable.all_defeat);
                 playerIcon.setColorFilter(ContextCompat.getColor(convertView.getContext(), R.color.lost_duel));
             }
-
+        }
+        if (!pendingRound) {
             ImageView opponentIcon = (ImageView) convertView.findViewById(R.id.imageview_dueldetialchild_opponenticon);
             if (question.getOpponentAnswer()) {
                 opponentIcon.setImageResource(R.drawable.all_victory);
@@ -123,5 +134,15 @@ public class DuelDetailAdapter extends BaseExpandableListAdapter {
     @Override
     public boolean isChildSelectable(int groupPosition, int childPosition) {
         return false;
+    }
+
+
+    private boolean bothPlayedRound(int round) {
+        try {
+            getGroup(round + 1);
+            return true;
+        } catch (IndexOutOfBoundsException e) {
+            return false;
+        }
     }
 }

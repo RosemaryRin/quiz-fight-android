@@ -16,7 +16,7 @@
         <com.github.mikephil.charting.charts.BarChart
             android:id="@+id/duels_chart"
             android:layout_width="match_parent"
-            android:layout_height="200dp" />
+            android:layout_height="@dimen/chart_height" />
 
         <TextView
             android:layout_width="match_parent"
@@ -27,7 +27,7 @@
         <com.github.mikephil.charting.charts.BarChart
             android:id="@+id/questions_chart"
             android:layout_width="match_parent"
-            android:layout_height="200dp" />
+            android:layout_height="@dimen/chart_height" />
 
         <TextView
             android:layout_width="match_parent"
@@ -38,6 +38,6 @@
         <com.github.mikephil.charting.charts.BarChart
             android:id="@+id/round_chart"
             android:layout_width="match_parent"
-            android:layout_height="200dp" />
+            android:layout_height="@dimen/chart_height" />
     </LinearLayout>
 </ScrollView>

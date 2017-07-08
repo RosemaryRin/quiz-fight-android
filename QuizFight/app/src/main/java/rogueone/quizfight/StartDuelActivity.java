@@ -20,7 +20,6 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 
 import com.google.android.gms.games.Games;
-import com.google.android.gms.games.snapshot.Snapshot;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -49,7 +48,6 @@ import com.facebook.AccessToken;
 import org.json.JSONArray;
 import org.json.JSONException;
 
-import butterknife.ButterKnife;
 import rogueone.quizfight.adapters.FriendListAdapter;
 
 public class StartDuelActivity extends SavedGamesActivity {

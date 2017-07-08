@@ -25,15 +25,12 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedInputStream;
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLConnection;
 
 import rogueone.quizfight.R;
 
@@ -71,7 +68,7 @@ public class FriendListAdapter extends ArrayAdapter<JSONObject> {
         final ImageView iconView = (ImageView) rowView.findViewById(R.id.imageview_friendrow_icon);
         final TextView nameView = (TextView) rowView.findViewById(R.id.textview_friendrow_name);
         ProgressBar friendProgressBar = (ProgressBar) rowView.findViewById(R.id.friendProgressBar);
-        friendProgressBar.getProgressDrawable().setColorFilter(Color., PorterDuff.Mode.MULTIPLY);
+        friendProgressBar.getProgressDrawable().setColorFilter(Color.BLUE, PorterDuff.Mode.MULTIPLY);
         String friend_id;
 
         try {

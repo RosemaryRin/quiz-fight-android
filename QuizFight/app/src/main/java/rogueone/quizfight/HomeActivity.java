@@ -23,6 +23,7 @@ import com.facebook.login.widget.LoginButton;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.images.ImageManager;
 import com.google.android.gms.games.Games;
+import com.google.android.gms.games.leaderboard.LeaderboardVariant;
 
 import java.util.List;
 
@@ -288,7 +289,8 @@ public class HomeActivity extends SavedGamesActivity {
     }
 
     public void showLeaderboard(View v) {
-        startActivity(new Intent(this, LeaderboardActivity.class));
+//        startActivity(new Intent(this, LeaderboardActivity.class));
+        startActivityForResult(Games.Leaderboards.getLeaderboardIntent(application.getClient(), getString(R.string.leaderboard_id), LeaderboardVariant.TIME_SPAN_ALL_TIME, LeaderboardVariant.COLLECTION_PUBLIC), 100);
     }
 
     @Override

@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">Quiz Fight</string>
     <string name="app_id">628056279109</string>
+    <string name="facebook_app_id">1778022419175506</string>
 
     <string name="snapshot_name">quiz-fight-snapshot</string>
 
@@ -28,6 +29,7 @@
     <string name="unable_to_restore_saved_games">Not able to restore previous duels.</string>
     <string name="unable_to_start_duel">Not able to start a new duel.</string>
     <string name="unable_to_start_round">Not able to start a new round.</string>
+    <string name="unable_to_get_pending_duels">Not able to retrieve pending duels.</string>
     <string name="snapshot_error">Could not resolve snapshot conflicts</string>
 
     <string name="dueldetail_you">You</string>
@@ -61,9 +63,13 @@
     <string name="score_15_points">CgkIxZDJ2KMSEAIQEQ</string>
     <string name="score_30_points">CgkIxZDJ2KMSEAIQEA</string>
     <string name="score_45_points">CgkIxZDJ2KMSEAIQDw</string>
+    <string name="correct_answers">CgkIxZDJ2KMSEAIQBg</string>
     <string name="duels_won">CgkIxZDJ2KMSEAIQDg</string>
     <string name="corrects_answers">CgkIxZDJ2KMSEAIQBg</string>
-
+    <string name="questions_answered">CgkIxZDJ2KMSEAIQEg</string>
+    <string name="rounds_played">CgkIxZDJ2KMSEAIQEw</string>
+    <string name="rounds_won">CgkIxZDJ2KMSEAIQFA</string>
+    <string name="duels_played">CgkIxZDJ2KMSEAIQFQ</string>
     <string name="round">round</string>
 
     <string-array name="topics">

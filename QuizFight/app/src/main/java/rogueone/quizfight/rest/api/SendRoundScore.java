@@ -20,6 +20,7 @@ public class SendRoundScore extends APICaller<ResponseBody> {
     private RoundResult result;
 
     public SendRoundScore(@NonNull RoundResult result) {
+        super();
         this.result = result;
     }
 

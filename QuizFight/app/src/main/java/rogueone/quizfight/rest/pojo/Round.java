@@ -6,7 +6,12 @@ import android.os.Parcelable;
 import java.util.List;
 
 /**
- * Created by mdipirro on 27/05/17.
+ * This class represents a duel Round. It contains the duelID, the quizID (of the current round),
+ * its topic, the opponent username (Games) and a list of questions.
+ * The class implements Parcelable to be passed in a Bundle.
+ *
+ * @author Matteo Di Pirro
+ * @see Parcelable
  */
 
 public class Round implements Parcelable {

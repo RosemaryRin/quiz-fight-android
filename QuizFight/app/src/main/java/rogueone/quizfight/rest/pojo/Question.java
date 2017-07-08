@@ -6,7 +6,12 @@ import android.os.Parcelable;
 import java.util.List;
 
 /**
- * Created by mdipirro on 27/05/17.
+ * This class represents a Question. It contains the actual question text, a boolean (true iff the
+ * question if a T/F one), an int representing the correct answer index, the difficulty and a <tt>List</tt>
+ * of <tt>Option</tt>s. The class implements Parcelable to be passed in a Bundle.
+ *
+ * @author Matteo Di Pirro
+ * @see Parcelable
  */
 
 public class Question implements Parcelable {

@@ -63,6 +63,14 @@
                 android:text="@string/sign_out" />
         </LinearLayout>
 
+        <com.facebook.login.widget.LoginButton
+            android:id="@+id/login_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="30dp"
+            android:layout_marginBottom="30dp" />
+
         <TextView
             android:id="@+id/textview_home_duels_in_progress"
             android:layout_width="match_parent"

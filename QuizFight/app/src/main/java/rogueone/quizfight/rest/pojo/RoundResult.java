@@ -3,7 +3,10 @@ package rogueone.quizfight.rest.pojo;
 import android.support.annotation.NonNull;
 
 /**
- * Created by mdipirro on 30/05/17.
+ * This class represents the result of a certain round. It contains both the required information for
+ * identifying the duel server-side and the given answers (plus the score).
+ *
+ * @author Matteo Di Pirro
  */
 
 public class RoundResult {

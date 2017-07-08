@@ -10,6 +10,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.facebook.AccessToken;
@@ -68,6 +69,10 @@ public class HomeActivity extends SavedGamesActivity {
     @BindView(R.id.imageview_profile) ImageView userProfileImage;
     @BindView(R.id.listview_home_duels_in_progress) ListView duelsInProgress_listview;
     @BindView(R.id.login_button) LoginButton loginButton;
+    @BindView(R.id.indeterminateBar1) ProgressBar mProgressBar1;
+    @BindView(R.id.indeterminateBar2) ProgressBar mProgressBar2;
+    @BindView(R.id.textview_home_no_duels_in_progress) TextView noDuelsProgress;
+    @BindView(R.id.textview_home_noduels) TextView noLastDuels;
 
     @BindString(R.string.unable_to_get_pending_duels) String callError;
     @BindString(R.string.win_10_duels) String win10;
@@ -88,6 +93,9 @@ public class HomeActivity extends SavedGamesActivity {
         loginButton.setReadPermissions("email", "user_friends");
 
         callbackManager = CallbackManager.Factory.create();
+
+        noDuelsProgress.setVisibility(View.INVISIBLE);
+        noLastDuels.setVisibility(View.INVISIBLE);
 
         loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
@@ -220,10 +228,14 @@ public class HomeActivity extends SavedGamesActivity {
                     errorToast(callError);
                 }
                 updateHistory();
+                mProgressBar1.setVisibility(View.GONE);
+                mProgressBar2.setVisibility(View.GONE);
             }
 
             @Override
             public void onFailure(Call<PendingDuels> call, Throwable t) {
+                mProgressBar1.setVisibility(View.GONE);
+                mProgressBar2.setVisibility(View.GONE);
                 t.printStackTrace();
                 errorToast(callError);
             }
@@ -240,20 +252,24 @@ public class HomeActivity extends SavedGamesActivity {
         if (history != null && !history.isEmpty()) {
             List<Duel> completedDuels = history.getCompletedDuels(DUELS_SHOWN);
             List<Duel> duelsInProgress = history.getInProgressDuels(DUELS_SHOWN);
+            mProgressBar2.setVisibility(View.INVISIBLE);
             if (completedDuels.size() > 0) {
-                findViewById(R.id.textview_home_noduels).setVisibility(View.GONE);
                 findViewById(R.id.button_home_duelshistory).setVisibility(View.VISIBLE);
                 oldDuels_listview.setVisibility(View.VISIBLE);
                 final DuelSummaryAdapter complAdapter = new DuelSummaryAdapter(this, completedDuels);
                 oldDuels_listview.setAdapter(complAdapter);
                 complAdapter.notifyDataSetChanged();
+            } else {
+                noLastDuels.setVisibility(View.VISIBLE);
             }
+            mProgressBar1.setVisibility(View.GONE);
             if (duelsInProgress.size() > 0) {
-                findViewById(R.id.textview_home_no_duels_in_progress).setVisibility(View.GONE);
                 duelsInProgress_listview.setVisibility(View.VISIBLE);
                 final DuelSummaryAdapter progAdapter = new DuelSummaryAdapter(this, duelsInProgress);
                 duelsInProgress_listview.setAdapter(progAdapter);
                 progAdapter.notifyDataSetChanged();
+            } else {
+                noDuelsProgress.setVisibility(View.GONE);
             }
         }
     }

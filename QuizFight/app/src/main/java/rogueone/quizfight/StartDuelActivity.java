@@ -17,6 +17,7 @@ import android.view.ViewGroup;
 
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 
 import com.google.android.gms.games.Games;
 import com.google.android.gms.games.snapshot.Snapshot;
@@ -27,6 +28,7 @@ import java.util.List;
 import java.util.Random;
 
 import butterknife.BindString;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -71,6 +73,8 @@ public class StartDuelActivity extends SavedGamesActivity {
     private final static String TAG = "StartDuelActivity";
 
     private ListView listView;
+
+    @BindView(R.id.indeterminateBar3) ProgressBar mProgressBar;
 
     @BindString(R.string.unable_to_start_duel) String duelError;
 
@@ -122,6 +126,7 @@ public class StartDuelActivity extends SavedGamesActivity {
                     public void onResponse(Call<User> call, Response<User> response) {
                         if (response.isSuccessful()) {
                             String username = response.body().getUsername();
+                            mProgressBar.setVisibility(View.VISIBLE);
                             createDuel(username);
                         }
                         else {
@@ -147,6 +152,7 @@ public class StartDuelActivity extends SavedGamesActivity {
         )).call(new Callback<Round>() {
             @Override
             public void onResponse(Call<Round> call, Response<Round> response) {
+                mProgressBar.setVisibility(View.GONE);
                 startDuel(response.body());
             }
 

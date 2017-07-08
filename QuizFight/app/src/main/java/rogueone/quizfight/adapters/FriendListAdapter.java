@@ -7,6 +7,8 @@ package rogueone.quizfight.adapters;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -16,15 +18,22 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLConnection;
 
 import rogueone.quizfight.R;
 
@@ -61,6 +70,8 @@ public class FriendListAdapter extends ArrayAdapter<JSONObject> {
         final View rowView = inflater.inflate(R.layout.friend_row, parent, false);
         final ImageView iconView = (ImageView) rowView.findViewById(R.id.imageview_friendrow_icon);
         final TextView nameView = (TextView) rowView.findViewById(R.id.textview_friendrow_name);
+        ProgressBar friendProgressBar = (ProgressBar) rowView.findViewById(R.id.friendProgressBar);
+        friendProgressBar.getProgressDrawable().setColorFilter(Color., PorterDuff.Mode.MULTIPLY);
         String friend_id;
 
         try {
@@ -68,7 +79,7 @@ public class FriendListAdapter extends ArrayAdapter<JSONObject> {
             String friend_name = data.getString("name");
             friend_id = data.getString("id");
             nameView.setText(friend_name);
-            new PictureDownloadTask(iconView).execute(friend_id);
+            new PictureDownloadTask(iconView, friendProgressBar).execute(friend_id);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -79,13 +90,21 @@ public class FriendListAdapter extends ArrayAdapter<JSONObject> {
         return rowView;
     }
 
-    private class PictureDownloadTask extends AsyncTask<String, Void, Bitmap> {
+    private class PictureDownloadTask extends AsyncTask<String, Integer, Bitmap> {
 
         private ImageView iconView;
+        private ProgressBar friendProgressBar;
 
-        PictureDownloadTask(ImageView iconView) {
+        PictureDownloadTask(ImageView iconView, ProgressBar progressBar) {
             super();
             this.iconView = iconView;
+            this.friendProgressBar = progressBar;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            friendProgressBar.setVisibility(View.VISIBLE);
         }
 
         @Override
@@ -98,7 +117,36 @@ public class FriendListAdapter extends ArrayAdapter<JSONObject> {
             }
             Bitmap bitmap = null;
             try {
-                bitmap = BitmapFactory.decodeStream(imageURL.openConnection().getInputStream());
+                int increment;
+                byte[] data;
+                InputStream in = null;
+                int response;
+                HttpURLConnection httpConn = (HttpURLConnection) imageURL.openConnection();
+                httpConn.setInstanceFollowRedirects(true);
+                httpConn.setRequestMethod("GET");
+                httpConn.connect();
+
+                response = httpConn.getResponseCode();
+                if (response == HttpURLConnection.HTTP_OK) {
+                    in = httpConn.getInputStream();
+                }
+                int length = httpConn.getContentLength();
+
+                data = new byte[length];
+                increment = length / 100;
+                ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+                int count = -1;
+                int progress = 0;
+
+                while ((count = in.read(data, 0, increment)) != -1) {
+                    progress += count;
+                    publishProgress((progress * 100) / length);
+                    outStream.write(data, 0, count);
+                }
+                bitmap = BitmapFactory.decodeByteArray(
+                        outStream.toByteArray(), 0, data.length);
+                in.close();
+                outStream.close();
                 Log.d(TAG, "Friends pic request");
             } catch (IOException e) {
                 e.printStackTrace();
@@ -107,7 +155,14 @@ public class FriendListAdapter extends ArrayAdapter<JSONObject> {
         }
 
         @Override
+        protected void onProgressUpdate(Integer... values) {
+            super.onProgressUpdate(values);
+            friendProgressBar.setProgress(values[0]);
+        }
+
+        @Override
         protected void onPostExecute(Bitmap bitmap) {
+            friendProgressBar.setVisibility(View.GONE);
             iconView.setImageBitmap(bitmap);
             Log.d(TAG, "DownloadPic - OnPostExecute");
         }

@@ -34,6 +34,10 @@
     <string name="title_friends">FRIENDS</string>
     <string name="title_leaderboard">LEADERBOARD</string>
     <string name="random_player">Random</string>
+    <string name="show_stats">View stats</string>
+    <string name="duels_stats">Duels\' stats</string>
+    <string name="questions_stats">Questions\' stats</string>
+    <string name="rounds_stats">Rounds\' stats</string>
 
     <string name="score_dialog">You got %1$d points!</string>
     <string name="round_completed">Round completed!</string>
@@ -96,3 +100,4 @@
         <item>Science: Gadgets</item>
     </string-array>
 </resources>
+

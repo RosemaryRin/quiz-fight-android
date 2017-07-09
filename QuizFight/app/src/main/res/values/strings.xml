@@ -30,6 +30,7 @@
     <string name="unable_to_start_round">Not able to start a new round.</string>
     <string name="unable_to_get_pending_duels">Not able to retrieve pending duels.</string>
     <string name="snapshot_error">Could not resolve snapshot conflicts</string>
+    <string name="stats_error">Not able to retrieve statistics.</string>
 
     <string name="title_friends">FRIENDS</string>
     <string name="title_leaderboard">LEADERBOARD</string>

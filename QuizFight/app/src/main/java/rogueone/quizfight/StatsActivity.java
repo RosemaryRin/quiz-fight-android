@@ -28,57 +28,42 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import rogueone.quizfight.QuizFightApplication;
 import rogueone.quizfight.R;
+import rogueone.quizfight.models.Duel;
 
 /**
  * Created by mdipirro on 08/07/17.
  */
 
-public class StatsActivity extends AppCompatActivity implements ResultCallback<Events.LoadEventsResult> {
+public class StatsActivity extends SavedGamesActivity {
 
-    Map<String, Event> events;
 
     @BindView(R.id.duels_chart) BarChart duelsChart;
     @BindView(R.id.questions_chart) BarChart questionsChart;
     @BindView(R.id.round_chart) BarChart roundsChart;
 
-    @BindString(R.string.duels_won) String duelsWon;
-    @BindString(R.string.duels_played) String duelsPlayed;
-    @BindString(R.string.corrects_answers) String correctAnswers;
-    @BindString(R.string.questions_answered) String questionsAnswered;
-    @BindString(R.string.rounds_played) String roundsPlayed;
-    @BindString(R.string.rounds_won) String roundsWon;
+    @BindString(R.string.stats_error) String statsError;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_stats);
         ButterKnife.bind(this);
+    }
 
-        events = new HashMap<>();
+    @Override
+    protected void onLoadFinished(boolean success) {
+        if (success) {
+            populateUI();
+        } else {
+            errorToast(statsError);
+        }
     }
 
     @Override
     public void onResume() {
         super.onResume();
 
-        GoogleApiClient client = ((QuizFightApplication)getApplication()).getClient();
-        PendingResult<Events.LoadEventsResult> pr = Games.Events.load(client, true);
-        pr.setResultCallback(this);
-    }
-
-    @Override
-    public void onResult(@NonNull Events.LoadEventsResult result) {
-        EventBuffer eb = result.getEvents();
-
-        Log.d("EVENTS", eb.getCount() +"");
-
-        for (int i = 0; i < eb.getCount(); i++) {
-            Event event = eb.get(i);
-            events.put(event.getEventId(), event);
-            Log.d("EVENTS", event.getEventId());
-        }
-        eb.close();
-        populateUI();
+        getGames();
     }
 
     private void populateUI() {
@@ -98,14 +83,16 @@ public class StatsActivity extends AppCompatActivity implements ResultCallback<E
         roundsPlayed.add(new BarEntry(0f, Float.parseFloat(events.get(questionsAnswered).getFormattedValue())));
         roundsWon.add(new BarEntry(1f, Float.parseFloat(events.get(correctAnswers).getFormattedValue())));*/
 
-        duelsPlayed.add(new BarEntry(0f, 18f));
-        duelsWon.add(new BarEntry(1f, 10f));
+        int completedDuels = history.getCompletedDuels().size();
 
-        questionsAnswered.add(new BarEntry(0f, 90f));
-        correctAnswers.add(new BarEntry(1f, 40f));
+        duelsPlayed.add(new BarEntry(0f, completedDuels));
+        duelsWon.add(new BarEntry(1f, history.howManyWonDuels()));
 
-        roundsPlayed.add(new BarEntry(0f, 54f));
-        roundsWon.add(new BarEntry(1f, 23f));
+        questionsAnswered.add(new BarEntry(0f, completedDuels * 3 * 5));
+        correctAnswers.add(new BarEntry(1f, history.howManyCorrectAnswers()));
+
+        roundsPlayed.add(new BarEntry(0f, completedDuels * 3));
+        roundsWon.add(new BarEntry(1f, history.howManyWonRounds()));
 
         BarDataSet duelsPlayedSet = new BarDataSet(duelsPlayed, "Duels Played");
         BarDataSet duelsWonSet = new BarDataSet(duelsWon, "Duels Won");

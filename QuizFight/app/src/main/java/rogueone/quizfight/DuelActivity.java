@@ -5,6 +5,7 @@ import android.app.FragmentManager;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.Loader;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.annotation.NonNull;
@@ -84,7 +85,7 @@ public class DuelActivity extends SavedGamesActivity {
     private Duel duel;
     private boolean[] answers;
 
-    private int availableTime;
+    private long availableTime;
 
     private CountDownTimer timer; // The timer
 
@@ -123,14 +124,18 @@ public class DuelActivity extends SavedGamesActivity {
 
         application = (QuizFightApplication)getApplication();
 
-        if (configurationChanged) {
+        if (savedInstanceState != null) {
+            configurationChanged = true;
+
             count = savedInstanceState.getInt(countString);
             score = savedInstanceState.getInt(scoreString);
             answers = savedInstanceState.getBooleanArray(answersString);
             round = savedInstanceState.getParcelable(roundString);
-            availableTime = savedInstanceState.getInt(availableTimeString);
+            availableTime = savedInstanceState.getLong(availableTimeString);
 
-            initDuel();
+            getGames();
+
+            Log.d("AA", "confCh");
         } else {
             getGames();
 
@@ -145,7 +150,7 @@ public class DuelActivity extends SavedGamesActivity {
         outState.putInt(scoreString, score);
         outState.putBooleanArray(answersString, answers);
         outState.putParcelable(roundString, round);
-        outState.putInt(availableTimeString, availableTime);
+        outState.putLong(availableTimeString, availableTime);
     }
 
     /**
@@ -165,7 +170,6 @@ public class DuelActivity extends SavedGamesActivity {
             ).call(new Callback<Round>() {
                 @Override
                 public void onResponse(Call<Round> call, Response<Round> response) {
-                    Log.d("RESPONSE", response.message() + " " + response.code());
                     if (response.isSuccessful()) {
                         round = response.body();
                         initDuel();
@@ -212,9 +216,8 @@ public class DuelActivity extends SavedGamesActivity {
     private void setupTimer() {
         timer = new CountDownTimer(availableTime, 1000) {
             public void onTick(long millisUntilFinished) {
-                availableTime = (int)millisUntilFinished * 100 / ALLOWED_TIME;
-                progressBar.setProgress(availableTime);
-
+                availableTime = millisUntilFinished;
+                progressBar.setProgress((int)millisUntilFinished * 100 / ALLOWED_TIME);
             }
 
             public void onFinish() {
@@ -296,6 +299,7 @@ public class DuelActivity extends SavedGamesActivity {
      * client and server side.
      */
     private void roundTerminated() {
+        Log.d("AA", score + "");
         // Call the server for remote saving the result
         new SendRoundScore(new RoundResult(
                 round.getDuelID(), round.getQuizID(),
@@ -408,14 +412,19 @@ public class DuelActivity extends SavedGamesActivity {
         if (timer != null) {
             timer.cancel(); // stop the timer
         }
+    }
+
+    @Override
+    protected void onDestroy() {
         // Close the round as a surrender if the user hasn't answered every question
-        if (count < QUESTIONS_PER_ROUND) {
+        if (!isChangingConfigurations() && count < QUESTIONS_PER_ROUND) {
             for (int i = 0; i < QUESTIONS_PER_ROUND; i++) {
                 answers[i] = false;
             }
             score = 0;
             roundTerminated();
         }
+        super.onDestroy();
     }
 
     /**
@@ -425,7 +434,11 @@ public class DuelActivity extends SavedGamesActivity {
     @Override
     protected void onLoadFinished(boolean success) {
         if (success) {
-            setup();
+            if (configurationChanged) {
+                initDuel();
+            } else {
+                setup();
+            }
         } else {
             errorToast(errorRound);
         }

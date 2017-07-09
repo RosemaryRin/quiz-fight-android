@@ -1,13 +1,11 @@
 package rogueone.quizfight.models;
 
 import android.support.annotation.NonNull;
-import android.util.Log;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Vector;
 
 /**
  * This class represents the user's history saved in Google Saved Games. It implements

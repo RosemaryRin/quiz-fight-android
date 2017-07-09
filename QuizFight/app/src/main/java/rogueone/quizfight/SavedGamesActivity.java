@@ -1,11 +1,9 @@
 package rogueone.quizfight;
 
-import android.app.FragmentManager;
 import android.app.LoaderManager;
 import android.content.Loader;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.Toast;
@@ -17,7 +15,6 @@ import java.io.IOException;
 import rogueone.quizfight.fragments.SavedGamesFragment;
 import rogueone.quizfight.loaders.SavedGamesLoader;
 import rogueone.quizfight.models.History;
-import rogueone.quizfight.utils.SavedGames;
 
 import static rogueone.quizfight.utils.SavedGames.byteToHistory;
 
@@ -53,6 +50,7 @@ public abstract class SavedGamesActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
 
         savedGamesFragment = (SavedGamesFragment) getFragmentManager().findFragmentByTag(SAVED_GAMES_FRAGMENT);
+        Log.d("CONF", savedGamesFragment + "");
         if (savedGamesFragment != null) {
             history = savedGamesFragment.getHistory();
             snapshot = savedGamesFragment.getSnapshot();

@@ -18,6 +18,7 @@ import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.Profile;
+import com.facebook.ProfileTracker;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -58,6 +59,7 @@ public class HomeActivity extends SavedGamesActivity {
 
     private QuizFightApplication application;
     private CallbackManager callbackManager;
+    private ProfileTracker profileTracker;
     private AccessToken accessToken;
     private AccessTokenTracker accessTokenTracker;
 
@@ -93,21 +95,35 @@ public class HomeActivity extends SavedGamesActivity {
             @Override
             public void onSuccess(LoginResult loginResult) {
                 Log.d(TAG, "Facebook login request success");
-                accessToken = AccessToken.getCurrentAccessToken();
-                new sendFacebookId(
-                        Games.Players.getCurrentPlayer(application.getClient()).getDisplayName(),
-                        Profile.getCurrentProfile().getId())
-                        .call(new Callback<User>() {
-                            @Override
-                            public void onResponse(Call<User> call, Response<User> response) {
-                                Log.d(TAG, response.message());
-                            }
+                accessToken = loginResult.getAccessToken();
+                accessTokenTracker = new AccessTokenTracker() {
+                    @Override
+                    protected void onCurrentAccessTokenChanged(AccessToken oldAccessToken, AccessToken currentAccessToken) {
+                        accessTokenTracker.stopTracking();
+                    }
+                };
+                profileTracker = new ProfileTracker() {
+                    @Override
+                    protected void onCurrentProfileChanged(Profile oldProfile, Profile currentProfile) {
+                        profileTracker.stopTracking();
+                    }
+                };
+                if (Profile.getCurrentProfile() != null) {
+                    new sendFacebookId(
+                            Games.Players.getCurrentPlayer(application.getClient()).getDisplayName(),
+                            Profile.getCurrentProfile().getId()
+                    ).call(new Callback<User>() {
+                        @Override
+                        public void onResponse(Call<User> call, Response<User> response) {
+                            Log.d(TAG, response.message());
+                        }
 
-                            @Override
-                            public void onFailure(Call<User> call, Throwable t) {
-                                t.printStackTrace();
-                            }
-                        });
+                        @Override
+                        public void onFailure(Call<User> call, Throwable t) {
+                            t.printStackTrace();
+                        }
+                    });
+                }
             }
 
             @Override
@@ -120,13 +136,6 @@ public class HomeActivity extends SavedGamesActivity {
                 Log.d(TAG, "Facebook login request Error");
             }
         });
-
-        accessTokenTracker = new AccessTokenTracker() {
-            @Override
-            protected void onCurrentAccessTokenChanged(AccessToken oldAccessToken, AccessToken currentAccessToken) {
-                accessToken = currentAccessToken;
-            }
-        };
 
         // setting username from login
         username.setText(Games.Players.getCurrentPlayer(
@@ -269,6 +278,7 @@ public class HomeActivity extends SavedGamesActivity {
     public void onDestroy() {
         super.onDestroy();
         application.getClient().disconnect();
+        profileTracker.stopTracking();
     }*/
 
     //FIXME temporary

@@ -35,6 +35,7 @@ import retrofit2.Response;
 import rogueone.quizfight.adapters.DuelSummaryAdapter;
 import rogueone.quizfight.listeners.DuelDetailListener;
 import rogueone.quizfight.models.Duel;
+import rogueone.quizfight.models.Quiz;
 import rogueone.quizfight.rest.api.sendFacebookId;
 import rogueone.quizfight.rest.pojo.User;
 import rogueone.quizfight.models.History;
@@ -170,6 +171,10 @@ public class HomeActivity extends SavedGamesActivity {
         for (Duel duel : history.getInProgressDuels()) {
             duelIDs += duel.getDuelID() + ",";
         }
+
+        for (Duel duel : history.getCompletedDuels()) {
+            duelIDs += duel.getDuelID() + ",";
+        }
         // If there are no pending duels, send a dummy string just to fill in the parameter
         duelIDs = (duelIDs.length() - 1 > 0) ? duelIDs.substring(0, duelIDs.length() - 1) : "dummy";
         new GetProgress(
@@ -184,32 +189,36 @@ public class HomeActivity extends SavedGamesActivity {
                         Duel duel = history.getDuelByID(pendingDuel.getDuelID());
                         if (duel != null) { //existing duel
                             // Get the indexes for updating an existing duel
-                            int index = 0, currentQuizIndex = duel.getQuizzes().size() - 1;
-                            // If the player completed the round (1st condition) and if the opponent
-                            // answered (2nd condition) save the result
-                            if (currentQuizIndex < pendingDuel.getAnswers().length &&
-                                    index < pendingDuel.getAnswers()[currentQuizIndex].length) {
-                                // For each new question save the opponent's answer
-                                for (Question question : duel.getCurrentQuiz().getQuestions()) {
-                                    question.setOpponentAnswer(pendingDuel.getAnswers()[currentQuizIndex][index++]);
-                                }
-                                Score roundScore = duel.getCurrentQuiz().getScore();
-                                if (roundScore.getPlayerScore() > roundScore.getOpponentScore()) {
-                                    Games.Events.increment(client, roundsWon, 1);
-                                }
-                                // If both the two players completed the duel, set it as complete
-                                duel.getCurrentQuiz().complete();
-                                if (duel.getQuizzes().size() == 3) {
-                                    Score score = duel.getScore();
-                                    if (score.getPlayerScore() > score.getOpponentScore()) {
-                                        Games.Achievements.increment(client, win10, 1);
-                                        Games.Achievements.increment(client, win50, 1);
-                                        Games.Achievements.increment(client, win100, 1);
-                                        Games.Achievements.increment(client, win200, 1);
-                                        Games.Events.increment(client, duelsWon, 1);
+                            int currentQuizIndex = duel.getQuizzes().size() - 1;
+
+                            for (int ci = 0; ci <= currentQuizIndex; ci ++) {
+                                int index = 0;
+                                // If the player completed the round (1st condition) and if the opponent
+                                // answered (2nd condition) save the result
+                                if (ci < pendingDuel.getAnswers().length &&
+                                        index < pendingDuel.getAnswers()[ci].length) {
+                                    // For each new question save the opponent's answer
+                                    for (Question question : duel.getCurrentQuiz().getQuestions()) {
+                                        question.setOpponentAnswer(pendingDuel.getAnswers()[ci][index++]);
                                     }
+                                    Score roundScore = duel.getCurrentQuiz().getScore();
+                                    if (roundScore.getPlayerScore() > roundScore.getOpponentScore()) {
+                                        Games.Events.increment(client, roundsWon, 1);
+                                    }
+                                    // If both the two players completed the duel, set it as completecomplete
+                                    duel.getCurrentQuiz().complete();
+                                    if (duel.getQuizzes().size() == 3) {
+                                        Score score = duel.getScore();
+                                        if (score.getPlayerScore() > score.getOpponentScore()) {
+                                            Games.Achievements.increment(client, win10, 1);
+                                            Games.Achievements.increment(client, win50, 1);
+                                            Games.Achievements.increment(client, win100, 1);
+                                            Games.Achievements.increment(client, win200, 1);
+                                            Games.Events.increment(client, duelsWon, 1);
+                                        }
+                                    }
+                                    history.setDuelByID(duel);
                                 }
-                                history.setDuelByID(duel);
                             }
                         } else { // new duel
                             history.addDuel(new Duel(pendingDuel.getDuelID(), pendingDuel.getOpponent()));

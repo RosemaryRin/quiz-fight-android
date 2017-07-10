@@ -76,15 +76,16 @@ public class DuelDetailAdapter extends BaseExpandableListAdapter {
             convertView = inflater.inflate(R.layout.duel_detail_group, null);
 
         Quiz quiz = getGroup(groupPosition);
-        boolean pendingRound = !bothPlayedRound(groupPosition);
+        Log.d("Debug", "Round " + (groupPosition + 1));
         Log.d("Debug", "completed = " + quiz.isCompleted());
+        Log.d("Debug", "played = " + quiz.isPlayed());
 
         TextView round = (TextView) convertView.findViewById(R.id.textview_dueldetailgroup_roundtext);
         round.setText("Round " + (groupPosition + 1));
 
         TextView score = (TextView) convertView.findViewById(R.id.textview_dueldetailgroup_roundscore);
         Score quizScore = quiz.getScore();
-        if (pendingRound)
+        if (!quiz.isCompleted())
             if (quiz.isPlayed())
                 score.setText(quizScore.getPlayerScore() + " - ?");
             else
@@ -102,7 +103,6 @@ public class DuelDetailAdapter extends BaseExpandableListAdapter {
 
         Quiz quiz = getGroup(groupPosition);
         Question question = getChild(groupPosition, childPosition);
-        boolean pendingRound = !bothPlayedRound(groupPosition);
 
         TextView questionText = (TextView) convertView.findViewById(R.id.textview_dueldetailchild_question);
         questionText.setText("Question " + (childPosition + 1));
@@ -117,7 +117,7 @@ public class DuelDetailAdapter extends BaseExpandableListAdapter {
                 playerIcon.setColorFilter(ContextCompat.getColor(convertView.getContext(), R.color.lost_duel));
             }
         }
-        if (!pendingRound) {
+        if (quiz.isCompleted()) {
             ImageView opponentIcon = (ImageView) convertView.findViewById(R.id.imageview_dueldetialchild_opponenticon);
             if (question.getOpponentAnswer()) {
                 opponentIcon.setImageResource(R.drawable.all_victory);
@@ -136,13 +136,4 @@ public class DuelDetailAdapter extends BaseExpandableListAdapter {
         return false;
     }
 
-
-    private boolean bothPlayedRound(int round) {
-        try {
-            getGroup(round + 1);
-            return true;
-        } catch (IndexOutOfBoundsException e) {
-            return false;
-        }
-    }
 }

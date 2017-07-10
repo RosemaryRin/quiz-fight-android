@@ -198,8 +198,8 @@ public class HomeActivity extends SavedGamesActivity {
                                     Games.Events.increment(client, roundsWon, 1);
                                 }
                                 // If both the two players completed the duel, set it as complete
+                                duel.getCurrentQuiz().complete();
                                 if (duel.getQuizzes().size() == 3) {
-                                    duel.getCurrentQuiz().complete();
                                     Score score = duel.getScore();
                                     if (score.getPlayerScore() > score.getOpponentScore()) {
                                         Games.Achievements.increment(client, win10, 1);

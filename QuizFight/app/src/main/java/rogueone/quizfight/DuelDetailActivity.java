@@ -3,6 +3,7 @@ package rogueone.quizfight;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.BaseExpandableListAdapter;
+import android.widget.Button;
 import android.widget.ExpandableListView;
 import android.widget.TextView;
 
@@ -18,6 +19,16 @@ public class DuelDetailActivity extends AppCompatActivity {
         setContentView(R.layout.activity_duel_detail);
 
         Duel duel = (Duel) getIntent().getSerializableExtra("Duel");
+
+        // fight/waiting button
+        Button button = (Button) findViewById(R.id.button_dueldetail_fight);
+        if (duel.getCurrentQuiz().isPlayed()) {
+            button.setText(R.string.dueldetail_waitingforopponent);
+            button.setEnabled(false);
+        } else {
+            button.setText(R.string.dueldetail_fight);
+            button.setEnabled(true);
+        }
 
         // opponent name
         TextView opponentName = (TextView) findViewById(R.id.textview_dueldetail_opponent);

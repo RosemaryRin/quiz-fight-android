@@ -33,6 +33,8 @@
     <string name="snapshot_error">Could not resolve snapshot conflicts</string>
 
     <string name="dueldetail_you">You</string>
+    <string name="dueldetail_fight">Fight</string>
+    <string name="dueldetail_waitingforopponent">Waiting for opponent...</string>
     <string name="dueldetail_questionicon">A check if given answer is correct, a cross otherwise</string>
 
     <string name="title_friends">FRIENDS</string>

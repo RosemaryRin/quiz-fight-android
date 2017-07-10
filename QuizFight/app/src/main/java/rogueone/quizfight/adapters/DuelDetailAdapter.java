@@ -76,9 +76,6 @@ public class DuelDetailAdapter extends BaseExpandableListAdapter {
             convertView = inflater.inflate(R.layout.duel_detail_group, null);
 
         Quiz quiz = getGroup(groupPosition);
-        Log.d("Debug", "Round " + (groupPosition + 1));
-        Log.d("Debug", "completed = " + quiz.isCompleted());
-        Log.d("Debug", "played = " + quiz.isPlayed());
 
         TextView round = (TextView) convertView.findViewById(R.id.textview_dueldetailgroup_roundtext);
         round.setText("Round " + (groupPosition + 1));

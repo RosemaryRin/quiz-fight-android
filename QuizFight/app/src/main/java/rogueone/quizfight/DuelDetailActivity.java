@@ -1,7 +1,9 @@
 package rogueone.quizfight;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.Button;
 import android.widget.ExpandableListView;
@@ -13,15 +15,29 @@ import rogueone.quizfight.models.Score;
 
 public class DuelDetailActivity extends AppCompatActivity {
 
+    String duelId;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_duel_detail);
 
-        Duel duel = (Duel) getIntent().getSerializableExtra("Duel");
+        duelId = getResources().getString(R.string.duel_id);
+
+        final Duel duel = (Duel) getIntent().getSerializableExtra("Duel");
 
         // fight/waiting button
         Button button = (Button) findViewById(R.id.button_dueldetail_fight);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(DuelDetailActivity.this, DuelActivity.class);
+
+                intent.putExtra(duelId, duel.getDuelID());
+
+                startActivity(intent);
+            }
+        });
         if (duel.getCurrentQuiz().isPlayed()) {
             button.setText(R.string.dueldetail_waitingforopponent);
             button.setEnabled(false);

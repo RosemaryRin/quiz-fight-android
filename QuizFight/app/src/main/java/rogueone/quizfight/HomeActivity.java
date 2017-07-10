@@ -190,7 +190,7 @@ public class HomeActivity extends SavedGamesActivity {
                             // Get the indexes for updating an existing duel
                             int currentQuizIndex = duel.getQuizzes().size() - 1;
 
-                            for (int ci = 0; ci < currentQuizIndex; ci ++) {
+                            for (int ci = 0; ci <= currentQuizIndex; ci ++) {
                                 int index = 0;
                                 // If the player completed the round (1st condition) and if the opponent
                                 // answered (2nd condition) save the result

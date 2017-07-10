@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import rogueone.quizfight.adapters.DuelDetailAdapter;
 import rogueone.quizfight.models.Duel;
+import rogueone.quizfight.models.Quiz;
 import rogueone.quizfight.models.Score;
 
 public class DuelDetailActivity extends AppCompatActivity {
@@ -25,26 +26,32 @@ public class DuelDetailActivity extends AppCompatActivity {
         duelId = getResources().getString(R.string.duel_id);
 
         final Duel duel = (Duel) getIntent().getSerializableExtra("Duel");
+        final Quiz currentQuiz = duel.getCurrentQuiz();
 
         // fight/waiting button
         Button button = (Button) findViewById(R.id.button_dueldetail_fight);
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(DuelDetailActivity.this, DuelActivity.class);
 
-                intent.putExtra(duelId, duel.getDuelID());
+        if (duel.getQuizzes().size() < 3 || !currentQuiz.isCompleted()) {
+            button.setVisibility(View.VISIBLE);
+            button.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(DuelDetailActivity.this, DuelActivity.class);
 
-                startActivity(intent);
+                    intent.putExtra(duelId, duel.getDuelID());
+
+                    startActivity(intent);
+                }
+            });
+            if (currentQuiz.isCompleted() || !currentQuiz.isPlayed()){
+                button.setText(R.string.dueldetail_fight);
+                button.setEnabled(true);
+            } else {
+                button.setText(R.string.dueldetail_waitingforopponent);
+                button.setEnabled(false);
             }
-        });
-        if (duel.getCurrentQuiz().isPlayed()) {
-            button.setText(R.string.dueldetail_waitingforopponent);
-            button.setEnabled(false);
-        } else {
-            button.setText(R.string.dueldetail_fight);
-            button.setEnabled(true);
-        }
+        } else
+            button.setVisibility(View.GONE);
 
         // opponent name
         TextView opponentName = (TextView) findViewById(R.id.textview_dueldetail_opponent);

@@ -1,5 +1,6 @@
 package rogueone.quizfight;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -37,6 +38,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import rogueone.quizfight.adapters.LeaderboardAdapter;
+import rogueone.quizfight.listeners.LeaderboardDuelListener;
 import rogueone.quizfight.models.Duel;
 import rogueone.quizfight.rest.api.NewDuel;
 import rogueone.quizfight.rest.api.getGoogleUsername;
@@ -77,6 +79,7 @@ public class StartDuelActivity extends SavedGamesActivity {
     private ViewPager mViewPager;
 
     private static QuizFightApplication application;
+    private static Activity activity;
     private final static String TAG = "StartDuelActivity";
 
     private static List<LeaderboardScore> lbEntries;
@@ -93,6 +96,7 @@ public class StartDuelActivity extends SavedGamesActivity {
         ButterKnife.bind(this);
 
         application = (QuizFightApplication)getApplication();
+        activity = this;
         getGames();
     }
 
@@ -253,14 +257,14 @@ public class StartDuelActivity extends SavedGamesActivity {
                                 for (int i = 0; i < lsb.getCount(); i++)
                                     lbEntries.add(lsb.get(i));
 
-                                Log.d("Debug", ""+lbEntries.size());
-
                                 listView = (ListView) rootView.findViewById(R.id.listview_startduel_list);
 
                                 listView.setVisibility(View.VISIBLE);
 
                                 final LeaderboardAdapter adapter = new LeaderboardAdapter(ctx, lbEntries);
                                 listView.setAdapter(adapter);
+
+                                listView.setOnItemClickListener(new LeaderboardDuelListener(activity));
                             }
                         });
             }

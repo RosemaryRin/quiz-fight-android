@@ -36,7 +36,6 @@ import rogueone.quizfight.adapters.DuelSummaryAdapter;
 import rogueone.quizfight.models.Duel;
 import rogueone.quizfight.rest.api.sendFacebookId;
 import rogueone.quizfight.rest.pojo.User;
-import rogueone.quizfight.models.History;
 import rogueone.quizfight.models.Question;
 import rogueone.quizfight.models.Score;
 import rogueone.quizfight.rest.api.GetProgress;

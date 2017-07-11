@@ -1,12 +1,12 @@
 package rogueone.quizfight.rest.api;
 
-import android.content.Context;
 import android.support.annotation.NonNull;
 import android.widget.Toast;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import rogueone.quizfight.QuizFightApplication;
+import rogueone.quizfight.R;
 import rogueone.quizfight.rest.EndpointInterface;
 import rogueone.quizfight.rest.RetrofitHelper;
 
@@ -37,7 +37,7 @@ public abstract class APICaller<T> {
         }
         else {
             Toast.makeText(application.getApplicationContext(),
-                    "YOU ARE NOT CONNECTED",
+                    application.getApplicationContext().getResources().getString(R.string.connectivity_error),
                     Toast.LENGTH_LONG).show();
         }
     }

@@ -8,9 +8,6 @@ import android.support.annotation.NonNull;
 
 import com.facebook.FacebookSdk;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.games.snapshot.Snapshot;
-
-import rogueone.quizfight.models.History;
 
 /**
  * This class extends the Application class and is used for storing objects and share them across

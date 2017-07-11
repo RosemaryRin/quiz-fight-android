@@ -17,6 +17,7 @@ import android.view.ViewGroup;
 
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.google.android.gms.games.Games;
 
@@ -218,6 +219,10 @@ public class StartDuelActivity extends SavedGamesActivity {
                     && AccessToken.getCurrentAccessToken() != null
                     && application.checkConnection(getContext())) { // friends tab
                 friendsNamesRequest(rootView);
+            } else if (!application.checkConnection(getContext())) {
+                Toast.makeText(getContext(),
+                        getResources().getString(R.string.connectivity_error),
+                        Toast.LENGTH_LONG).show();
             }
 
             /*if (getArguments().getInt(ARG_SECTION_NUMBER) == 1) { // friends tab

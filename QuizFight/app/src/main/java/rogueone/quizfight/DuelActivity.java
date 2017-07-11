@@ -105,6 +105,7 @@ public class DuelActivity extends SavedGamesActivity {
     @BindString(R.string.correct_answers) String correctAnswers;
     @BindString(R.string.rounds_played) String roundsPlayed;
     @BindString(R.string.questions_answered) String questionsAnswered;
+    @BindString(R.string.leaderboard_id) String leaderboardId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -296,6 +297,9 @@ public class DuelActivity extends SavedGamesActivity {
         }
         history.setDuelByID(duel);
         SavedGames.writeSnapshot(snapshot, history, "", application.getClient());
+
+        // adding score to leaderboard
+//        Games.Leaderboards.submitScore(application.getClient(), leaderboardId, score);
 
         showScoreDialog();
     }

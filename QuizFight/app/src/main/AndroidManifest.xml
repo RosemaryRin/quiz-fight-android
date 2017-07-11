@@ -30,15 +30,14 @@
         </activity>
         <activity
             android:name=".HomeActivity"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:launchMode="singleTask">
-        </activity>
+            android:launchMode="singleTask"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
         <activity
             android:name=".StartDuelActivity"
             android:label="@string/title_activity_start_duel"
+            android:noHistory="true"
             android:parentActivityName=".HomeActivity"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:noHistory="true">
+            android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="rogueone.quizfight.HomeActivity" />
@@ -46,9 +45,9 @@
         <activity
             android:name=".DuelActivity"
             android:label="@string/title_activity_duel"
+            android:noHistory="true"
             android:parentActivityName=".HomeActivity"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:noHistory="true">
+            android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="rogueone.quizfight.HomeActivity" />
@@ -67,6 +66,13 @@
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="rogueone.quizfight.DuelsHistoryActivity" />
+        <activity
+            android:name=".LeaderboardActivity"
+            android:label="@string/title_activity_leaderboard"
+            android:parentActivityName=".HomeActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="rogueone.quizfight.HomeActivity" />
         </activity>
 
         <service android:name=".services.CustomFirebaseInstanceID">
@@ -89,10 +95,12 @@
             </intent-filter>
         </receiver>
 
-        <meta-data android:name="com.google.android.gms.games.APP_ID"
+        <meta-data
+            android:name="com.google.android.gms.games.APP_ID"
             android:value="@string/app_id" />
-        <meta-data android:name="com.facebook.sdk.ApplicationId"
-            android:value="@string/facebook_app_id"/>
+        <meta-data
+            android:name="com.facebook.sdk.ApplicationId"
+            android:value="@string/facebook_app_id" />
     </application>
 
 </manifest>

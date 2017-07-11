@@ -9,6 +9,7 @@
     <string name="title_activity_duels_history">Duels History</string>
     <string name="title_activity_duel_detail">Duel Detail</string>
     <string name="title_activity_duel">Duel</string>
+    <string name="title_activity_leaderboard">Leaderboard</string>
 
     <string name="action_settings">Settings</string>
 
@@ -16,6 +17,8 @@
     <string name="all_noduels">No duels found</string>
 
     <string name="home_usericondescription">User image</string>
+    <string name="home_logoicondescription">Quiz Fight</string>
+    <string name="home_leaderboardicondescription">Leaderboard</string>
     <string name="home_lastduels">Last duels:</string>
     <string name="home_duels_in_progress">Duels in progress:</string>
     <string name="home_viewhistory">View all duels</string>
@@ -31,6 +34,8 @@
     <string name="unable_to_start_round">Not able to start a new round.</string>
     <string name="unable_to_get_pending_duels">Not able to retrieve pending duels.</string>
     <string name="snapshot_error">Could not resolve snapshot conflicts</string>
+    <string name="no_facebook_friends">None of your friends on Facebook use QuizFight. Go tell them!</string>
+    <string name="no_facebook_access">You must login with Facebook to see your friends</string>
 
     <string name="dueldetail_you">You</string>
     <string name="dueldetail_fight">Fight</string>

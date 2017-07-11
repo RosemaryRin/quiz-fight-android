@@ -17,9 +17,9 @@ import android.view.ViewGroup;
 
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.google.android.gms.games.Games;
-import com.google.android.gms.games.snapshot.Snapshot;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -47,7 +47,6 @@ import com.facebook.AccessToken;
 import org.json.JSONArray;
 import org.json.JSONException;
 
-import butterknife.ButterKnife;
 import rogueone.quizfight.adapters.FriendListAdapter;
 
 public class StartDuelActivity extends SavedGamesActivity {
@@ -219,6 +218,11 @@ public class StartDuelActivity extends SavedGamesActivity {
             if (getArguments().getInt(ARG_SECTION_NUMBER) == 1
                     && AccessToken.getCurrentAccessToken() != null) { // friends tab
                 friendsNamesRequest(rootView);
+            } else if (AccessToken.getCurrentAccessToken() == null) {
+                AccessToken token = AccessToken.getCurrentAccessToken();
+                Toast.makeText(getContext(),
+                        getResources().getString(R.string.no_facebook_access),
+                        Toast.LENGTH_LONG).show();
             }
 
             /*if (getArguments().getInt(ARG_SECTION_NUMBER) == 1) { // friends tab
@@ -273,6 +277,11 @@ public class StartDuelActivity extends SavedGamesActivity {
                                 try {
                                     JSONArray friends = response.getJSONObject()
                                             .getJSONArray("data");
+                                    if (friends.length() == 0) {
+                                        Toast.makeText(getContext(), getResources().
+                                                getString(R.string.no_facebook_friends),
+                                                Toast.LENGTH_LONG).show();
+                                    }
                                     setFriendsAdapter(friends, rootView);
                                 } catch (JSONException e) {
                                     e.printStackTrace();

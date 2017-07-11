@@ -38,7 +38,6 @@ import rogueone.quizfight.models.Duel;
 import rogueone.quizfight.models.Quiz;
 import rogueone.quizfight.rest.api.sendFacebookId;
 import rogueone.quizfight.rest.pojo.User;
-import rogueone.quizfight.models.History;
 import rogueone.quizfight.models.Question;
 import rogueone.quizfight.models.Score;
 import rogueone.quizfight.rest.api.GetProgress;
@@ -309,8 +308,11 @@ public class HomeActivity extends SavedGamesActivity {
             editor.putBoolean(getString(R.string.signed_in), false);
             editor.apply();
 
-            startActivity(new Intent(this, SignInActivity.class));
         }
+    }
+
+    public void showLeaderboard(View v) {
+        startActivity(new Intent(this, LeaderboardActivity.class));
     }
 
     @Override

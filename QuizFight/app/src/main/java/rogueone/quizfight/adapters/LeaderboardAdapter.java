@@ -3,7 +3,6 @@ package rogueone.quizfight.adapters;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,8 +10,8 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.android.gms.common.images.ImageManager;
 import com.google.android.gms.games.leaderboard.LeaderboardScore;
-import com.google.android.gms.games.leaderboard.LeaderboardScoreBuffer;
 
 import java.util.List;
 
@@ -36,9 +35,9 @@ public class LeaderboardAdapter extends ArrayAdapter<LeaderboardScore> {
         TextView rankView = (TextView) rowView.findViewById(R.id.textview_toprankedrow_rank);
         rankView.setText(entries.get(position).getDisplayRank());
 
-        // TODO: fix error on uri
-//        ImageView iconView = (ImageView) rowView.findViewById(R.id.imageview_toprankedrow_icon);
-//        iconView.setImageURI(entries.get(position).getScoreHolderHiResImageUri());
+        ImageView iconView = (ImageView) rowView.findViewById(R.id.imageview_toprankedrow_icon);
+        ImageManager mgr = ImageManager.create(getContext());
+        mgr.loadImage(iconView, entries.get(position).getScoreHolderHiResImageUri());
 
         TextView nameView = (TextView) rowView.findViewById(R.id.textview_toprankedrow_name);
         nameView.setText(entries.get(position).getScoreHolderDisplayName());

@@ -75,6 +75,8 @@
     <string name="duels_played">CgkIxZDJ2KMSEAIQFQ</string>
     <string name="round">round</string>
 
+    <string name="compl_duels">completed_duels</string>
+
     <string-array name="topics">
         <item>General Knowledge</item>
         <item>Entertainment: Books</item>

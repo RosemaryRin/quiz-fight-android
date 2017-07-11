@@ -36,24 +36,46 @@ import rogueone.quizfight.models.Duel;
 
 public class StatsActivity extends SavedGamesActivity {
 
+    private boolean configurationChanged;
+    private boolean loadFinished;
+    private int howManyDuelsWon;
+    private int howManyCorrectAnswers;
+    private int howManyRoundsWon;
+    private int completedDuels;
 
     @BindView(R.id.duels_chart) BarChart duelsChart;
     @BindView(R.id.questions_chart) BarChart questionsChart;
     @BindView(R.id.round_chart) BarChart roundsChart;
 
     @BindString(R.string.stats_error) String statsError;
+    @BindString(R.string.compl_duels) String completedDuelsString;
+    @BindString(R.string.duels_won) String duelsWonString;
+    @BindString(R.string.correct_answers) String correctAnswrsString;
+    @BindString(R.string.rounds_won) String roundsWonString;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_stats);
         ButterKnife.bind(this);
+
+        if (savedInstanceState != null) {
+            configurationChanged = true;
+
+            completedDuels = savedInstanceState.getInt(completedDuelsString);
+            howManyDuelsWon = savedInstanceState.getInt(duelsWonString);
+            howManyCorrectAnswers = savedInstanceState.getInt(correctAnswrsString);
+            howManyRoundsWon = savedInstanceState.getInt(roundsWonString);
+
+            loadFinished = true;
+        }
     }
 
     @Override
     protected void onLoadFinished(boolean success) {
         if (success) {
             populateUI();
+            Games.Snapshots.discardAndClose(((QuizFightApplication)getApplication()).getClient(), snapshot);
         } else {
             errorToast(statsError);
         }
@@ -63,7 +85,21 @@ public class StatsActivity extends SavedGamesActivity {
     public void onResume() {
         super.onResume();
 
-        getGames();
+        if (!configurationChanged) {
+            getGames();
+        } else {
+            populateUI();
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        if (loadFinished) {
+            outState.putInt(completedDuelsString, completedDuels);
+            outState.putInt(duelsWonString, howManyDuelsWon);
+            outState.putInt(correctAnswrsString, howManyCorrectAnswers);
+            outState.putInt(roundsWonString, howManyRoundsWon);
+        }
     }
 
     private void populateUI() {
@@ -83,53 +119,61 @@ public class StatsActivity extends SavedGamesActivity {
         roundsPlayed.add(new BarEntry(0f, Float.parseFloat(events.get(questionsAnswered).getFormattedValue())));
         roundsWon.add(new BarEntry(1f, Float.parseFloat(events.get(correctAnswers).getFormattedValue())));*/
 
-        int completedDuels = history.getCompletedDuels().size();
+        if (!configurationChanged) {
+            completedDuels = history.getCompletedDuels().size();
+            howManyDuelsWon = history.howManyWonDuels();
+            howManyCorrectAnswers = history.howManyCorrectAnswers();
+            howManyRoundsWon = history.howManyWonRounds();
+            loadFinished = true;
+        }
 
-        duelsPlayed.add(new BarEntry(0f, completedDuels));
-        duelsWon.add(new BarEntry(1f, history.howManyWonDuels()));
+        if (completedDuels > 0) {
+            duelsPlayed.add(new BarEntry(0f, completedDuels));
+            duelsWon.add(new BarEntry(1f, howManyDuelsWon));
 
-        questionsAnswered.add(new BarEntry(0f, completedDuels * 3 * 5));
-        correctAnswers.add(new BarEntry(1f, history.howManyCorrectAnswers()));
+            questionsAnswered.add(new BarEntry(0f, completedDuels * 3 * 5));
+            correctAnswers.add(new BarEntry(1f, howManyCorrectAnswers));
 
-        roundsPlayed.add(new BarEntry(0f, completedDuels * 3));
-        roundsWon.add(new BarEntry(1f, history.howManyWonRounds()));
+            roundsPlayed.add(new BarEntry(0f, completedDuels * 3));
+            roundsWon.add(new BarEntry(1f, howManyRoundsWon));
 
-        BarDataSet duelsPlayedSet = new BarDataSet(duelsPlayed, "Duels Played");
-        BarDataSet duelsWonSet = new BarDataSet(duelsWon, "Duels Won");
-        BarDataSet questionsAnsweredSet = new BarDataSet(questionsAnswered, "Questions Answered");
-        BarDataSet correctAnswersSet = new BarDataSet(correctAnswers, "Correct Answers");
-        BarDataSet roundsWonSet = new BarDataSet(roundsWon, "Rounds Won");
-        BarDataSet roundsPlayedSet = new BarDataSet(roundsPlayed, "Rounds Played");
+            BarDataSet duelsPlayedSet = new BarDataSet(duelsPlayed, "Duels Played");
+            BarDataSet duelsWonSet = new BarDataSet(duelsWon, "Duels Won");
+            BarDataSet questionsAnsweredSet = new BarDataSet(questionsAnswered, "Questions Answered");
+            BarDataSet correctAnswersSet = new BarDataSet(correctAnswers, "Correct Answers");
+            BarDataSet roundsWonSet = new BarDataSet(roundsWon, "Rounds Won");
+            BarDataSet roundsPlayedSet = new BarDataSet(roundsPlayed, "Rounds Played");
 
-        duelsPlayedSet.setColors(new int[] { R.color.won_duel}, this);
-        duelsWonSet.setColors(new int[] { R.color.lost_duel}, this);
-        questionsAnsweredSet.setColors(new int[] { R.color.won_duel}, this);
-        correctAnswersSet.setColors(new int[] { R.color.lost_duel}, this);
-        roundsPlayedSet.setColors(new int[] { R.color.won_duel}, this);
-        roundsWonSet.setColors(new int[] { R.color.lost_duel}, this);
+            duelsPlayedSet.setColors(new int[] { R.color.won_duel}, this);
+            duelsWonSet.setColors(new int[] { R.color.lost_duel}, this);
+            questionsAnsweredSet.setColors(new int[] { R.color.won_duel}, this);
+            correctAnswersSet.setColors(new int[] { R.color.lost_duel}, this);
+            roundsPlayedSet.setColors(new int[] { R.color.won_duel}, this);
+            roundsWonSet.setColors(new int[] { R.color.lost_duel}, this);
 
-        BarData duelsData = new BarData(duelsPlayedSet, duelsWonSet);
-        BarData questionsData = new BarData(questionsAnsweredSet, correctAnswersSet);
-        BarData roundsData = new BarData(roundsPlayedSet, roundsWonSet);
+            BarData duelsData = new BarData(duelsPlayedSet, duelsWonSet);
+            BarData questionsData = new BarData(questionsAnsweredSet, correctAnswersSet);
+            BarData roundsData = new BarData(roundsPlayedSet, roundsWonSet);
 
-        duelsChart.setData(duelsData);
-        duelsChart.setFitBars(true);
-        duelsChart.getXAxis().setDrawLabels(false);
-        duelsChart.getDescription().setEnabled(false);
-        questionsChart.setData(questionsData);
-        questionsChart.setFitBars(true);
-        questionsChart.getXAxis().setDrawLabels(false);
-        questionsChart.getDescription().setEnabled(false);
-        roundsChart.setData(roundsData);
-        roundsChart.setFitBars(true);
-        roundsChart.getXAxis().setDrawLabels(false);
-        roundsChart.getDescription().setEnabled(false);
+            duelsChart.setData(duelsData);
+            duelsChart.setFitBars(true);
+            duelsChart.getXAxis().setDrawLabels(false);
+            duelsChart.getDescription().setEnabled(false);
+            questionsChart.setData(questionsData);
+            questionsChart.setFitBars(true);
+            questionsChart.getXAxis().setDrawLabels(false);
+            questionsChart.getDescription().setEnabled(false);
+            roundsChart.setData(roundsData);
+            roundsChart.setFitBars(true);
+            roundsChart.getXAxis().setDrawLabels(false);
+            roundsChart.getDescription().setEnabled(false);
 
-        Legend duelsLegend = duelsChart.getLegend();
-        duelsLegend.setEnabled(true);
+            Legend duelsLegend = duelsChart.getLegend();
+            duelsLegend.setEnabled(true);
 
-        duelsChart.invalidate();
-        questionsChart.invalidate();
-        roundsChart.invalidate();
+            duelsChart.invalidate();
+            questionsChart.invalidate();
+            roundsChart.invalidate();
+        }
     }
 }

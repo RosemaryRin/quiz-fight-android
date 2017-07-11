@@ -299,7 +299,7 @@ public class DuelActivity extends SavedGamesActivity {
         SavedGames.writeSnapshot(snapshot, history, "", application.getClient());
 
         // adding score to leaderboard
-//        Games.Leaderboards.submitScore(application.getClient(), leaderboardId, score);
+        Games.Leaderboards.submitScore(application.getClient(), leaderboardId, history.getTotalPlayerScore());
 
         showScoreDialog();
     }

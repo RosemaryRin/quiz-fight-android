@@ -35,7 +35,6 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import rogueone.quizfight.adapters.DuelSummaryAdapter;
 import rogueone.quizfight.models.Duel;
-import rogueone.quizfight.models.Quiz;
 import rogueone.quizfight.rest.api.sendFacebookId;
 import rogueone.quizfight.rest.pojo.User;
 import rogueone.quizfight.models.Question;

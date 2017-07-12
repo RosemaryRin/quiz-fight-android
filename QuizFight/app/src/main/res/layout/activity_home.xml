@@ -50,6 +50,27 @@
                 android:textColor="@android:color/background_light" />
 
             <ImageButton
+                android:id="@+id/imagebutton_home_leaderboard"
+                android:layout_width="48dip"
+                android:layout_height="match_parent"
+                android:layout_weight="0"
+                android:background="@color/colorPrimaryDark"
+                android:contentDescription="@string/home_leaderboardicondescription"
+                android:onClick="showLeaderboard"
+                android:tint="@android:color/background_light"
+                app:srcCompat="@drawable/leaderboard" />
+
+            <ImageButton
+                android:id="@+id/imagebutton_home_achievements"
+                android:layout_width="48dip"
+                android:layout_height="match_parent"
+                android:layout_weight="0"
+                android:background="@color/colorPrimaryDark"
+                android:contentDescription="@string/home_leaderboardicondescription"
+                android:tint="@android:color/background_light"
+                app:srcCompat="@drawable/achievement" />
+
+            <ImageButton
                 android:id="@+id/stats_button"
                 android:layout_width="48dip"
                 android:layout_height="match_parent"
@@ -59,15 +80,6 @@
                 android:tint="@android:color/background_light"
                 app:srcCompat="@drawable/stats" />
 
-            <ImageButton
-                android:id="@+id/imagebutton_home_stats"
-                android:layout_width="48dip"
-                android:layout_height="match_parent"
-                android:layout_weight="0"
-                android:background="@color/colorPrimaryDark"
-                android:contentDescription="@string/home_leaderboardicondescription"
-                android:tint="@android:color/background_light"
-                app:srcCompat="@drawable/leaderboard" />
         </LinearLayout>
 
         <LinearLayout
@@ -145,7 +157,8 @@
             <ListView
                 android:id="@+id/listview_home_duels_in_progress"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="128dp"
+                android:fadeScrollbars="false"
                 android:visibility="gone" />
 
             <TextView
@@ -155,7 +168,6 @@
                 android:paddingTop="50dp"
                 android:text="@string/home_lastduels"
                 android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
-
             <TextView
                 android:id="@+id/textview_home_noduels"
                 android:layout_width="match_parent"
@@ -171,7 +183,8 @@
             <ListView
                 android:id="@+id/listview_home_lastduels"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="128dp"
+                android:fadeScrollbars="false"
                 android:visibility="gone" />
 
             <Button

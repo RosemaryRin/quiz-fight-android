@@ -1,13 +1,13 @@
 package rogueone.quizfight;
 
 import android.app.Application;
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.support.annotation.NonNull;
 
 import com.facebook.FacebookSdk;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.games.snapshot.Snapshot;
-
-import rogueone.quizfight.models.History;
 
 /**
  * This class extends the Application class and is used for storing objects and share them across
@@ -33,5 +33,25 @@ public class QuizFightApplication extends Application {
 
     public GoogleApiClient getClient() {
         return games;
+    }
+
+    /**
+     * General function to check connection
+     * @param context
+     */
+    public boolean checkConnection(Context context) {
+        boolean status = false;
+        try {
+            ConnectivityManager cm =
+                    (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+            NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+
+            status = activeNetwork != null &&
+                    activeNetwork.isConnectedOrConnecting();
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+        return status;
     }
 }

@@ -20,6 +20,7 @@ import android.view.ViewGroup;
 
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.google.android.gms.common.api.ResultCallback;
@@ -80,12 +81,15 @@ public class StartDuelActivity extends SavedGamesActivity {
 
     private static QuizFightApplication application;
     private static Activity activity;
+
     private final static String TAG = "StartDuelActivity";
 
     private static List<LeaderboardScore> lbEntries;
     private static final int PLAYERS_SHOWN = 20; // number of leaderboard entries
 
     private ListView listView;
+
+    @BindView(R.id.indeterminateBar3) ProgressBar mProgressBar;
 
     @BindString(R.string.unable_to_start_duel) String duelError;
 
@@ -98,6 +102,16 @@ public class StartDuelActivity extends SavedGamesActivity {
         application = (QuizFightApplication)getApplication();
         activity = this;
         getGames();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (configurationChanged) {
+            setupUI();
+        } else {
+            getGames();
+        }
     }
 
     private void setupUI() {
@@ -119,7 +133,7 @@ public class StartDuelActivity extends SavedGamesActivity {
         findViewById(R.id.button_random_player).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                createDuel("elena.pullin95@gmail.com"); //FIXME to be removed
+                createDuel("");
             }
         });
 
@@ -138,6 +152,7 @@ public class StartDuelActivity extends SavedGamesActivity {
                     public void onResponse(Call<User> call, Response<User> response) {
                         if (response.isSuccessful()) {
                             String username = response.body().getUsername();
+                            mProgressBar.setVisibility(View.VISIBLE);
                             createDuel(username);
                         }
                         else {
@@ -149,20 +164,30 @@ public class StartDuelActivity extends SavedGamesActivity {
                     public void onFailure(Call<User> call, Throwable t) {
                         errorToast(duelError);
                     }
-                });
+                }, application);
             }
         });
     }
 
     public void createDuel(String opponentUsername) {
         String[] topics = getRandomTopics().toArray(new String[3]); // 3 rounds
-        new NewDuel(new RESTDuel(
-                Games.Players.getCurrentPlayer(application.getClient()).getDisplayName(),
-                opponentUsername,
-                topics
-        )).call(new Callback<Round>() {
+        NewDuel newDuel;
+        if (opponentUsername.equals("")) {
+            newDuel = new NewDuel(new RESTDuel(
+                    Games.Players.getCurrentPlayer(application.getClient()).getDisplayName(),
+                    topics
+            ));
+        } else{
+            newDuel = new NewDuel(new RESTDuel(
+                    Games.Players.getCurrentPlayer(application.getClient()).getDisplayName(),
+                    opponentUsername,
+                    topics
+            ));
+        }
+        newDuel.call(new Callback<Round>() {
             @Override
             public void onResponse(Call<Round> call, Response<Round> response) {
+                mProgressBar.setVisibility(View.GONE);
                 startDuel(response.body());
             }
 
@@ -170,7 +195,7 @@ public class StartDuelActivity extends SavedGamesActivity {
             public void onFailure(Call<Round> call, Throwable t) {
                 errorToast(duelError);
             }
-        });
+        }, application);
     }
 
     private List<String> getRandomTopics() {
@@ -233,8 +258,13 @@ public class StartDuelActivity extends SavedGamesActivity {
             final View rootView = inflater.inflate(R.layout.fragment_start_duel, container, false);
 
             if (getArguments().getInt(ARG_SECTION_NUMBER) == 1
-                    && AccessToken.getCurrentAccessToken() != null) { // friends tab
+                    && AccessToken.getCurrentAccessToken() != null
+                    && application.checkConnection(getContext())) { // friends tab
                 friendsNamesRequest(rootView);
+            } else if (!application.checkConnection(getContext())) {
+                Toast.makeText(getContext(),
+                        getResources().getString(R.string.connectivity_error),
+                        Toast.LENGTH_LONG).show();
             } else if (AccessToken.getCurrentAccessToken() == null) {
                 AccessToken token = AccessToken.getCurrentAccessToken();
                 Toast.makeText(getContext(),

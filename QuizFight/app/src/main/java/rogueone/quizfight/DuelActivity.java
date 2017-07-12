@@ -2,34 +2,23 @@ package rogueone.quizfight;
 
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.app.NotificationManager;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.Loader;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.games.Games;
-import com.google.android.gms.games.snapshot.Snapshot;
 
-import org.w3c.dom.Text;
-
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
-import butterknife.BindArray;
-import butterknife.BindColor;
 import butterknife.BindString;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -40,7 +29,6 @@ import retrofit2.Response;
 import rogueone.quizfight.fragments.MultipleChoiceFragment;
 import rogueone.quizfight.fragments.TrueFalseFragment;
 import rogueone.quizfight.models.Duel;
-import rogueone.quizfight.models.History;
 import rogueone.quizfight.models.Quiz;
 import rogueone.quizfight.rest.api.GetRound;
 import rogueone.quizfight.rest.api.SendRoundScore;
@@ -83,6 +71,8 @@ public class DuelActivity extends SavedGamesActivity {
     private Duel duel;
     private boolean[] answers;
 
+    private long availableTime;
+
     private CountDownTimer timer; // The timer
 
     private FragmentManager fragmentManager;
@@ -94,6 +84,10 @@ public class DuelActivity extends SavedGamesActivity {
 
     @BindString(R.string.round) String roundString;
     @BindString(R.string.duel_id) String duelString;
+    @BindString(R.string.count) String countString;
+    @BindString(R.string.score) String scoreString;
+    @BindString(R.string.answers) String answersString;
+    @BindString(R.string.available_time) String availableTimeString;
     @BindString(R.string.unable_to_start_round) String errorRound;
     @BindString(R.string.correct_answers_100) String answers100;
     @BindString(R.string.correct_answers_250) String answers250;
@@ -113,11 +107,38 @@ public class DuelActivity extends SavedGamesActivity {
         setContentView(R.layout.activity_duel);
         ButterKnife.bind(this);
 
-        application = (QuizFightApplication)getApplication();
-        getGames();
+        availableTime = ALLOWED_TIME;
 
-        count = 0; score = 0;
-        answers = new boolean[5];
+        application = (QuizFightApplication)getApplication();
+
+        NotificationManager notificationManager = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.cancelAll();
+
+        if (savedInstanceState != null) {
+            configurationChanged = true;
+
+            count = savedInstanceState.getInt(countString);
+            score = savedInstanceState.getInt(scoreString);
+            answers = savedInstanceState.getBooleanArray(answersString);
+            round = savedInstanceState.getParcelable(roundString);
+            availableTime = savedInstanceState.getLong(availableTimeString);
+
+            getGames();
+        } else {
+            getGames();
+
+            count = 0; score = 0;
+            answers = new boolean[5];
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putInt(countString, count);
+        outState.putInt(scoreString, score);
+        outState.putBooleanArray(answersString, answers);
+        outState.putParcelable(roundString, round);
+        outState.putLong(availableTimeString, availableTime);
     }
 
     /**
@@ -137,7 +158,6 @@ public class DuelActivity extends SavedGamesActivity {
             ).call(new Callback<Round>() {
                 @Override
                 public void onResponse(Call<Round> call, Response<Round> response) {
-                    Log.d("RESPONSE", response.message() + " " + response.code());
                     if (response.isSuccessful()) {
                         round = response.body();
                         initDuel();
@@ -151,7 +171,7 @@ public class DuelActivity extends SavedGamesActivity {
                     t.printStackTrace();
                     errorToast(errorRound);
                 }
-            });
+            }, application);
         }
     }
 
@@ -159,10 +179,10 @@ public class DuelActivity extends SavedGamesActivity {
      * Actually begin a new round for the current duel.
      */
     private void initDuel() {
-        Games.Events.increment(application.getClient(), roundsPlayed, 1);
         // The round has been retrieved, do some housekeeping
         duel = history.getDuelByID(round.getDuelID());
-        if (duel.getCurrentQuiz().isCompleted() && duel.getQuizzes().size() < 3) {
+        if (duel.getCurrentQuiz().isCompleted() && duel.getQuizzes().size() < 3 && !configurationChanged) {
+            Games.Events.increment(application.getClient(), roundsPlayed, 1);
             duel.addQuiz(new Quiz()); // Add a new quiz if there's a new round
         }
 
@@ -182,8 +202,9 @@ public class DuelActivity extends SavedGamesActivity {
      * Setup the timer.
      */
     private void setupTimer() {
-        timer = new CountDownTimer(ALLOWED_TIME, 1000) {
+        timer = new CountDownTimer(availableTime, 1000) {
             public void onTick(long millisUntilFinished) {
+                availableTime = millisUntilFinished;
                 progressBar.setProgress((int)millisUntilFinished * 100 / ALLOWED_TIME);
             }
 
@@ -202,6 +223,7 @@ public class DuelActivity extends SavedGamesActivity {
         Games.Events.increment(client, questionsAnswered, 1);
         if (timer != null) {
             timer.cancel(); // Stop the timer
+            availableTime = ALLOWED_TIME;
         }
         if (answer == currentQuestion.getAnswer()) {
             // TODO something green
@@ -265,6 +287,7 @@ public class DuelActivity extends SavedGamesActivity {
      * client and server side.
      */
     private void roundTerminated() {
+        Log.d("AA", score + "");
         // Call the server for remote saving the result
         new SendRoundScore(new RoundResult(
                 round.getDuelID(), round.getQuizID(),
@@ -276,7 +299,7 @@ public class DuelActivity extends SavedGamesActivity {
 
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {}
-        });
+        }, application);
         // Write the snapshot for updating the history
         // < 3 is needed because otherwise the duel would appear as complete. @see HomeActivity.updatePendingDuels
         // There the duel is marked as complete if the opponent completed it as well.
@@ -299,7 +322,7 @@ public class DuelActivity extends SavedGamesActivity {
         SavedGames.writeSnapshot(snapshot, history, "", application.getClient());
 
         // adding score to leaderboard
-//        Games.Leaderboards.submitScore(application.getClient(), leaderboardId, score);
+        Games.Leaderboards.submitScore(application.getClient(), leaderboardId, history.getTotalPlayerScore());
 
         showScoreDialog();
     }
@@ -380,14 +403,19 @@ public class DuelActivity extends SavedGamesActivity {
         if (timer != null) {
             timer.cancel(); // stop the timer
         }
+    }
+
+    @Override
+    protected void onDestroy() {
         // Close the round as a surrender if the user hasn't answered every question
-        if (count < QUESTIONS_PER_ROUND) {
+        if (!isChangingConfigurations() && count < QUESTIONS_PER_ROUND) {
             for (int i = 0; i < QUESTIONS_PER_ROUND; i++) {
                 answers[i] = false;
             }
             score = 0;
             roundTerminated();
         }
+        super.onDestroy();
     }
 
     /**
@@ -397,7 +425,11 @@ public class DuelActivity extends SavedGamesActivity {
     @Override
     protected void onLoadFinished(boolean success) {
         if (success) {
-            setup();
+            if (configurationChanged) {
+                initDuel();
+            } else {
+                setup();
+            }
         } else {
             errorToast(errorRound);
         }

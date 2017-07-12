@@ -1,6 +1,9 @@
 package rogueone.quizfight;
 
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
 import android.support.v7.widget.Toolbar;
@@ -20,8 +23,10 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.games.Games;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -33,6 +38,8 @@ import butterknife.ButterKnife;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import rogueone.quizfight.adapters.LeaderboardAdapter;
+import rogueone.quizfight.listeners.LeaderboardDuelListener;
 import rogueone.quizfight.models.Duel;
 import rogueone.quizfight.rest.api.NewDuel;
 import rogueone.quizfight.rest.api.getGoogleUsername;
@@ -45,6 +52,10 @@ import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
 import com.facebook.HttpMethod;
 import com.facebook.AccessToken;
+import com.google.android.gms.games.leaderboard.LeaderboardScore;
+import com.google.android.gms.games.leaderboard.LeaderboardScoreBuffer;
+import com.google.android.gms.games.leaderboard.LeaderboardVariant;
+import com.google.android.gms.games.leaderboard.Leaderboards;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -69,7 +80,12 @@ public class StartDuelActivity extends SavedGamesActivity {
     private ViewPager mViewPager;
 
     private static QuizFightApplication application;
+    private static Activity activity;
+
     private final static String TAG = "StartDuelActivity";
+
+    private static List<LeaderboardScore> lbEntries;
+    private static final int PLAYERS_SHOWN = 20; // number of leaderboard entries
 
     private ListView listView;
 
@@ -84,6 +100,8 @@ public class StartDuelActivity extends SavedGamesActivity {
         ButterKnife.bind(this);
 
         application = (QuizFightApplication)getApplication();
+        activity = this;
+        getGames();
     }
 
     @Override
@@ -252,6 +270,33 @@ public class StartDuelActivity extends SavedGamesActivity {
                 Toast.makeText(getContext(),
                         getResources().getString(R.string.no_facebook_access),
                         Toast.LENGTH_LONG).show();
+            }
+            else { // leaderboard tab
+                lbEntries = new ArrayList<LeaderboardScore>();
+                final Context ctx = getContext();
+
+                String leaderboardId = getResources().getString(R.string.leaderboard_id);
+
+                Games.Leaderboards.loadTopScores(application.getClient(), leaderboardId,
+                        LeaderboardVariant.TIME_SPAN_ALL_TIME, LeaderboardVariant.COLLECTION_PUBLIC, PLAYERS_SHOWN)
+                        .setResultCallback(new ResultCallback<Leaderboards.LoadScoresResult>() {
+                            public void onResult(Leaderboards.LoadScoresResult result) {
+
+                                LeaderboardScoreBuffer lsb = result.getScores();
+
+                                for (int i = 0; i < lsb.getCount(); i++)
+                                    lbEntries.add(lsb.get(i));
+
+                                listView = (ListView) rootView.findViewById(R.id.listview_startduel_list);
+
+                                listView.setVisibility(View.VISIBLE);
+
+                                final LeaderboardAdapter adapter = new LeaderboardAdapter(ctx, lbEntries);
+                                listView.setAdapter(adapter);
+
+                                listView.setOnItemClickListener(new LeaderboardDuelListener(activity));
+                            }
+                        });
             }
 
             return rootView;

@@ -22,7 +22,7 @@ import rogueone.quizfight.adapters.LeaderboardAdapter;
 
 public class LeaderboardActivity extends AppCompatActivity {
 
-    private static final int PLAYERS_SHOWN = 10;
+    private static final int PLAYERS_SHOWN = 20;
 
     private QuizFightApplication application;
     private List<LeaderboardScore> entries;

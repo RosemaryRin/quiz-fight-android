@@ -39,6 +39,14 @@ public interface EndpointInterface {
     Call<ResponseBody> sendRoundScore(@Body RoundResult result);
 
     @Headers({"Content-Type: application/json"})
+    @PUT("users/{googleUsername}/{facebookId}")
+    Call<User> sendFacebookId(@Path("googleUsername") String googleUsername,
+                                      @Path("facebookId") String facebookId);
+
+    @Headers({"Content-Type: application/json"})
+    @GET("users/{facebookId}")
+    Call<User> getGoogleUsername(@Path("facebookId") String facebookId);
+
     @GET("result/{playerID}/{ids}")
     Call<PendingDuels> getProgress(@Path("playerID") String player, @Path("ids") String duelIDs);
 }

@@ -15,38 +15,6 @@
       },
       "oauth_client": [
         {
-          "client_id": "628056279109-vaqjemmlgkjtg8j05a8jn1a32gdc5i44.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "rogueone.quizfight",
-            "certificate_hash": "e7bb664de6295e84a0388c99328a5c02a1d8e241"
-          }
-        },
-        {
-          "client_id": "628056279109-4v6rcsjh10ul2qo0bmv480l4miih3ba4.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "rogueone.quizfight",
-            "certificate_hash": "23d23b2a7dffc73c501cfeda57163a0dde27d13e"
-          }
-        },
-        {
-          "client_id": "628056279109-cd53usrjj94o7sl50u1e5sbsbhg501fg.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "rogueone.quizfight",
-            "certificate_hash": "42de4488341396f573b844cc0e9613fcc1d7d42e"
-          }
-        },
-        {
-          "client_id": "628056279109-89ftdmf5vh09arsgc76g7vkssbi9el1v.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "rogueone.quizfight",
-            "certificate_hash": "0ee4896767c40bde0c8712f65aa280a352b4867e"
-          }
-        },
-        {
           "client_id": "628056279109-rh0bepeil258kfnl0psljdqh6s3bvcfm.apps.googleusercontent.com",
           "client_type": 3
         },

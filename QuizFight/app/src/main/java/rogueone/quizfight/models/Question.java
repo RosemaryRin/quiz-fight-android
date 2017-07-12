@@ -69,4 +69,5 @@ public class Question implements Serializable {
     private int getScore(boolean correct) {
         return (correct) ? difficulty : 0;
     }
+
 }

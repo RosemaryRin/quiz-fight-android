@@ -9,114 +9,199 @@
     tools:context="rogueone.quizfight.HomeActivity">
 
     <LinearLayout
-        android:id="@+id/linearlayout_home_maincontainer"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:gravity="center_horizontal"
         android:orientation="vertical"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0"
-        tools:layout_constraintBottom_creator="1"
         tools:layout_constraintLeft_creator="1"
         tools:layout_constraintRight_creator="1"
-        tools:layout_constraintTop_creator="1">
+        tools:layout_constraintTop_creator="1"
+        android:layout_marginEnd="0dp"
+        android:layout_marginRight="0dp">
 
         <LinearLayout
-            android:id="@+id/linearlayout_home_user"
+            android:id="@+id/linearlayout_home_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:background="@color/colorPrimary"
+            android:orientation="horizontal"
+            android:padding="8dip">
 
             <ImageView
-                android:id="@+id/imageview_profile"
-                android:layout_width="48dp"
-                android:layout_height="match_parent"
-                android:contentDescription="@string/home_usericondescription"
-                app:srcCompat="@android:drawable/screen_background_light" />
+                android:id="@+id/imageview_logo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/home_logoicondescription"
+                app:srcCompat="@mipmap/logo" />
 
             <TextView
-                android:id="@+id/textview_home_username"
+                android:id="@+id/textview_home_title"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
+                android:layout_marginLeft="20dp"
                 android:layout_marginStart="20dp"
                 android:layout_weight="1"
-                android:textSize="24sp" />
+                android:text="@string/app_name"
+                android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+                android:textColor="@android:color/background_light" />
 
-            <Button
-                android:id="@+id/sign_out_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
+            <ImageButton
+                android:id="@+id/imagebutton_home_leaderboard"
+                android:layout_width="48dip"
+                android:layout_height="match_parent"
                 android:layout_weight="0"
-                android:onClick="signOut"
-                android:text="@string/sign_out" />
+                android:background="@color/colorPrimaryDark"
+                android:contentDescription="@string/home_leaderboardicondescription"
+                android:onClick="showLeaderboard"
+                android:tint="@android:color/background_light"
+                app:srcCompat="@drawable/leaderboard" />
+
+            <ImageButton
+                android:id="@+id/imagebutton_home_achievements"
+                android:layout_width="48dip"
+                android:layout_height="match_parent"
+                android:layout_weight="0"
+                android:background="@color/colorPrimaryDark"
+                android:contentDescription="@string/home_leaderboardicondescription"
+                android:tint="@android:color/background_light"
+                app:srcCompat="@drawable/achievement"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"/>
+
+            <ImageButton
+                android:id="@+id/stats_button"
+                android:layout_width="48dip"
+                android:layout_height="match_parent"
+                android:layout_weight="0"
+                android:background="@color/colorPrimaryDark"
+                android:contentDescription="@string/home_leaderboardicondescription"
+                android:tint="@android:color/background_light"
+                app:srcCompat="@drawable/stats" />
+
         </LinearLayout>
 
-        <TextView
-            android:id="@+id/textview_home_duels_in_progress"
+        <LinearLayout
+            android:id="@+id/linearlayout_home_maincontainer"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingTop="50dp"
-            android:text="@string/home_duels_in_progress"
-            android:textSize="14sp" />
+            android:layout_height="match_parent"
+            android:layout_marginEnd="8dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:gravity="center_horizontal"
+            android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/textview_home_no_duels_in_progress"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/all_noduels"
-            android:textAlignment="center" />
+            <LinearLayout
+                android:id="@+id/linearlayout_home_user"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
 
-        <ListView
-            android:id="@+id/listview_home_duels_in_progress"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:visibility="gone" />
+                <ImageView
+                    android:id="@+id/imageview_profile"
+                    android:layout_width="48dp"
+                    android:layout_height="match_parent"
+                    android:contentDescription="@string/home_usericondescription"
+                    app:srcCompat="@android:drawable/screen_background_light" />
 
-        <TextView
-            android:id="@+id/textview_home_lastview"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingTop="50dp"
-            android:text="@string/home_lastduels"
-            android:textSize="14sp" />
+                <TextView
+                    android:id="@+id/textview_home_username"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginStart="20dp"
+                    android:layout_weight="1"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Large" />
 
-        <TextView
-            android:id="@+id/textview_home_noduels"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/all_noduels"
-            android:textAlignment="center" />
+                <Button
+                    android:id="@+id/sign_out_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_weight="0"
+                    android:onClick="signOut"
+                    android:text="@string/sign_out" />
+            </LinearLayout>
 
-        <ListView
-            android:id="@+id/listview_home_lastduels"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:visibility="gone" />
+            <com.facebook.login.widget.LoginButton
+                android:id="@+id/login_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginBottom="30dp"
+                android:layout_marginTop="30dp" />
 
-        <Button
-            android:id="@+id/button_home_duelshistory"
-            style="@style/Widget.AppCompat.Button.Colored"
+            <TextView
+                android:id="@+id/textview_home_duels_in_progress"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="50dp"
+                android:text="@string/home_duels_in_progress"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+
+            <TextView
+                android:id="@+id/textview_home_no_duels_in_progress"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/all_noduels"
+                android:textAlignment="center" />
+
+        <ProgressBar
+            android:id="@+id/indeterminateBar1"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end"
-            android:text="@string/home_viewhistory"
-            android:textAlignment="center"
-            android:visibility="gone" />
+            android:layout_height="wrap_content" />
 
-        <!-- FIXME Temporary -->
+            <ListView
+                android:id="@+id/listview_home_duels_in_progress"
+                android:layout_width="match_parent"
+                android:layout_height="128dp"
+                android:fadeScrollbars="false"
+                android:visibility="gone" />
 
+            <TextView
+                android:id="@+id/textview_home_lastview"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="50dp"
+                android:text="@string/home_lastduels"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+            <TextView
+                android:id="@+id/textview_home_noduels"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/all_noduels"
+                android:textAlignment="center" />
+
+        <ProgressBar
+            android:id="@+id/indeterminateBar2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+            <ListView
+                android:id="@+id/listview_home_lastduels"
+                android:layout_width="match_parent"
+                android:layout_height="128dp"
+                android:fadeScrollbars="false"
+                android:visibility="gone" />
+
+            <Button
+                android:id="@+id/button_home_duelshistory"
+                style="@style/Widget.AppCompat.Button.Colored"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:text="@string/home_viewhistory"
+                android:textAlignment="center"
+                android:visibility="gone" />
+
+            <!-- FIXME Temporary -->
+
+        </LinearLayout>
     </LinearLayout>
 
     <android.support.design.widget.FloatingActionButton
@@ -133,6 +218,7 @@
         app:layout_constraintRight_toRightOf="parent"
         app:srcCompat="@drawable/duel"
         tools:layout_constraintBottom_creator="1"
-        tools:layout_constraintRight_creator="1" />
+        tools:layout_constraintRight_creator="1"
+        android:layout_marginRight="16dp" />
 
 </android.support.constraint.ConstraintLayout>

@@ -41,7 +41,14 @@
                 android:drawablePadding="10dip"
                 android:drawableRight="@drawable/random"
                 android:drawableTint="@color/common_google_signin_btn_text_dark_default"
-                android:text="@string/random_player" />
+                android:text="@string/random_player"
+                android:layout_marginRight="10dip" />
+
+            <ProgressBar
+                android:id="@+id/indeterminateBar3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="invisible" />
 
         </android.support.v7.widget.Toolbar>
 

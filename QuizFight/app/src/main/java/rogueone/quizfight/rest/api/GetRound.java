@@ -2,7 +2,6 @@ package rogueone.quizfight.rest.api;
 
 import retrofit2.Call;
 import rogueone.quizfight.rest.pojo.Round;
-import rogueone.quizfight.rest.pojo.User;
 
 /**
  * This class represents a GET REST call to /fight. It stores two <tt>String</tt>s corresponding

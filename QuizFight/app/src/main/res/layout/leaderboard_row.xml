@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/linearlayout_toprankedrow_maincontainer"
     android:layout_width="match_parent"
     android:layout_height="64dip"
@@ -11,9 +12,20 @@
         android:id="@+id/textview_toprankedrow_rank"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
+        android:layout_marginEnd="20dip"
+        android:layout_marginLeft="10dip"
+        android:layout_marginRight="20dip"
+        android:layout_marginStart="10dip"
         android:layout_weight="0"
         android:gravity="center"
         android:textAlignment="center" />
+
+    <ImageView
+        android:id="@+id/imageview_toprankedrow_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:adjustViewBounds="true"
+        android:contentDescription="@string/home_usericondescription" />
 
     <TextView
         android:id="@+id/textview_toprankedrow_name"
@@ -28,7 +40,10 @@
         android:id="@+id/textview_toprankedrow_score"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
+        android:layout_marginLeft="10dip"
+        android:layout_marginRight="10dip"
         android:layout_weight="0"
         android:gravity="center"
         android:textAlignment="center" />
+
 </LinearLayout>

@@ -20,6 +20,7 @@ public class Quiz implements Serializable {
 
     private List<Question> questions = new ArrayList<>(5);
     private boolean completed;
+    private boolean played;
 
     public Quiz() {}
 
@@ -52,5 +53,13 @@ public class Quiz implements Serializable {
 
     public void complete() {
         completed = true;
+    }
+
+    public boolean isPlayed() {
+        return played;
+    }
+
+    public void played() {
+        played = true;
     }
 }

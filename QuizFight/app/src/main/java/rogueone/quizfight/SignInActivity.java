@@ -1,6 +1,7 @@
 package rogueone.quizfight;
 
 import butterknife.BindString;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import me.leolin.shortcutbadger.ShortcutBadger;
 import okhttp3.ResponseBody;
@@ -8,8 +9,6 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import rogueone.quizfight.models.Duel;
-import rogueone.quizfight.models.History;
-import rogueone.quizfight.models.Question;
 import rogueone.quizfight.rest.api.AddToken;
 import rogueone.quizfight.rest.api.GetProgress;
 import rogueone.quizfight.rest.pojo.PendingDuels;
@@ -26,8 +25,9 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.provider.Settings.Secure;
 import android.support.annotation.NonNull;
-import android.util.Log;
 import android.view.View;
+import android.widget.TextView;
+import android.widget.ProgressBar;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
@@ -52,18 +52,25 @@ public class SignInActivity extends SavedGamesActivity implements
 
     private static final int RESOLUTION = 2404;
 
+    ProgressBar mProgressBar;
+
     private GoogleApiClient client;
+    private QuizFightApplication application;
 
     @BindString(R.string.unable_to_restore_saved_games) String savedGamesError;
     @BindString(R.string.unable_to_connect) String connectionError;
     @BindString(R.string.duels_played) String duelsPlayed;
 
+    @BindView(R.id.tv_signin_required) TextView textView_signIn;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ButterKnife.bind(this);
 
         setContentView(R.layout.activity_sign_in);
+        ButterKnife.bind(this);
+
+        mProgressBar = (ProgressBar) findViewById(R.id.indeterminateBar0);
 
         client = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
@@ -72,7 +79,9 @@ public class SignInActivity extends SavedGamesActivity implements
                 .addApi(Drive.API).addScope(Drive.SCOPE_APPFOLDER)
                 .build();
 
-        ((QuizFightApplication)getApplicationContext()).setClient(client);
+        application = (QuizFightApplication) getApplicationContext();
+
+        application.setClient(client);
 
         findViewById(R.id.button_sign_in).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -80,6 +89,7 @@ public class SignInActivity extends SavedGamesActivity implements
                 if (client != null && client.isConnected()) {
                     client.clearDefaultAccountAndReconnect();
                 }
+                mProgressBar.setVisibility(View.VISIBLE);
                 signIn();
             }
         });
@@ -98,6 +108,9 @@ public class SignInActivity extends SavedGamesActivity implements
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
         if (sharedPref.getBoolean(getString(R.string.signed_in), false)) {
             client.connect();
+            mProgressBar.setVisibility(View.VISIBLE);
+        } else {
+            textView_signIn.setVisibility(View.VISIBLE);
         }
     }
 
@@ -128,7 +141,7 @@ public class SignInActivity extends SavedGamesActivity implements
 
                 @Override
                 public void onFailure(Call<ResponseBody> call, Throwable t) {}
-            });
+            }, application);
         }
     }
 
@@ -186,6 +199,7 @@ public class SignInActivity extends SavedGamesActivity implements
                         }
                     }
                     SavedGames.writeSnapshot(snapshot, history, "", application.getClient());
+                    mProgressBar.setVisibility(View.GONE);
                     startHomeActivity();
                 } else {
                     errorToast(savedGamesError);
@@ -197,7 +211,7 @@ public class SignInActivity extends SavedGamesActivity implements
                 t.printStackTrace();
                 errorToast(savedGamesError);
             }
-        });
+        }, application);
     }
 
     @Override

@@ -78,6 +78,7 @@ public abstract class SavedGamesActivity extends AppCompatActivity implements
     @Override
     public void onLoadFinished(Loader<Snapshot> loader, Snapshot snapshot) {
         this.snapshot = snapshot;
+        Log.d("SNAP", snapshot.getSnapshotContents() + "");
         if (snapshot != null && snapshot.getSnapshotContents() != null) {
             try {
                 history = byteToHistory(snapshot.getSnapshotContents().readFully());
@@ -99,7 +100,11 @@ public abstract class SavedGamesActivity extends AppCompatActivity implements
     protected boolean getGames() {
         QuizFightApplication application = (QuizFightApplication) getApplication();
         if (application != null && application.getClient() != null && application.getClient().isConnected()) {
-            getLoaderManager().restartLoader(SAVED_GAMES_LOADER, null, this);
+            if (snapshot != null) {
+                getLoaderManager().restartLoader(SAVED_GAMES_LOADER, null, this);
+            } else {
+                getLoaderManager().initLoader(SAVED_GAMES_LOADER, null, this);
+            }
             return true;
         }
         return false;

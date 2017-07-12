@@ -97,7 +97,7 @@ public class MessagingService extends FirebaseMessagingService {
                 .setAutoCancel(true)
                 .setSound(defaultSoundUri)
                 .setContentIntent(pendingIntent)
-                .setSmallIcon(R.mipmap.ic_launcher); //FIXME LOGO!!
+                .setSmallIcon(R.mipmap.logo);
 
         ShortcutBadger.applyCount(getApplicationContext(), notificationCount);
 

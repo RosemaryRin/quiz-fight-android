@@ -1,6 +1,7 @@
 package rogueone.quizfight;
 
 import butterknife.BindString;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import me.leolin.shortcutbadger.ShortcutBadger;
 import okhttp3.ResponseBody;
@@ -28,6 +29,9 @@ import android.provider.Settings.Secure;
 import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
@@ -58,12 +62,15 @@ public class SignInActivity extends SavedGamesActivity implements
     @BindString(R.string.unable_to_connect) String connectionError;
     @BindString(R.string.duels_played) String duelsPlayed;
 
+    @BindView(R.id.tv_signin_required) TextView textView_signIn;
+    @BindView(R.id.signin_ind_bar) ProgressBar ind_progressbar;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ButterKnife.bind(this);
 
         setContentView(R.layout.activity_sign_in);
+        ButterKnife.bind(this);
 
         client = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
@@ -98,6 +105,9 @@ public class SignInActivity extends SavedGamesActivity implements
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
         if (sharedPref.getBoolean(getString(R.string.signed_in), false)) {
             client.connect();
+            ind_progressbar.setVisibility(View.VISIBLE);
+        } else {
+            textView_signIn.setVisibility(View.VISIBLE);
         }
     }
 

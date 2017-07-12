@@ -156,4 +156,19 @@ public class History implements Serializable {
         }
         return k;
     }
+
+    public int getTotalPlayerScore() {
+        int sumOfScores = 0;
+        Iterator<Duel> iterator = duels.iterator();
+        while (iterator.hasNext()) {
+            Duel duel = iterator.next();
+            Iterator<Quiz> quizIterator = duel.getQuizzes().iterator();
+            while (quizIterator.hasNext()) {
+                Quiz quiz = quizIterator.next();
+                Score score = quiz.getScore();
+                sumOfScores += score.getPlayerScore();
+            }
+        }
+        return sumOfScores;
+    }
 }

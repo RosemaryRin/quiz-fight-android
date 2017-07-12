@@ -10,6 +10,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.facebook.AccessToken;
@@ -34,6 +35,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import rogueone.quizfight.adapters.DuelSummaryAdapter;
 import rogueone.quizfight.models.Duel;
+import rogueone.quizfight.models.Quiz;
 import rogueone.quizfight.rest.api.sendFacebookId;
 import rogueone.quizfight.rest.pojo.User;
 import rogueone.quizfight.models.Question;
@@ -67,6 +69,10 @@ public class HomeActivity extends SavedGamesActivity {
     @BindView(R.id.imageview_profile) ImageView userProfileImage;
     @BindView(R.id.listview_home_duels_in_progress) ListView duelsInProgress_listview;
     @BindView(R.id.login_button) LoginButton loginButton;
+    @BindView(R.id.indeterminateBar1) ProgressBar mProgressBar1;
+    @BindView(R.id.indeterminateBar2) ProgressBar mProgressBar2;
+    @BindView(R.id.textview_home_no_duels_in_progress) TextView noDuelsProgress;
+    @BindView(R.id.textview_home_noduels) TextView noLastDuels;
 
     @BindString(R.string.unable_to_get_pending_duels) String callError;
     @BindString(R.string.win_10_duels) String win10;
@@ -87,6 +93,9 @@ public class HomeActivity extends SavedGamesActivity {
         loginButton.setReadPermissions("email", "user_friends");
 
         callbackManager = CallbackManager.Factory.create();
+
+        noDuelsProgress.setVisibility(View.INVISIBLE);
+        noLastDuels.setVisibility(View.INVISIBLE);
 
         loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
@@ -168,6 +177,10 @@ public class HomeActivity extends SavedGamesActivity {
         for (Duel duel : history.getInProgressDuels()) {
             duelIDs += duel.getDuelID() + ",";
         }
+
+        for (Duel duel : history.getCompletedDuels()) {
+            duelIDs += duel.getDuelID() + ",";
+        }
         // If there are no pending duels, send a dummy string just to fill in the parameter
         duelIDs = (duelIDs.length() - 1 > 0) ? duelIDs.substring(0, duelIDs.length() - 1) : "dummy";
         new GetProgress(
@@ -182,32 +195,36 @@ public class HomeActivity extends SavedGamesActivity {
                         Duel duel = history.getDuelByID(pendingDuel.getDuelID());
                         if (duel != null) { //existing duel
                             // Get the indexes for updating an existing duel
-                            int index = 0, currentQuizIndex = duel.getQuizzes().size() - 1;
-                            // If the player completed the round (1st condition) and if the opponent
-                            // answered (2nd condition) save the result
-                            if (currentQuizIndex < pendingDuel.getAnswers().length &&
-                                    index < pendingDuel.getAnswers()[currentQuizIndex].length) {
-                                // For each new question save the opponent's answer
-                                for (Question question : duel.getCurrentQuiz().getQuestions()) {
-                                    question.setOpponentAnswer(pendingDuel.getAnswers()[currentQuizIndex][index++]);
-                                }
-                                Score roundScore = duel.getCurrentQuiz().getScore();
-                                if (roundScore.getPlayerScore() > roundScore.getOpponentScore()) {
-                                    Games.Events.increment(client, roundsWon, 1);
-                                }
-                                // If both the two players completed the duel, set it as complete
-                                if (duel.getQuizzes().size() == 3) {
-                                    duel.getCurrentQuiz().complete();
-                                    Score score = duel.getScore();
-                                    if (score.getPlayerScore() > score.getOpponentScore()) {
-                                        Games.Achievements.increment(client, win10, 1);
-                                        Games.Achievements.increment(client, win50, 1);
-                                        Games.Achievements.increment(client, win100, 1);
-                                        Games.Achievements.increment(client, win200, 1);
-                                        Games.Events.increment(client, duelsWon, 1);
+                            int currentQuizIndex = duel.getQuizzes().size() - 1;
+
+                            for (int ci = 0; ci <= currentQuizIndex; ci ++) {
+                                int index = 0;
+                                // If the player completed the round (1st condition) and if the opponent
+                                // answered (2nd condition) save the result
+                                if (ci < pendingDuel.getAnswers().length &&
+                                        index < pendingDuel.getAnswers()[ci].length) {
+                                    // For each new question save the opponent's answer
+                                    for (Question question : duel.getCurrentQuiz().getQuestions()) {
+                                        question.setOpponentAnswer(pendingDuel.getAnswers()[ci][index++]);
                                     }
+                                    Score roundScore = duel.getCurrentQuiz().getScore();
+                                    if (roundScore.getPlayerScore() > roundScore.getOpponentScore()) {
+                                        Games.Events.increment(client, roundsWon, 1);
+                                    }
+                                    // If both the two players completed the duel, set it as complete
+                                    if (duel.getQuizzes().size() == 3) {
+                                        duel.getCurrentQuiz().complete();
+                                        Score score = duel.getScore();
+                                        if (score.getPlayerScore() > score.getOpponentScore()) {
+                                            Games.Achievements.increment(client, win10, 1);
+                                            Games.Achievements.increment(client, win50, 1);
+                                            Games.Achievements.increment(client, win100, 1);
+                                            Games.Achievements.increment(client, win200, 1);
+                                            Games.Events.increment(client, duelsWon, 1);
+                                        }
+                                    }
+                                    history.setDuelByID(duel);
                                 }
-                                history.setDuelByID(duel);
                             }
                         } else { // new duel
                             history.addDuel(new Duel(pendingDuel.getDuelID(), pendingDuel.getOpponent()));
@@ -219,10 +236,14 @@ public class HomeActivity extends SavedGamesActivity {
                     errorToast(callError);
                 }
                 updateHistory();
+                mProgressBar1.setVisibility(View.GONE);
+                mProgressBar2.setVisibility(View.GONE);
             }
 
             @Override
             public void onFailure(Call<PendingDuels> call, Throwable t) {
+                mProgressBar1.setVisibility(View.GONE);
+                mProgressBar2.setVisibility(View.GONE);
                 t.printStackTrace();
                 errorToast(callError);
             }
@@ -239,20 +260,24 @@ public class HomeActivity extends SavedGamesActivity {
         if (history != null && !history.isEmpty()) {
             List<Duel> completedDuels = history.getCompletedDuels(DUELS_SHOWN);
             List<Duel> duelsInProgress = history.getInProgressDuels(DUELS_SHOWN);
+            mProgressBar2.setVisibility(View.INVISIBLE);
             if (completedDuels.size() > 0) {
-                findViewById(R.id.textview_home_noduels).setVisibility(View.GONE);
                 findViewById(R.id.button_home_duelshistory).setVisibility(View.VISIBLE);
                 oldDuels_listview.setVisibility(View.VISIBLE);
                 final DuelSummaryAdapter complAdapter = new DuelSummaryAdapter(this, completedDuels);
                 oldDuels_listview.setAdapter(complAdapter);
                 complAdapter.notifyDataSetChanged();
+            } else {
+                noLastDuels.setVisibility(View.VISIBLE);
             }
+            mProgressBar1.setVisibility(View.GONE);
             if (duelsInProgress.size() > 0) {
-                findViewById(R.id.textview_home_no_duels_in_progress).setVisibility(View.GONE);
                 duelsInProgress_listview.setVisibility(View.VISIBLE);
                 final DuelSummaryAdapter progAdapter = new DuelSummaryAdapter(this, duelsInProgress);
                 duelsInProgress_listview.setAdapter(progAdapter);
                 progAdapter.notifyDataSetChanged();
+            } else {
+                noDuelsProgress.setVisibility(View.GONE);
             }
         }
     }
@@ -283,8 +308,11 @@ public class HomeActivity extends SavedGamesActivity {
             editor.putBoolean(getString(R.string.signed_in), false);
             editor.apply();
 
-            startActivity(new Intent(this, SignInActivity.class));
         }
+    }
+
+    public void showLeaderboard(View v) {
+        startActivity(new Intent(this, LeaderboardActivity.class));
     }
 
     @Override

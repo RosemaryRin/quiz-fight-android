@@ -17,6 +17,7 @@ import android.view.ViewGroup;
 
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.google.android.gms.games.Games;
@@ -27,6 +28,7 @@ import java.util.List;
 import java.util.Random;
 
 import butterknife.BindString;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -70,6 +72,8 @@ public class StartDuelActivity extends SavedGamesActivity {
     private final static String TAG = "StartDuelActivity";
 
     private ListView listView;
+
+    @BindView(R.id.indeterminateBar3) ProgressBar mProgressBar;
 
     @BindString(R.string.unable_to_start_duel) String duelError;
 
@@ -121,6 +125,7 @@ public class StartDuelActivity extends SavedGamesActivity {
                     public void onResponse(Call<User> call, Response<User> response) {
                         if (response.isSuccessful()) {
                             String username = response.body().getUsername();
+                            mProgressBar.setVisibility(View.VISIBLE);
                             createDuel(username);
                         }
                         else {
@@ -146,6 +151,7 @@ public class StartDuelActivity extends SavedGamesActivity {
         )).call(new Callback<Round>() {
             @Override
             public void onResponse(Call<Round> call, Response<Round> response) {
+                mProgressBar.setVisibility(View.GONE);
                 startDuel(response.body());
             }
 
@@ -223,6 +229,11 @@ public class StartDuelActivity extends SavedGamesActivity {
                 Toast.makeText(getContext(),
                         getResources().getString(R.string.connectivity_error),
                         Toast.LENGTH_LONG).show();
+            } else if (AccessToken.getCurrentAccessToken() == null) {
+                AccessToken token = AccessToken.getCurrentAccessToken();
+                Toast.makeText(getContext(),
+                        getResources().getString(R.string.no_facebook_access),
+                        Toast.LENGTH_LONG).show();
             }
 
             /*if (getArguments().getInt(ARG_SECTION_NUMBER) == 1) { // friends tab
@@ -277,6 +288,11 @@ public class StartDuelActivity extends SavedGamesActivity {
                                 try {
                                     JSONArray friends = response.getJSONObject()
                                             .getJSONArray("data");
+                                    if (friends.length() == 0) {
+                                        Toast.makeText(getContext(), getResources().
+                                                getString(R.string.no_facebook_friends),
+                                                Toast.LENGTH_LONG).show();
+                                    }
                                     setFriendsAdapter(friends, rootView);
                                 } catch (JSONException e) {
                                     e.printStackTrace();

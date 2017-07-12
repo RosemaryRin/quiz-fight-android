@@ -60,6 +60,13 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="rogueone.quizfight.HomeActivity" />
         </activity>
+        <activity android:name=".DuelDetailActivity"
+            android:label="@string/title_activity_duel_detail"
+            android:parentActivityName=".DuelsHistoryActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="rogueone.quizfight.DuelsHistoryActivity" />
+        </activity>
         <activity
             android:name=".StatsActivity"
             android:label="@string/title_activity_duel"

@@ -19,6 +19,7 @@ import android.widget.TextView;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.games.Games;
 
+import java.io.IOException;
 import butterknife.BindString;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -287,7 +288,8 @@ public class DuelActivity extends SavedGamesActivity {
      * client and server side.
      */
     private void roundTerminated() {
-        Log.d("AA", score + "");
+        // setting round played by player
+        duel.getCurrentQuiz().played();
         // Call the server for remote saving the result
         new SendRoundScore(new RoundResult(
                 round.getDuelID(), round.getQuizID(),
@@ -295,7 +297,13 @@ public class DuelActivity extends SavedGamesActivity {
                 answers, score
         )).call(new Callback<ResponseBody>() {
             @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {}
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                try {
+                    Log.d("Debug", "" + response.body().string());
+                } catch (IOException e) {
+                    Log.d("Debug", "Exception occurred");
+                }
+            }
 
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {}
@@ -303,9 +311,8 @@ public class DuelActivity extends SavedGamesActivity {
         // Write the snapshot for updating the history
         // < 3 is needed because otherwise the duel would appear as complete. @see HomeActivity.updatePendingDuels
         // There the duel is marked as complete if the opponent completed it as well.
-        if (duel.getQuizzes().size() < 3) {
-            duel.getCurrentQuiz().complete();
-        } else { // Duel completed, let's check if an achievement may be updated
+        if (duel.getQuizzes().size() == 3) {
+            // Duel completed, let's check if an achievement may be updated
             GoogleApiClient client = application.getClient();
             if (score == 45) {
                 Games.Achievements.increment(client, points15, 1);

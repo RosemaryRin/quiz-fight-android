@@ -2,9 +2,11 @@ package rogueone.quizfight;
 
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
 import rogueone.quizfight.adapters.DuelSummaryAdapter;
+import rogueone.quizfight.listeners.DuelDetailListener;
 
 public class DuelsHistoryActivity extends SavedGamesActivity {
 
@@ -31,6 +33,8 @@ public class DuelsHistoryActivity extends SavedGamesActivity {
 
             final DuelSummaryAdapter listAdapter = new DuelSummaryAdapter(this, history.getCompletedDuels());
             listView.setAdapter(listAdapter);
+
+            listView.setOnItemClickListener(new DuelDetailListener(this));
         }
     }
 }

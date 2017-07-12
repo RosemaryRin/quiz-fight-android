@@ -37,6 +37,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import rogueone.quizfight.adapters.DuelSummaryAdapter;
+import rogueone.quizfight.listeners.DuelDetailListener;
 import rogueone.quizfight.models.Duel;
 import rogueone.quizfight.rest.api.sendFacebookId;
 import rogueone.quizfight.rest.pojo.User;
@@ -240,9 +241,9 @@ public class HomeActivity extends SavedGamesActivity {
                                     if (roundScore.getPlayerScore() > roundScore.getOpponentScore()) {
                                         Games.Events.increment(client, roundsWon, 1);
                                     }
-                                    // If both the two players completed the duel, set it as complete
+                                    // If both the two players completed the duel, set it as completecomplete
+                                    duel.getCurrentQuiz().complete();
                                     if (duel.getQuizzes().size() == 3) {
-                                        duel.getCurrentQuiz().complete();
                                         Score score = duel.getScore();
                                         if (score.getPlayerScore() > score.getOpponentScore()) {
                                             Games.Achievements.increment(client, win10, 1);
@@ -296,6 +297,7 @@ public class HomeActivity extends SavedGamesActivity {
                 final DuelSummaryAdapter complAdapter = new DuelSummaryAdapter(this, completedDuels);
                 oldDuels_listview.setAdapter(complAdapter);
                 complAdapter.notifyDataSetChanged();
+                oldDuels_listview.setOnItemClickListener(new DuelDetailListener(this));
                 //justifyListViewHeightBasedOnChildren(oldDuels_listview);
             } else {
                 noLastDuels.setVisibility(View.VISIBLE);
@@ -306,6 +308,7 @@ public class HomeActivity extends SavedGamesActivity {
                 final DuelSummaryAdapter progAdapter = new DuelSummaryAdapter(this, duelsInProgress);
                 duelsInProgress_listview.setAdapter(progAdapter);
                 progAdapter.notifyDataSetChanged();
+                duelsInProgress_listview.setOnItemClickListener(new DuelDetailListener(this));
                 //justifyListViewHeightBasedOnChildren(duelsInProgress_listview);
             } else {
                 noDuelsProgress.setVisibility(View.GONE);

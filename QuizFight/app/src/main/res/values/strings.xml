@@ -7,6 +7,7 @@
 
     <string name="title_activity_start_duel">Start Duel</string>
     <string name="title_activity_duels_history">Duels History</string>
+    <string name="title_activity_duel_detail">Duel Detail</string>
     <string name="title_activity_duel">Duel</string>
     <string name="title_activity_leaderboard">Leaderboard</string>
 
@@ -38,6 +39,11 @@
     <string name="connectivity_error">You are not connected</string>
     <string name="no_facebook_friends">None of your friends on Facebook use QuizFight. Go tell them!</string>
     <string name="no_facebook_access">You must login with Facebook to see your friends</string>
+
+    <string name="dueldetail_you">You</string>
+    <string name="dueldetail_fight">Fight</string>
+    <string name="dueldetail_waitingforopponent">Waiting for opponent...</string>
+    <string name="dueldetail_questionicon">A check if given answer is correct, a cross otherwise</string>
 
     <string name="title_friends">FRIENDS</string>
     <string name="title_leaderboard">LEADERBOARD</string>

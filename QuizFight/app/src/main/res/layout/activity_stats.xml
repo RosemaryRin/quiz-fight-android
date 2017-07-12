@@ -13,10 +13,16 @@
             android:text="@string/duels_stats"
             android:textSize="@dimen/stats_label_height"/>
 
+        <ProgressBar
+            android:id="@+id/indeterminateBarStat1"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
         <com.github.mikephil.charting.charts.BarChart
             android:id="@+id/duels_chart"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/chart_height" />
+            android:layout_height="@dimen/chart_height"
+            android:visibility="gone"/>
 
         <TextView
             android:layout_width="match_parent"
@@ -24,10 +30,16 @@
             android:text="@string/questions_stats"
             android:textSize="@dimen/stats_label_height"/>
 
+        <ProgressBar
+            android:id="@+id/indeterminateBarStat2"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
         <com.github.mikephil.charting.charts.BarChart
             android:id="@+id/questions_chart"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/chart_height" />
+            android:layout_height="@dimen/chart_height"
+            android:visibility="gone"/>
 
         <TextView
             android:layout_width="match_parent"
@@ -35,9 +47,15 @@
             android:text="@string/rounds_stats"
             android:textSize="@dimen/stats_label_height"/>
 
+        <ProgressBar
+            android:id="@+id/indeterminateBarStat3"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
         <com.github.mikephil.charting.charts.BarChart
             android:id="@+id/round_chart"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/chart_height" />
+            android:layout_height="@dimen/chart_height"
+            android:visibility="gone"/>
     </LinearLayout>
 </ScrollView>

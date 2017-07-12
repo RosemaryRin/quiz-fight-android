@@ -1,34 +1,22 @@
 package rogueone.quizfight;
 
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
+import android.view.View;
+import android.widget.ProgressBar;
 
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.PendingResult;
-import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.games.Games;
-import com.google.android.gms.games.event.Event;
-import com.google.android.gms.games.event.EventBuffer;
-import com.google.android.gms.games.event.Events;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import butterknife.BindString;
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import rogueone.quizfight.QuizFightApplication;
-import rogueone.quizfight.R;
-import rogueone.quizfight.models.Duel;
 
 /**
  * Created by mdipirro on 08/07/17.
@@ -46,6 +34,9 @@ public class StatsActivity extends SavedGamesActivity {
     @BindView(R.id.duels_chart) BarChart duelsChart;
     @BindView(R.id.questions_chart) BarChart questionsChart;
     @BindView(R.id.round_chart) BarChart roundsChart;
+    @BindView(R.id.indeterminateBarStat1) ProgressBar mProgressBar1;
+    @BindView(R.id.indeterminateBarStat2) ProgressBar mProgressBar2;
+    @BindView(R.id.indeterminateBarStat3) ProgressBar mProgressBar3;
 
     @BindString(R.string.stats_error) String statsError;
     @BindString(R.string.compl_duels) String completedDuelsString;
@@ -159,14 +150,20 @@ public class StatsActivity extends SavedGamesActivity {
             duelsChart.setFitBars(true);
             duelsChart.getXAxis().setDrawLabels(false);
             duelsChart.getDescription().setEnabled(false);
+            mProgressBar1.setVisibility(View.GONE);
+            duelsChart.setVisibility(View.VISIBLE);
             questionsChart.setData(questionsData);
             questionsChart.setFitBars(true);
             questionsChart.getXAxis().setDrawLabels(false);
             questionsChart.getDescription().setEnabled(false);
+            mProgressBar2.setVisibility(View.GONE);
+            questionsChart.setVisibility(View.VISIBLE);
             roundsChart.setData(roundsData);
             roundsChart.setFitBars(true);
             roundsChart.getXAxis().setDrawLabels(false);
             roundsChart.getDescription().setEnabled(false);
+            mProgressBar3.setVisibility(View.GONE);
+            roundsChart.setVisibility(View.VISIBLE);
 
             Legend duelsLegend = duelsChart.getLegend();
             duelsLegend.setEnabled(true);

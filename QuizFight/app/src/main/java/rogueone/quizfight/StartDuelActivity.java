@@ -17,6 +17,7 @@ import android.view.ViewGroup;
 
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.google.android.gms.games.Games;
@@ -27,6 +28,7 @@ import java.util.List;
 import java.util.Random;
 
 import butterknife.BindString;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -66,10 +68,12 @@ public class StartDuelActivity extends SavedGamesActivity {
      */
     private ViewPager mViewPager;
 
-    private QuizFightApplication application;
+    private static QuizFightApplication application;
     private final static String TAG = "StartDuelActivity";
 
     private ListView listView;
+
+    @BindView(R.id.indeterminateBar3) ProgressBar mProgressBar;
 
     @BindString(R.string.unable_to_start_duel) String duelError;
 
@@ -121,6 +125,7 @@ public class StartDuelActivity extends SavedGamesActivity {
                     public void onResponse(Call<User> call, Response<User> response) {
                         if (response.isSuccessful()) {
                             String username = response.body().getUsername();
+                            mProgressBar.setVisibility(View.VISIBLE);
                             createDuel(username);
                         }
                         else {
@@ -132,7 +137,7 @@ public class StartDuelActivity extends SavedGamesActivity {
                     public void onFailure(Call<User> call, Throwable t) {
                         errorToast(duelError);
                     }
-                });
+                }, application);
             }
         });
     }
@@ -146,6 +151,7 @@ public class StartDuelActivity extends SavedGamesActivity {
         )).call(new Callback<Round>() {
             @Override
             public void onResponse(Call<Round> call, Response<Round> response) {
+                mProgressBar.setVisibility(View.GONE);
                 startDuel(response.body());
             }
 
@@ -153,7 +159,7 @@ public class StartDuelActivity extends SavedGamesActivity {
             public void onFailure(Call<Round> call, Throwable t) {
                 errorToast(duelError);
             }
-        });
+        }, application);
     }
 
     private List<String> getRandomTopics() {
@@ -216,8 +222,13 @@ public class StartDuelActivity extends SavedGamesActivity {
             final View rootView = inflater.inflate(R.layout.fragment_start_duel, container, false);
 
             if (getArguments().getInt(ARG_SECTION_NUMBER) == 1
-                    && AccessToken.getCurrentAccessToken() != null) { // friends tab
+                    && AccessToken.getCurrentAccessToken() != null
+                    && application.checkConnection(getContext())) { // friends tab
                 friendsNamesRequest(rootView);
+            } else if (!application.checkConnection(getContext())) {
+                Toast.makeText(getContext(),
+                        getResources().getString(R.string.connectivity_error),
+                        Toast.LENGTH_LONG).show();
             } else if (AccessToken.getCurrentAccessToken() == null) {
                 AccessToken token = AccessToken.getCurrentAccessToken();
                 Toast.makeText(getContext(),

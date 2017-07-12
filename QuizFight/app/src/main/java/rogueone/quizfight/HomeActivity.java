@@ -295,7 +295,6 @@ public class HomeActivity extends SavedGamesActivity {
         application.getClient().disconnect();
     }*/
 
-    //FIXME temporary
     public void signOut(View v) {
         if (!signOutClicked) {
             signOutClicked = true;
@@ -308,6 +307,7 @@ public class HomeActivity extends SavedGamesActivity {
             editor.putBoolean(getString(R.string.signed_in), false);
             editor.apply();
 
+            startActivity(new Intent(HomeActivity.this, SignInActivity.class));
         }
     }
 

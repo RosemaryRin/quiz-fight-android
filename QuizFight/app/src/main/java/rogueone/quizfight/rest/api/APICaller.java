@@ -1,9 +1,12 @@
 package rogueone.quizfight.rest.api;
 
 import android.support.annotation.NonNull;
+import android.widget.Toast;
 
 import retrofit2.Call;
 import retrofit2.Callback;
+import rogueone.quizfight.QuizFightApplication;
+import rogueone.quizfight.R;
 import rogueone.quizfight.rest.EndpointInterface;
 import rogueone.quizfight.rest.RetrofitHelper;
 
@@ -27,9 +30,16 @@ public abstract class APICaller<T> {
         apiService = RetrofitHelper.getAPIService();
     }
 
-    public void call(@NonNull Callback<T> callback) {
-        Call<T> api = getActualMethod();
-        api.enqueue(callback);
+    public void call(@NonNull Callback<T> callback, QuizFightApplication application) {
+        if (application.checkConnection(application.getApplicationContext())) {
+            Call<T> api = getActualMethod();
+            api.enqueue(callback);
+        }
+        else {
+            Toast.makeText(application.getApplicationContext(),
+                    application.getApplicationContext().getResources().getString(R.string.connectivity_error),
+                    Toast.LENGTH_LONG).show();
+        }
     }
 
     protected abstract Call<T> getActualMethod();

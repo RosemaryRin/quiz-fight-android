@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
@@ -57,6 +58,7 @@ public class HomeActivity extends SavedGamesActivity {
 
     private static final int DUELS_SHOWN = 5;
     private static final String TAG = "HomeActivity";
+    private static final int REQUEST_ACHIEVEMENTS = 1;
 
     private QuizFightApplication application;
     private CallbackManager callbackManager;
@@ -75,6 +77,7 @@ public class HomeActivity extends SavedGamesActivity {
     @BindView(R.id.indeterminateBar2) ProgressBar mProgressBar2;
     @BindView(R.id.textview_home_no_duels_in_progress) TextView noDuelsProgress;
     @BindView(R.id.textview_home_noduels) TextView noLastDuels;
+    @BindView(R.id.imagebutton_home_achievements) ImageButton achButton;
 
     @BindString(R.string.unable_to_get_pending_duels) String callError;
     @BindString(R.string.win_10_duels) String win10;
@@ -171,6 +174,15 @@ public class HomeActivity extends SavedGamesActivity {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(v.getContext(), StartDuelActivity.class));
+            }
+        });
+
+        achButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                GoogleApiClient client = ((QuizFightApplication)getApplication()).getClient();
+                startActivityForResult(Games.Achievements.getAchievementsIntent(client),
+                        REQUEST_ACHIEVEMENTS);
             }
         });
 

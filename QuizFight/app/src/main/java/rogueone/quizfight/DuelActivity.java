@@ -2,6 +2,8 @@ package rogueone.quizfight;
 
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.app.NotificationManager;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -109,6 +111,9 @@ public class DuelActivity extends SavedGamesActivity {
 
         application = (QuizFightApplication)getApplication();
 
+        NotificationManager notificationManager = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.cancelAll();
+
         if (savedInstanceState != null) {
             configurationChanged = true;
 
@@ -119,8 +124,6 @@ public class DuelActivity extends SavedGamesActivity {
             availableTime = savedInstanceState.getLong(availableTimeString);
 
             getGames();
-
-            Log.d("AA", "confCh");
         } else {
             getGames();
 

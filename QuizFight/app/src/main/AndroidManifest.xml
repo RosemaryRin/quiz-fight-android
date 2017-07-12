@@ -66,6 +66,17 @@
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="rogueone.quizfight.DuelsHistoryActivity" />
+        </activity>
+        <activity
+            android:name=".StatsActivity"
+            android:label="@string/title_activity_duel"
+            android:parentActivityName=".HomeActivity"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:noHistory="true">
+        <meta-data
+            android:name="android.support.PARENT_ACTIVITY"
+            android:value="rogueone.quizfight.HomeActivity" />
+        </activity>
         <activity
             android:name=".LeaderboardActivity"
             android:label="@string/title_activity_leaderboard"

@@ -59,7 +59,14 @@ public class DuelSummaryAdapter extends ArrayAdapter<Duel> {
         return rowView;
     }
 
-    public Duel getItem(int position){
+    public Duel getItem(int position) {
         return duels.get(position);
+    }
+
+    public int getRowHeight(ViewGroup listView) {
+        View listItem = getView(0, null, listView);
+        int height = listItem.getLayoutParams().height;
+
+        return height;
     }
 }

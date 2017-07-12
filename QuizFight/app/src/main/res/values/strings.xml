@@ -34,6 +34,7 @@
     <string name="unable_to_start_round">Not able to start a new round.</string>
     <string name="unable_to_get_pending_duels">Not able to retrieve pending duels.</string>
     <string name="snapshot_error">Could not resolve snapshot conflicts</string>
+    <string name="stats_error">Not able to retrieve statistics.</string>
     <string name="connectivity_error">You are not connected</string>
     <string name="no_facebook_friends">None of your friends on Facebook use QuizFight. Go tell them!</string>
     <string name="no_facebook_access">You must login with Facebook to see your friends</string>
@@ -41,6 +42,10 @@
     <string name="title_friends">FRIENDS</string>
     <string name="title_leaderboard">LEADERBOARD</string>
     <string name="random_player">Random</string>
+    <string name="show_stats">View stats</string>
+    <string name="duels_stats">Duels\' stats</string>
+    <string name="questions_stats">Questions\' stats</string>
+    <string name="rounds_stats">Rounds\' stats</string>
 
     <string name="score_dialog">You got %1$d points!</string>
     <string name="round_completed">Round completed!</string>
@@ -81,6 +86,8 @@
     <string name="tv_signin_required">Please, sign in</string>
 
 
+    <string name="compl_duels">completed_duels</string>
+
     <string-array name="topics">
         <item>General Knowledge</item>
         <item>Entertainment: Books</item>
@@ -109,3 +116,4 @@
         <item>Science: Gadgets</item>
     </string-array>
 </resources>
+

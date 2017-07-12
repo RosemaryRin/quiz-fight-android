@@ -103,4 +103,57 @@ public class History implements Serializable {
         }
         return (index < duels.size()) ? index : -1;
     }
+
+    public int howManyWonDuels() {
+        int k = 0;
+        Iterator<Duel> iterator = getCompletedDuels().iterator();
+        while (iterator.hasNext()) {
+            Duel duel = iterator.next();
+            Score score = duel.getScore();
+            if (score.getPlayerScore() > score.getOpponentScore()) {
+                k++;
+            }
+        }
+        return k;
+    }
+
+    public int howManyWonRounds() {
+        int k = 0;
+        Iterator<Duel> iterator = getCompletedDuels().iterator();
+        while (iterator.hasNext()) {
+            Duel duel = iterator.next();
+            List<Quiz> rounds = duel.getQuizzes();
+            Iterator<Quiz> quizIterator = rounds.iterator();
+            while (quizIterator.hasNext()) {
+                Quiz quiz = quizIterator.next();
+                Score score = quiz.getScore();
+                if (score.getPlayerScore() > score.getOpponentScore()) {
+                    k++;
+                }
+            }
+        }
+        return k;
+    }
+
+    public int howManyCorrectAnswers() {
+        int k = 0;
+        Iterator<Duel> iterator = getCompletedDuels().iterator();
+        while (iterator.hasNext()) {
+            Duel duel = iterator.next();
+            List<Quiz> rounds = duel.getQuizzes();
+            Iterator<Quiz> quizIterator = rounds.iterator();
+            while (quizIterator.hasNext()) {
+                Quiz quiz = quizIterator.next();
+                List<Question> questions = quiz.getQuestions();
+                Iterator<Question> questionsIterator = questions.iterator();
+                while (questionsIterator.hasNext()) {
+                    Question question = questionsIterator.next();
+                    if (question.getPlayerAnswer()) {
+                        k++;
+                    }
+                }
+            }
+        }
+        return k;
+    }
 }

@@ -73,6 +73,7 @@ public class HomeActivity extends SavedGamesActivity {
     @BindView(R.id.imageview_profile) ImageView userProfileImage;
     @BindView(R.id.listview_home_duels_in_progress) ListView duelsInProgress_listview;
     @BindView(R.id.login_button) LoginButton loginButton;
+    @BindView(R.id.stats_button) ImageButton statsButton;
     @BindView(R.id.indeterminateBar1) ProgressBar mProgressBar1;
     @BindView(R.id.indeterminateBar2) ProgressBar mProgressBar2;
     @BindView(R.id.textview_home_no_duels_in_progress) TextView noDuelsProgress;
@@ -168,7 +169,6 @@ public class HomeActivity extends SavedGamesActivity {
             }
         });
 
-
         // start duel button
         FloatingActionButton startDuelFAB = (FloatingActionButton) rootView.findViewById(R.id.floatingactionbutton_home_startduel);
         startDuelFAB.setOnClickListener(new View.OnClickListener() {
@@ -186,6 +186,15 @@ public class HomeActivity extends SavedGamesActivity {
                         REQUEST_ACHIEVEMENTS);
             }
         });
+
+        statsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(HomeActivity.this, StatsActivity.class));
+            }
+        });
+
+        getGames();
     }
 
     /**

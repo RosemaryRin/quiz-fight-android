@@ -7,6 +7,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -288,6 +289,7 @@ public class HomeActivity extends SavedGamesActivity {
                 final DuelSummaryAdapter complAdapter = new DuelSummaryAdapter(this, completedDuels);
                 oldDuels_listview.setAdapter(complAdapter);
                 complAdapter.notifyDataSetChanged();
+                //justifyListViewHeightBasedOnChildren(oldDuels_listview);
             } else {
                 noLastDuels.setVisibility(View.VISIBLE);
             }
@@ -297,6 +299,7 @@ public class HomeActivity extends SavedGamesActivity {
                 final DuelSummaryAdapter progAdapter = new DuelSummaryAdapter(this, duelsInProgress);
                 duelsInProgress_listview.setAdapter(progAdapter);
                 progAdapter.notifyDataSetChanged();
+                //justifyListViewHeightBasedOnChildren(duelsInProgress_listview);
             } else {
                 noDuelsProgress.setVisibility(View.GONE);
             }
@@ -344,5 +347,27 @@ public class HomeActivity extends SavedGamesActivity {
         } else {
             errorToast(callError);
         }
+    }
+
+    public static void justifyListViewHeightBasedOnChildren (ListView listView) {
+
+        DuelSummaryAdapter adapter = (DuelSummaryAdapter) listView.getAdapter();
+
+        if (adapter == null)
+            return;
+
+        // padding
+        int totalHeight = listView.getPaddingTop() + listView.getPaddingBottom();
+
+        // height of list items (supposed all equals)
+        totalHeight += adapter.getCount() * adapter.getRowHeight(listView);
+
+        // dividers height
+        totalHeight += listView.getDividerHeight() * (adapter.getCount() - 1);
+
+        ViewGroup.LayoutParams params = listView.getLayoutParams();
+        params.height = totalHeight;
+        listView.setLayoutParams(params);
+        listView.requestLayout();
     }
 }

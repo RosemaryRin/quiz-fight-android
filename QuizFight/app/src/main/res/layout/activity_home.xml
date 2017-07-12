@@ -147,7 +147,8 @@
             <ListView
                 android:id="@+id/listview_home_duels_in_progress"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="128dp"
+                android:fadeScrollbars="false"
                 android:visibility="gone" />
 
             <TextView
@@ -157,7 +158,6 @@
                 android:paddingTop="50dp"
                 android:text="@string/home_lastduels"
                 android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
-
             <TextView
                 android:id="@+id/textview_home_noduels"
                 android:layout_width="match_parent"
@@ -173,7 +173,8 @@
             <ListView
                 android:id="@+id/listview_home_lastduels"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="128dp"
+                android:fadeScrollbars="false"
                 android:visibility="gone" />
 
             <Button

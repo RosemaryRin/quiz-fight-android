@@ -60,6 +60,16 @@
                 android:tint="@android:color/background_light"
                 app:srcCompat="@drawable/leaderboard" />
 
+            <ImageButton
+                android:id="@+id/imagebutton_home_achievements"
+                android:layout_width="48dip"
+                android:layout_height="match_parent"
+                android:layout_weight="0"
+                android:background="@color/colorPrimaryDark"
+                android:contentDescription="@string/home_leaderboardicondescription"
+                android:tint="@android:color/background_light"
+                app:srcCompat="@drawable/achievement" />
+
         </LinearLayout>
 
         <LinearLayout

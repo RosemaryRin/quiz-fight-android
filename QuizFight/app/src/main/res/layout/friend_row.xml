@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/linearlayout_friendrow_maincontainer"
@@ -13,6 +14,15 @@
         android:layout_width="64dip"
         android:layout_height="match_parent"
         android:layout_weight="0" />
+
+    <ProgressBar
+        android:id="@+id/friendProgressBar"
+        style="@android:style/Widget.ProgressBar.Horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="10dp"
+        android:maxHeight="10dp"
+        android:minHeight="10dp"
+        android:visibility="invisible" />
 
     <TextView
         android:id="@+id/textview_friendrow_name"

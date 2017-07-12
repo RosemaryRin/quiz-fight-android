@@ -68,7 +68,7 @@ public class StartDuelActivity extends SavedGamesActivity {
      */
     private ViewPager mViewPager;
 
-    private QuizFightApplication application;
+    private static QuizFightApplication application;
     private final static String TAG = "StartDuelActivity";
 
     private ListView listView;
@@ -137,7 +137,7 @@ public class StartDuelActivity extends SavedGamesActivity {
                     public void onFailure(Call<User> call, Throwable t) {
                         errorToast(duelError);
                     }
-                });
+                }, application);
             }
         });
     }
@@ -159,7 +159,7 @@ public class StartDuelActivity extends SavedGamesActivity {
             public void onFailure(Call<Round> call, Throwable t) {
                 errorToast(duelError);
             }
-        });
+        }, application);
     }
 
     private List<String> getRandomTopics() {
@@ -222,8 +222,13 @@ public class StartDuelActivity extends SavedGamesActivity {
             final View rootView = inflater.inflate(R.layout.fragment_start_duel, container, false);
 
             if (getArguments().getInt(ARG_SECTION_NUMBER) == 1
-                    && AccessToken.getCurrentAccessToken() != null) { // friends tab
+                    && AccessToken.getCurrentAccessToken() != null
+                    && application.checkConnection(getContext())) { // friends tab
                 friendsNamesRequest(rootView);
+            } else if (!application.checkConnection(getContext())) {
+                Toast.makeText(getContext(),
+                        getResources().getString(R.string.connectivity_error),
+                        Toast.LENGTH_LONG).show();
             } else if (AccessToken.getCurrentAccessToken() == null) {
                 AccessToken token = AccessToken.getCurrentAccessToken();
                 Toast.makeText(getContext(),

@@ -56,7 +56,7 @@ public class CustomFirebaseInstanceID extends FirebaseInstanceIdService {
 
                 @Override
                 public void onFailure(Call<ResponseBody> call, Throwable t) {}
-            });
+            }, (QuizFightApplication) getApplicationContext());
         }
     }
 }

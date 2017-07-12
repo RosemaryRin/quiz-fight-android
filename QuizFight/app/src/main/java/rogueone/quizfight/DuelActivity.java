@@ -4,32 +4,19 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.Loader;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.games.Games;
-import com.google.android.gms.games.snapshot.Snapshot;
 
-import org.w3c.dom.Text;
-
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
-import butterknife.BindArray;
-import butterknife.BindColor;
 import butterknife.BindString;
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -40,7 +27,6 @@ import retrofit2.Response;
 import rogueone.quizfight.fragments.MultipleChoiceFragment;
 import rogueone.quizfight.fragments.TrueFalseFragment;
 import rogueone.quizfight.models.Duel;
-import rogueone.quizfight.models.History;
 import rogueone.quizfight.models.Quiz;
 import rogueone.quizfight.rest.api.GetRound;
 import rogueone.quizfight.rest.api.SendRoundScore;
@@ -151,7 +137,7 @@ public class DuelActivity extends SavedGamesActivity {
                     t.printStackTrace();
                     errorToast(errorRound);
                 }
-            });
+            }, application);
         }
     }
 
@@ -276,7 +262,7 @@ public class DuelActivity extends SavedGamesActivity {
 
             @Override
             public void onFailure(Call<ResponseBody> call, Throwable t) {}
-        });
+        }, application);
         // Write the snapshot for updating the history
         // < 3 is needed because otherwise the duel would appear as complete. @see HomeActivity.updatePendingDuels
         // There the duel is marked as complete if the opponent completed it as well.

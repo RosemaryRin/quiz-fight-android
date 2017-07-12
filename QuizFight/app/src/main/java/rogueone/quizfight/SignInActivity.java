@@ -53,6 +53,7 @@ public class SignInActivity extends SavedGamesActivity implements
     ProgressBar mProgressBar;
 
     private GoogleApiClient client;
+    private QuizFightApplication application;
 
     @BindString(R.string.unable_to_restore_saved_games) String savedGamesError;
     @BindString(R.string.unable_to_connect) String connectionError;
@@ -74,7 +75,9 @@ public class SignInActivity extends SavedGamesActivity implements
                 .addApi(Drive.API).addScope(Drive.SCOPE_APPFOLDER)
                 .build();
 
-        ((QuizFightApplication)getApplicationContext()).setClient(client);
+        application = (QuizFightApplication) getApplicationContext();
+
+        application.setClient(client);
 
         findViewById(R.id.button_sign_in).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -131,7 +134,7 @@ public class SignInActivity extends SavedGamesActivity implements
 
                 @Override
                 public void onFailure(Call<ResponseBody> call, Throwable t) {}
-            });
+            }, application);
         }
     }
 
@@ -201,7 +204,7 @@ public class SignInActivity extends SavedGamesActivity implements
                 t.printStackTrace();
                 errorToast(savedGamesError);
             }
-        });
+        }, application);
     }
 
     @Override

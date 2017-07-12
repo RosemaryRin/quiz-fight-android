@@ -36,7 +36,6 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import rogueone.quizfight.adapters.DuelSummaryAdapter;
 import rogueone.quizfight.models.Duel;
-import rogueone.quizfight.models.Quiz;
 import rogueone.quizfight.rest.api.sendFacebookId;
 import rogueone.quizfight.rest.pojo.User;
 import rogueone.quizfight.models.Question;
@@ -100,6 +99,7 @@ public class HomeActivity extends SavedGamesActivity {
         noLastDuels.setVisibility(View.INVISIBLE);
 
         loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
+
             @Override
             public void onSuccess(LoginResult loginResult) {
                 Log.d(TAG, "Facebook login request success");
@@ -130,7 +130,7 @@ public class HomeActivity extends SavedGamesActivity {
                         public void onFailure(Call<User> call, Throwable t) {
                             t.printStackTrace();
                         }
-                    });
+                    }, application);
                 }
             }
 
@@ -256,7 +256,7 @@ public class HomeActivity extends SavedGamesActivity {
                 t.printStackTrace();
                 errorToast(callError);
             }
-        });
+        }, application);
     }
 
     @Override

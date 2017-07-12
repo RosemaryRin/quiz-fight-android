@@ -108,6 +108,7 @@ public class SignInActivity extends SavedGamesActivity implements
             client.connect();
             mProgressBar.setVisibility(View.VISIBLE);
         } else {
+            Log.d("AA", "AA");
             textView_signIn.setVisibility(View.VISIBLE);
         }
     }

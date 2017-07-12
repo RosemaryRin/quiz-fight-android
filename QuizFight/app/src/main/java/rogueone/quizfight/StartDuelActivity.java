@@ -1,6 +1,9 @@
 package rogueone.quizfight;
 
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
 import android.support.v7.widget.Toolbar;
@@ -17,20 +20,26 @@ import android.view.ViewGroup;
 
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
+import android.widget.Toast;
 
+import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.games.Games;
-import com.google.android.gms.games.snapshot.Snapshot;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
 import butterknife.BindString;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import rogueone.quizfight.adapters.LeaderboardAdapter;
+import rogueone.quizfight.listeners.LeaderboardDuelListener;
 import rogueone.quizfight.models.Duel;
 import rogueone.quizfight.rest.api.NewDuel;
 import rogueone.quizfight.rest.api.getGoogleUsername;
@@ -43,11 +52,14 @@ import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
 import com.facebook.HttpMethod;
 import com.facebook.AccessToken;
+import com.google.android.gms.games.leaderboard.LeaderboardScore;
+import com.google.android.gms.games.leaderboard.LeaderboardScoreBuffer;
+import com.google.android.gms.games.leaderboard.LeaderboardVariant;
+import com.google.android.gms.games.leaderboard.Leaderboards;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 
-import butterknife.ButterKnife;
 import rogueone.quizfight.adapters.FriendListAdapter;
 
 public class StartDuelActivity extends SavedGamesActivity {
@@ -67,10 +79,17 @@ public class StartDuelActivity extends SavedGamesActivity {
      */
     private ViewPager mViewPager;
 
-    private QuizFightApplication application;
+    private static QuizFightApplication application;
+    private static Activity activity;
+
     private final static String TAG = "StartDuelActivity";
 
+    private static List<LeaderboardScore> lbEntries;
+    private static final int PLAYERS_SHOWN = 20; // number of leaderboard entries
+
     private ListView listView;
+
+    @BindView(R.id.indeterminateBar3) ProgressBar mProgressBar;
 
     @BindString(R.string.unable_to_start_duel) String duelError;
 
@@ -81,7 +100,18 @@ public class StartDuelActivity extends SavedGamesActivity {
         ButterKnife.bind(this);
 
         application = (QuizFightApplication)getApplication();
+        activity = this;
         getGames();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (configurationChanged) {
+            setupUI();
+        } else {
+            getGames();
+        }
     }
 
     private void setupUI() {
@@ -103,7 +133,7 @@ public class StartDuelActivity extends SavedGamesActivity {
         findViewById(R.id.button_random_player).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                createDuel("elena.pullin95@gmail.com"); //FIXME to be removed
+                createDuel("");
             }
         });
 
@@ -122,6 +152,7 @@ public class StartDuelActivity extends SavedGamesActivity {
                     public void onResponse(Call<User> call, Response<User> response) {
                         if (response.isSuccessful()) {
                             String username = response.body().getUsername();
+                            mProgressBar.setVisibility(View.VISIBLE);
                             createDuel(username);
                         }
                         else {
@@ -133,20 +164,30 @@ public class StartDuelActivity extends SavedGamesActivity {
                     public void onFailure(Call<User> call, Throwable t) {
                         errorToast(duelError);
                     }
-                });
+                }, application);
             }
         });
     }
 
     public void createDuel(String opponentUsername) {
         String[] topics = getRandomTopics().toArray(new String[3]); // 3 rounds
-        new NewDuel(new RESTDuel(
-                Games.Players.getCurrentPlayer(application.getClient()).getDisplayName(),
-                opponentUsername,
-                topics
-        )).call(new Callback<Round>() {
+        NewDuel newDuel;
+        if (opponentUsername.equals("")) {
+            newDuel = new NewDuel(new RESTDuel(
+                    Games.Players.getCurrentPlayer(application.getClient()).getDisplayName(),
+                    topics
+            ));
+        } else{
+            newDuel = new NewDuel(new RESTDuel(
+                    Games.Players.getCurrentPlayer(application.getClient()).getDisplayName(),
+                    opponentUsername,
+                    topics
+            ));
+        }
+        newDuel.call(new Callback<Round>() {
             @Override
             public void onResponse(Call<Round> call, Response<Round> response) {
+                mProgressBar.setVisibility(View.GONE);
                 startDuel(response.body());
             }
 
@@ -154,7 +195,7 @@ public class StartDuelActivity extends SavedGamesActivity {
             public void onFailure(Call<Round> call, Throwable t) {
                 errorToast(duelError);
             }
-        });
+        }, application);
     }
 
     private List<String> getRandomTopics() {
@@ -217,45 +258,46 @@ public class StartDuelActivity extends SavedGamesActivity {
             final View rootView = inflater.inflate(R.layout.fragment_start_duel, container, false);
 
             if (getArguments().getInt(ARG_SECTION_NUMBER) == 1
-                    && AccessToken.getCurrentAccessToken() != null) { // friends tab
+                    && AccessToken.getCurrentAccessToken() != null
+                    && application.checkConnection(getContext())) { // friends tab
                 friendsNamesRequest(rootView);
-            }
-
-            /*if (getArguments().getInt(ARG_SECTION_NUMBER) == 1) { // friends tab
-                Games.Players.loadConnectedPlayers(application.getClient(), true).setResultCallback(
-                        new ResultCallback<Players.LoadPlayersResult>() {
-                            @Override
-                            public void onResult(@NonNull Players.LoadPlayersResult loadPlayersResult) {
-                                PlayerBuffer friends = loadPlayersResult.getPlayers();
-                                if (friends.getCount() > 0) {
-                                    final ListView listView = (ListView) rootView.findViewById(R.id.listview_startduel_list);
-                                    rootView.findViewById(R.id.textview_startduel_nouserstoshow).setVisibility(View.GONE);
-                                    listView.setVisibility(View.VISIBLE);
-                                    final FriendListAdapter listAdapter = new FriendListAdapter(getContext(), friends);
-                                    listView.setAdapter(listAdapter);
-                                }
-                            }
-                        }
-                );
+            } else if (!application.checkConnection(getContext())) {
+                Toast.makeText(getContext(),
+                        getResources().getString(R.string.connectivity_error),
+                        Toast.LENGTH_LONG).show();
+            } else if (AccessToken.getCurrentAccessToken() == null) {
+                AccessToken token = AccessToken.getCurrentAccessToken();
+                Toast.makeText(getContext(),
+                        getResources().getString(R.string.no_facebook_access),
+                        Toast.LENGTH_LONG).show();
             }
             else { // leaderboard tab
-                Games.Leaderboards.loadPlayerCenteredScores(application.getClient(), getString(R.string.leaderboard_id), LeaderboardVariant.TIME_SPAN_ALL_TIME, LeaderboardVariant.COLLECTION_PUBLIC, 10, true).setResultCallback(
-                        new ResultCallback<Leaderboards.LoadScoresResult>() {
-                            @Override
-                            public void onResult(@NonNull Leaderboards.LoadScoresResult loadScoresResult) {
-                                LeaderboardScoreBuffer leaderboard = loadScoresResult.getScores();
-                                Log.d("Debug", ""+leaderboard.getCount());
-                                if (leaderboard.getCount() > 0) {
-                                    final ListView listView = (ListView) rootView.findViewById(R.id.listview_startduel_list);
-                                    rootView.findViewById(R.id.textview_startduel_nouserstoshow).setVisibility(View.GONE);
-                                    listView.setVisibility(View.VISIBLE);
-                                    final LeaderboardAdapter listAdapter = new LeaderboardAdapter(getContext(), leaderboard);
-                                    listView.setAdapter(listAdapter);
-                                }
+                lbEntries = new ArrayList<LeaderboardScore>();
+                final Context ctx = getContext();
+
+                String leaderboardId = getResources().getString(R.string.leaderboard_id);
+
+                Games.Leaderboards.loadTopScores(application.getClient(), leaderboardId,
+                        LeaderboardVariant.TIME_SPAN_ALL_TIME, LeaderboardVariant.COLLECTION_PUBLIC, PLAYERS_SHOWN)
+                        .setResultCallback(new ResultCallback<Leaderboards.LoadScoresResult>() {
+                            public void onResult(Leaderboards.LoadScoresResult result) {
+
+                                LeaderboardScoreBuffer lsb = result.getScores();
+
+                                for (int i = 0; i < lsb.getCount(); i++)
+                                    lbEntries.add(lsb.get(i));
+
+                                listView = (ListView) rootView.findViewById(R.id.listview_startduel_list);
+
+                                listView.setVisibility(View.VISIBLE);
+
+                                final LeaderboardAdapter adapter = new LeaderboardAdapter(ctx, lbEntries);
+                                listView.setAdapter(adapter);
+
+                                listView.setOnItemClickListener(new LeaderboardDuelListener(activity));
                             }
-                        }
-                );
-            }*/
+                        });
+            }
 
             return rootView;
         }
@@ -273,6 +315,11 @@ public class StartDuelActivity extends SavedGamesActivity {
                                 try {
                                     JSONArray friends = response.getJSONObject()
                                             .getJSONArray("data");
+                                    if (friends.length() == 0) {
+                                        Toast.makeText(getContext(), getResources().
+                                                getString(R.string.no_facebook_friends),
+                                                Toast.LENGTH_LONG).show();
+                                    }
                                     setFriendsAdapter(friends, rootView);
                                 } catch (JSONException e) {
                                     e.printStackTrace();

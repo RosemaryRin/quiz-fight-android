@@ -7,9 +7,12 @@ import android.support.design.widget.FloatingActionButton;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.facebook.AccessToken;
@@ -18,6 +21,7 @@ import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.Profile;
+import com.facebook.ProfileTracker;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -33,10 +37,10 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import rogueone.quizfight.adapters.DuelSummaryAdapter;
+import rogueone.quizfight.listeners.DuelDetailListener;
 import rogueone.quizfight.models.Duel;
 import rogueone.quizfight.rest.api.sendFacebookId;
 import rogueone.quizfight.rest.pojo.User;
-import rogueone.quizfight.models.History;
 import rogueone.quizfight.models.Question;
 import rogueone.quizfight.models.Score;
 import rogueone.quizfight.rest.api.GetProgress;
@@ -55,9 +59,11 @@ public class HomeActivity extends SavedGamesActivity {
 
     private static final int DUELS_SHOWN = 5;
     private static final String TAG = "HomeActivity";
+    private static final int REQUEST_ACHIEVEMENTS = 1;
 
     private QuizFightApplication application;
     private CallbackManager callbackManager;
+    private ProfileTracker profileTracker;
     private AccessToken accessToken;
     private AccessTokenTracker accessTokenTracker;
 
@@ -68,6 +74,12 @@ public class HomeActivity extends SavedGamesActivity {
     @BindView(R.id.imageview_profile) ImageView userProfileImage;
     @BindView(R.id.listview_home_duels_in_progress) ListView duelsInProgress_listview;
     @BindView(R.id.login_button) LoginButton loginButton;
+    @BindView(R.id.stats_button) ImageButton statsButton;
+    @BindView(R.id.indeterminateBar1) ProgressBar mProgressBar1;
+    @BindView(R.id.indeterminateBar2) ProgressBar mProgressBar2;
+    @BindView(R.id.textview_home_no_duels_in_progress) TextView noDuelsProgress;
+    @BindView(R.id.textview_home_noduels) TextView noLastDuels;
+    @BindView(R.id.imagebutton_home_achievements) ImageButton achButton;
 
     @BindString(R.string.unable_to_get_pending_duels) String callError;
     @BindString(R.string.win_10_duels) String win10;
@@ -89,25 +101,43 @@ public class HomeActivity extends SavedGamesActivity {
 
         callbackManager = CallbackManager.Factory.create();
 
+        noDuelsProgress.setVisibility(View.INVISIBLE);
+        noLastDuels.setVisibility(View.INVISIBLE);
+
         loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
+
             @Override
             public void onSuccess(LoginResult loginResult) {
                 Log.d(TAG, "Facebook login request success");
-                accessToken = AccessToken.getCurrentAccessToken();
-                new sendFacebookId(
-                        Games.Players.getCurrentPlayer(application.getClient()).getDisplayName(),
-                        Profile.getCurrentProfile().getId())
-                        .call(new Callback<User>() {
-                            @Override
-                            public void onResponse(Call<User> call, Response<User> response) {
-                                Log.d(TAG, response.message());
-                            }
+                accessToken = loginResult.getAccessToken();
+                accessTokenTracker = new AccessTokenTracker() {
+                    @Override
+                    protected void onCurrentAccessTokenChanged(AccessToken oldAccessToken, AccessToken currentAccessToken) {
+                        accessTokenTracker.stopTracking();
+                    }
+                };
+                profileTracker = new ProfileTracker() {
+                    @Override
+                    protected void onCurrentProfileChanged(Profile oldProfile, Profile currentProfile) {
+                        profileTracker.stopTracking();
+                    }
+                };
+                if (Profile.getCurrentProfile() != null) {
+                    new sendFacebookId(
+                            Games.Players.getCurrentPlayer(application.getClient()).getDisplayName(),
+                            Profile.getCurrentProfile().getId()
+                    ).call(new Callback<User>() {
+                        @Override
+                        public void onResponse(Call<User> call, Response<User> response) {
+                            Log.d(TAG, response.message());
+                        }
 
-                            @Override
-                            public void onFailure(Call<User> call, Throwable t) {
-                                t.printStackTrace();
-                            }
-                        });
+                        @Override
+                        public void onFailure(Call<User> call, Throwable t) {
+                            t.printStackTrace();
+                        }
+                    }, application);
+                }
             }
 
             @Override
@@ -120,13 +150,6 @@ public class HomeActivity extends SavedGamesActivity {
                 Log.d(TAG, "Facebook login request Error");
             }
         });
-
-        accessTokenTracker = new AccessTokenTracker() {
-            @Override
-            protected void onCurrentAccessTokenChanged(AccessToken oldAccessToken, AccessToken currentAccessToken) {
-                accessToken = currentAccessToken;
-            }
-        };
 
         // setting username from login
         username.setText(Games.Players.getCurrentPlayer(
@@ -147,13 +170,28 @@ public class HomeActivity extends SavedGamesActivity {
             }
         });
 
-
         // start duel button
         FloatingActionButton startDuelFAB = (FloatingActionButton) rootView.findViewById(R.id.floatingactionbutton_home_startduel);
         startDuelFAB.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(v.getContext(), StartDuelActivity.class));
+            }
+        });
+
+        achButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                GoogleApiClient client = ((QuizFightApplication)getApplication()).getClient();
+                startActivityForResult(Games.Achievements.getAchievementsIntent(client),
+                        REQUEST_ACHIEVEMENTS);
+            }
+        });
+
+        statsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(HomeActivity.this, StatsActivity.class));
             }
         });
 
@@ -167,6 +205,10 @@ public class HomeActivity extends SavedGamesActivity {
     private void updatePendingDuels() {
         String duelIDs = "";
         for (Duel duel : history.getInProgressDuels()) {
+            duelIDs += duel.getDuelID() + ",";
+        }
+
+        for (Duel duel : history.getCompletedDuels()) {
             duelIDs += duel.getDuelID() + ",";
         }
         // If there are no pending duels, send a dummy string just to fill in the parameter
@@ -183,32 +225,36 @@ public class HomeActivity extends SavedGamesActivity {
                         Duel duel = history.getDuelByID(pendingDuel.getDuelID());
                         if (duel != null) { //existing duel
                             // Get the indexes for updating an existing duel
-                            int index = 0, currentQuizIndex = duel.getQuizzes().size() - 1;
-                            // If the player completed the round (1st condition) and if the opponent
-                            // answered (2nd condition) save the result
-                            if (currentQuizIndex < pendingDuel.getAnswers().length &&
-                                    index < pendingDuel.getAnswers()[currentQuizIndex].length) {
-                                // For each new question save the opponent's answer
-                                for (Question question : duel.getCurrentQuiz().getQuestions()) {
-                                    question.setOpponentAnswer(pendingDuel.getAnswers()[currentQuizIndex][index++]);
-                                }
-                                Score roundScore = duel.getCurrentQuiz().getScore();
-                                if (roundScore.getPlayerScore() > roundScore.getOpponentScore()) {
-                                    Games.Events.increment(client, roundsWon, 1);
-                                }
-                                // If both the two players completed the duel, set it as complete
-                                if (duel.getQuizzes().size() == 3) {
-                                    duel.getCurrentQuiz().complete();
-                                    Score score = duel.getScore();
-                                    if (score.getPlayerScore() > score.getOpponentScore()) {
-                                        Games.Achievements.increment(client, win10, 1);
-                                        Games.Achievements.increment(client, win50, 1);
-                                        Games.Achievements.increment(client, win100, 1);
-                                        Games.Achievements.increment(client, win200, 1);
-                                        Games.Events.increment(client, duelsWon, 1);
+                            int currentQuizIndex = duel.getQuizzes().size() - 1;
+
+                            for (int ci = 0; ci <= currentQuizIndex; ci ++) {
+                                int index = 0;
+                                // If the player completed the round (1st condition) and if the opponent
+                                // answered (2nd condition) save the result
+                                if (ci < pendingDuel.getAnswers().length &&
+                                        index < pendingDuel.getAnswers()[ci].length) {
+                                    // For each new question save the opponent's answer
+                                    for (Question question : duel.getCurrentQuiz().getQuestions()) {
+                                        question.setOpponentAnswer(pendingDuel.getAnswers()[ci][index++]);
                                     }
+                                    Score roundScore = duel.getCurrentQuiz().getScore();
+                                    if (roundScore.getPlayerScore() > roundScore.getOpponentScore()) {
+                                        Games.Events.increment(client, roundsWon, 1);
+                                    }
+                                    // If both the two players completed the duel, set it as completecomplete
+                                    duel.getCurrentQuiz().complete();
+                                    if (duel.getQuizzes().size() == 3) {
+                                        Score score = duel.getScore();
+                                        if (score.getPlayerScore() > score.getOpponentScore()) {
+                                            Games.Achievements.increment(client, win10, 1);
+                                            Games.Achievements.increment(client, win50, 1);
+                                            Games.Achievements.increment(client, win100, 1);
+                                            Games.Achievements.increment(client, win200, 1);
+                                            Games.Events.increment(client, duelsWon, 1);
+                                        }
+                                    }
+                                    history.setDuelByID(duel);
                                 }
-                                history.setDuelByID(duel);
                             }
                         } else { // new duel
                             history.addDuel(new Duel(pendingDuel.getDuelID(), pendingDuel.getOpponent()));
@@ -220,14 +266,18 @@ public class HomeActivity extends SavedGamesActivity {
                     errorToast(callError);
                 }
                 updateHistory();
+                mProgressBar1.setVisibility(View.GONE);
+                mProgressBar2.setVisibility(View.GONE);
             }
 
             @Override
             public void onFailure(Call<PendingDuels> call, Throwable t) {
+                mProgressBar1.setVisibility(View.GONE);
+                mProgressBar2.setVisibility(View.GONE);
                 t.printStackTrace();
                 errorToast(callError);
             }
-        });
+        }, application);
     }
 
     @Override
@@ -240,28 +290,42 @@ public class HomeActivity extends SavedGamesActivity {
         if (history != null && !history.isEmpty()) {
             List<Duel> completedDuels = history.getCompletedDuels(DUELS_SHOWN);
             List<Duel> duelsInProgress = history.getInProgressDuels(DUELS_SHOWN);
+            mProgressBar2.setVisibility(View.INVISIBLE);
             if (completedDuels.size() > 0) {
-                findViewById(R.id.textview_home_noduels).setVisibility(View.GONE);
                 findViewById(R.id.button_home_duelshistory).setVisibility(View.VISIBLE);
                 oldDuels_listview.setVisibility(View.VISIBLE);
                 final DuelSummaryAdapter complAdapter = new DuelSummaryAdapter(this, completedDuels);
                 oldDuels_listview.setAdapter(complAdapter);
                 complAdapter.notifyDataSetChanged();
+                oldDuels_listview.setOnItemClickListener(new DuelDetailListener(this));
+                //justifyListViewHeightBasedOnChildren(oldDuels_listview);
+            } else {
+                noLastDuels.setVisibility(View.VISIBLE);
             }
+            mProgressBar1.setVisibility(View.GONE);
             if (duelsInProgress.size() > 0) {
-                findViewById(R.id.textview_home_no_duels_in_progress).setVisibility(View.GONE);
                 duelsInProgress_listview.setVisibility(View.VISIBLE);
                 final DuelSummaryAdapter progAdapter = new DuelSummaryAdapter(this, duelsInProgress);
                 duelsInProgress_listview.setAdapter(progAdapter);
                 progAdapter.notifyDataSetChanged();
+                duelsInProgress_listview.setOnItemClickListener(new DuelDetailListener(this));
+                //justifyListViewHeightBasedOnChildren(duelsInProgress_listview);
+            } else {
+                noDuelsProgress.setVisibility(View.GONE);
             }
         }
     }
 
+
+
     @Override
     public void onResume() {
         super.onResume();
-        getGames();
+        if (configurationChanged) {
+            updateHistory();
+        } else {
+            getGames();
+        }
     }
 
     /* TODO To be tested
@@ -269,9 +333,9 @@ public class HomeActivity extends SavedGamesActivity {
     public void onDestroy() {
         super.onDestroy();
         application.getClient().disconnect();
+        profileTracker.stopTracking();
     }*/
 
-    //FIXME temporary
     public void signOut(View v) {
         if (!signOutClicked) {
             signOutClicked = true;
@@ -284,8 +348,12 @@ public class HomeActivity extends SavedGamesActivity {
             editor.putBoolean(getString(R.string.signed_in), false);
             editor.apply();
 
-            startActivity(new Intent(this, SignInActivity.class));
+            startActivity(new Intent(HomeActivity.this, SignInActivity.class));
         }
+    }
+
+    public void showLeaderboard(View v) {
+        startActivity(new Intent(this, LeaderboardActivity.class));
     }
 
     @Override
@@ -295,5 +363,27 @@ public class HomeActivity extends SavedGamesActivity {
         } else {
             errorToast(callError);
         }
+    }
+
+    public static void justifyListViewHeightBasedOnChildren (ListView listView) {
+
+        DuelSummaryAdapter adapter = (DuelSummaryAdapter) listView.getAdapter();
+
+        if (adapter == null)
+            return;
+
+        // padding
+        int totalHeight = listView.getPaddingTop() + listView.getPaddingBottom();
+
+        // height of list items (supposed all equals)
+        totalHeight += adapter.getCount() * adapter.getRowHeight(listView);
+
+        // dividers height
+        totalHeight += listView.getDividerHeight() * (adapter.getCount() - 1);
+
+        ViewGroup.LayoutParams params = listView.getLayoutParams();
+        params.height = totalHeight;
+        listView.setLayoutParams(params);
+        listView.requestLayout();
     }
 }

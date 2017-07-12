@@ -6,16 +6,19 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
+    <meta-data
+        android:name="com.google.android.gms.games.APP_ID"
+        android:value="@string/app_id" />
+
     <application
+        android:name=".QuizFightApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:launchMode="singleInstance"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme"
-        android:name=".QuizFightApplication"
-        android:launchMode="singleInstance">
-
+        android:theme="@style/AppTheme">
         <activity
             android:name=".SignInActivity"
             android:noHistory="true">
@@ -27,15 +30,14 @@
         </activity>
         <activity
             android:name=".HomeActivity"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:launchMode="singleTask">
-        </activity>
+            android:launchMode="singleTask"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
         <activity
             android:name=".StartDuelActivity"
             android:label="@string/title_activity_start_duel"
+            android:noHistory="true"
             android:parentActivityName=".HomeActivity"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:noHistory="true">
+            android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="rogueone.quizfight.HomeActivity" />
@@ -43,9 +45,9 @@
         <activity
             android:name=".DuelActivity"
             android:label="@string/title_activity_duel"
+            android:noHistory="true"
             android:parentActivityName=".HomeActivity"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:noHistory="true">
+            android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="rogueone.quizfight.HomeActivity" />
@@ -58,33 +60,58 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="rogueone.quizfight.HomeActivity" />
         </activity>
+        <activity android:name=".DuelDetailActivity"
+            android:label="@string/title_activity_duel_detail"
+            android:parentActivityName=".DuelsHistoryActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="rogueone.quizfight.DuelsHistoryActivity" />
+        </activity>
+        <activity
+            android:name=".StatsActivity"
+            android:label="@string/title_activity_duel"
+            android:parentActivityName=".HomeActivity"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:noHistory="true">
+        <meta-data
+            android:name="android.support.PARENT_ACTIVITY"
+            android:value="rogueone.quizfight.HomeActivity" />
+        </activity>
+        <activity
+            android:name=".LeaderboardActivity"
+            android:label="@string/title_activity_leaderboard"
+            android:parentActivityName=".HomeActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="rogueone.quizfight.HomeActivity" />
+        </activity>
 
-        <service
-            android:name=".services.CustomFirebaseInstanceID">
+        <service android:name=".services.CustomFirebaseInstanceID">
             <intent-filter>
-                <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>
+                <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
             </intent-filter>
         </service>
-        <service
-            android:name=".services.MessagingService">
+        <service android:name=".services.MessagingService">
             <intent-filter>
-                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
 
-        <receiver android:name=".QuizFightReceiver" android:enabled="true" android:exported="false">
+        <receiver
+            android:name=".QuizFightReceiver"
+            android:enabled="true"
+            android:exported="false">
             <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
 
-        <meta-data android:name="com.google.android.gms.games.APP_ID"
+        <meta-data
+            android:name="com.google.android.gms.games.APP_ID"
             android:value="@string/app_id" />
-        <meta-data android:name="com.facebook.sdk.ApplicationId"
-            android:value="@string/facebook_app_id"/>
+        <meta-data
+            android:name="com.facebook.sdk.ApplicationId"
+            android:value="@string/facebook_app_id" />
     </application>
-
-    <meta-data android:name="com.google.android.gms.games.APP_ID"
-        android:value="@string/app_id" />
 
 </manifest>

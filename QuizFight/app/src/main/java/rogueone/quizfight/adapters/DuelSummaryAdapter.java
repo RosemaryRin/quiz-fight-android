@@ -19,7 +19,7 @@ import rogueone.quizfight.models.Duel;
 
 public class DuelSummaryAdapter extends ArrayAdapter<Duel> {
     private Context context;
-    private List<Duel> duels = new ArrayList<>();
+    private List<Duel> duels = new ArrayList<Duel>();
 
     public DuelSummaryAdapter(@NonNull Context context, @NonNull List<Duel> duels) {
         super(context, -1, duels);
@@ -57,5 +57,16 @@ public class DuelSummaryAdapter extends ArrayAdapter<Duel> {
         scoreView.setText(playerScore + " - " + opponentScore);
 
         return rowView;
+    }
+
+    public Duel getItem(int position) {
+        return duels.get(position);
+    }
+
+    public int getRowHeight(ViewGroup listView) {
+        View listItem = getView(0, null, listView);
+        int height = listItem.getLayoutParams().height;
+
+        return height;
     }
 }

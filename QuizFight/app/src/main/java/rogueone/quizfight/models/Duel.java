@@ -73,8 +73,10 @@ public class Duel implements Serializable {
         for (Quiz q : quizzes) {
             Score quizScore = q.getScore();
 
-            playerScore += quizScore.getPlayerScore();
-            opponentScore += quizScore.getOpponentScore();
+            if (q.isPlayed())
+                playerScore += quizScore.getPlayerScore();
+            if (q.isCompleted())
+                opponentScore += quizScore.getOpponentScore();
         }
 
         return new Score(playerScore, opponentScore);

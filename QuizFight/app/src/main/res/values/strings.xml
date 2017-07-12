@@ -8,6 +8,7 @@
     <string name="title_activity_start_duel">Start Duel</string>
     <string name="title_activity_duels_history">Duels History</string>
     <string name="title_activity_duel">Duel</string>
+    <string name="title_activity_leaderboard">Leaderboard</string>
 
     <string name="action_settings">Settings</string>
 
@@ -15,6 +16,8 @@
     <string name="all_noduels">No duels found</string>
 
     <string name="home_usericondescription">User image</string>
+    <string name="home_logoicondescription">Quiz Fight</string>
+    <string name="home_leaderboardicondescription">Leaderboard</string>
     <string name="home_lastduels">Last duels:</string>
     <string name="home_duels_in_progress">Duels in progress:</string>
     <string name="home_viewhistory">View all duels</string>

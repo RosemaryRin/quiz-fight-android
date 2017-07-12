@@ -8,8 +8,6 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import rogueone.quizfight.models.Duel;
-import rogueone.quizfight.models.History;
-import rogueone.quizfight.models.Question;
 import rogueone.quizfight.rest.api.AddToken;
 import rogueone.quizfight.rest.api.GetProgress;
 import rogueone.quizfight.rest.pojo.PendingDuels;
@@ -26,8 +24,8 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.provider.Settings.Secure;
 import android.support.annotation.NonNull;
-import android.util.Log;
 import android.view.View;
+import android.widget.ProgressBar;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
@@ -52,6 +50,8 @@ public class SignInActivity extends SavedGamesActivity implements
 
     private static final int RESOLUTION = 2404;
 
+    ProgressBar mProgressBar;
+
     private GoogleApiClient client;
 
     @BindString(R.string.unable_to_restore_saved_games) String savedGamesError;
@@ -64,6 +64,8 @@ public class SignInActivity extends SavedGamesActivity implements
         ButterKnife.bind(this);
 
         setContentView(R.layout.activity_sign_in);
+
+        mProgressBar = (ProgressBar) findViewById(R.id.indeterminateBar0);
 
         client = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
@@ -80,6 +82,7 @@ public class SignInActivity extends SavedGamesActivity implements
                 if (client != null && client.isConnected()) {
                     client.clearDefaultAccountAndReconnect();
                 }
+                mProgressBar.setVisibility(View.VISIBLE);
                 signIn();
             }
         });
@@ -186,6 +189,7 @@ public class SignInActivity extends SavedGamesActivity implements
                         }
                     }
                     SavedGames.writeSnapshot(snapshot, history, "", application.getClient());
+                    mProgressBar.setVisibility(View.GONE);
                     startHomeActivity();
                 } else {
                     errorToast(savedGamesError);

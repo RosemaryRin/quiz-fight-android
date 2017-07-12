@@ -1,28 +1,71 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background"
+    android:orientation="vertical"
+    android:padding="8dp">
+
+    <LinearLayout
+        android:id="@+id/linearlayout_duel_difficulty"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/textview_duel_difficultytext"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="10dp"
+            android:layout_weight="1"
+            android:text="@string/difficulty"
+            android:textAlignment="textEnd"
+            android:textSize="12sp" />
+
+        <ProgressBar
+            android:id="@+id/progressbar_duel_difficultybar"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0"
+            android:max="3" />
+    </LinearLayout>
 
     <TextView
         android:id="@+id/textview_question"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp" />
 
-    <fragment android:name="rogueone.quizfight.fragments.TrueFalseFragment"
+    <fragment
         android:id="@+id/fragment_true_false"
-        android:layout_weight="1"
+        android:name="rogueone.quizfight.fragments.TrueFalseFragment"
         android:layout_width="match_parent"
-        android:layout_height="0dp" />
+        android:layout_height="wrap_content"
+        android:layout_weight="0"
+        tools:layout="@layout/fragment_true_false" />
 
-    <fragment android:name="rogueone.quizfight.fragments.MultipleChoiceFragment"
+    <fragment
         android:id="@+id/fragment_multiple_choice"
-        android:layout_weight="1"
+        android:name="rogueone.quizfight.fragments.MultipleChoiceFragment"
         android:layout_width="match_parent"
-        android:layout_height="0dp" />
+        android:layout_height="wrap_content"
+        android:layout_weight="0"
+        tools:layout="@layout/fragment_multiple_choice" />
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1" />
 
     <ProgressBar
         android:id="@+id/progressbar_timer"
         style="?android:attr/progressBarStyleHorizontal"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:progressTint="@color/colorPrimary"
+        android:scaleY="3" />
 </LinearLayout>

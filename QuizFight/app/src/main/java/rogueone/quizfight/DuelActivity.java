@@ -6,6 +6,7 @@ import android.app.NotificationManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.annotation.NonNull;
@@ -77,6 +78,7 @@ public class DuelActivity extends SavedGamesActivity {
     private CountDownTimer timer; // The timer
 
     private FragmentManager fragmentManager;
+    @BindView(R.id.progressbar_duel_difficultybar) ProgressBar progressBar_difficulty;
     @BindView(R.id.textview_question) TextView textView_question;
     @BindView(R.id.progressbar_timer) ProgressBar progressBar;
     private TrueFalseFragment trueFalseFragment;
@@ -264,6 +266,24 @@ public class DuelActivity extends SavedGamesActivity {
     private void nextQuestion() {
         if (count < QUESTIONS_PER_ROUND) { // there are some more questions
             currentQuestion = round.getQuestions().get(count); // get the next question
+
+            // difficulty
+            int diff = currentQuestion.getDifficulty();
+            if (diff <= 1) {
+                progressBar_difficulty.setProgress(1);
+                progressBar_difficulty.getProgressDrawable().setColorFilter(
+                        Color.GREEN, android.graphics.PorterDuff.Mode.SRC_IN);
+            }
+            else if (diff == 2) {
+                progressBar_difficulty.setProgress(2);
+                progressBar_difficulty.getProgressDrawable().setColorFilter(
+                        Color.YELLOW, android.graphics.PorterDuff.Mode.SRC_IN);
+            } else {
+                progressBar_difficulty.setProgress(3);
+                progressBar_difficulty.getProgressDrawable().setColorFilter(
+                        Color.RED, android.graphics.PorterDuff.Mode.SRC_IN);
+            }
+
             textView_question.setText(currentQuestion.getQuestion()); // show that...
             //.. with the correct Fragment
             if (currentQuestion.isTrueOrFalse()) {

@@ -94,6 +94,8 @@
 
     <string name="compl_duels">completed_duels</string>
 
+    <string name="difficulty">Difficulty:</string>
+
     <string-array name="topics">
         <item>General Knowledge</item>
         <item>Entertainment: Books</item>

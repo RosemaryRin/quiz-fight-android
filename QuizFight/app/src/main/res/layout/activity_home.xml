@@ -68,7 +68,9 @@
                 android:background="@color/colorPrimaryDark"
                 android:contentDescription="@string/home_leaderboardicondescription"
                 android:tint="@android:color/background_light"
-                app:srcCompat="@drawable/achievement" />
+                app:srcCompat="@drawable/achievement"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"/>
 
             <ImageButton
                 android:id="@+id/stats_button"

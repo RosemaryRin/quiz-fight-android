@@ -1,0 +1,125 @@
+<resources>
+    <string name="app_name">Quiz Fight</string>
+    <string name="app_id">628056279109</string>
+    <string name="facebook_app_id">1778022419175506</string>
+
+    <string name="snapshot_name">quiz-fight-snapshot</string>
+
+    <string name="title_activity_start_duel">Start Duel</string>
+    <string name="title_activity_duels_history">Duels History</string>
+    <string name="title_activity_duel_detail">Duel Detail</string>
+    <string name="title_activity_duel">Duel</string>
+    <string name="title_activity_leaderboard">Leaderboard</string>
+
+    <string name="action_settings">Settings</string>
+
+    <string name="all_duelresulticondescription">Duel result icon</string>
+    <string name="all_noduels">No duels found</string>
+
+    <string name="home_usericondescription">User image</string>
+    <string name="home_logoicondescription">Quiz Fight</string>
+    <string name="home_leaderboardicondescription">Leaderboard</string>
+    <string name="home_achievementsdicondescription">Achievements</string>
+    <string name="home_lastduels">Last duels:</string>
+    <string name="home_duels_in_progress">Duels in progress:</string>
+    <string name="home_viewhistory">View all duels</string>
+
+    <string name="duelshistory_duelshistory">Duels history:</string>
+
+    <string name="startduel_nofriends">No friends found</string>
+    <string name="startduel_notopplayers">Top players not found, try again later</string>
+
+    <string name="unable_to_connect">Not able to connect to google client.</string>
+    <string name="unable_to_restore_saved_games">Not able to restore previous duels.</string>
+    <string name="unable_to_start_duel">Not able to start a new duel.</string>
+    <string name="unable_to_start_round">Not able to start a new round.</string>
+    <string name="unable_to_get_pending_duels">Not able to retrieve pending duels.</string>
+    <string name="snapshot_error">Could not resolve snapshot conflicts</string>
+    <string name="stats_error">Not able to retrieve statistics.</string>
+    <string name="connectivity_error">You are not connected</string>
+    <string name="no_facebook_friends">None of your friends on Facebook use QuizFight. Go tell them!</string>
+    <string name="no_facebook_access">You must login with Facebook to see your friends</string>
+
+    <string name="dueldetail_you">You</string>
+    <string name="dueldetail_fight">Fight</string>
+    <string name="dueldetail_waitingforopponent">Waiting for opponent...</string>
+    <string name="dueldetail_questionicon">A check if given answer is correct, a cross otherwise</string>
+
+    <string name="title_friends">FRIENDS</string>
+    <string name="title_leaderboard">LEADERBOARD</string>
+    <string name="random_player">Random</string>
+    <string name="show_stats">View stats</string>
+    <string name="duels_stats">Duels\' stats</string>
+    <string name="questions_stats">Questions\' stats</string>
+    <string name="rounds_stats">Rounds\' stats</string>
+
+    <string name="score_dialog">You got %1$d points!</string>
+    <string name="round_completed">Round completed!</string>
+    <string name="ok">Ok</string>
+
+    <string name="sign_out">Sign out</string>
+    <string name="signed_in">signed_in</string>
+    <string name="duel_id">duelID</string>
+    <string name="answers">answers</string>
+    <string name="opponent">opponent</string>
+    <string name="pending_duels">pending_duels</string>
+    <string name="new_rounds">new_rounds</string>
+    <string name="round">round</string>
+    <string name="count">count</string>
+    <string name="score">score</string>
+    <string name="available_time">allowed_time</string>
+
+    <string name="leaderboard_id">CgkIxZDJ2KMSEAIQAg</string>
+    <string name="win_10_duels">CgkIxZDJ2KMSEAIQAw</string>
+    <string name="win_50_duels">CgkIxZDJ2KMSEAIQBw</string>
+    <string name="win_100_duels">CgkIxZDJ2KMSEAIQCA</string>
+    <string name="win_200_duels">CgkIxZDJ2KMSEAIQDA</string>
+    <string name="correct_answers_100">CgkIxZDJ2KMSEAIQCQ</string>
+    <string name="correct_answers_250">CgkIxZDJ2KMSEAIQCg</string>
+    <string name="correct_answers_500">CgkIxZDJ2KMSEAIQCw</string>
+    <string name="correct_answers_1000">CgkIxZDJ2KMSEAIQDQ</string>
+    <string name="score_15_points">CgkIxZDJ2KMSEAIQEQ</string>
+    <string name="score_30_points">CgkIxZDJ2KMSEAIQEA</string>
+    <string name="score_45_points">CgkIxZDJ2KMSEAIQDw</string>
+    <string name="correct_answers">CgkIxZDJ2KMSEAIQBg</string>
+    <string name="duels_won">CgkIxZDJ2KMSEAIQDg</string>
+    <string name="corrects_answers">CgkIxZDJ2KMSEAIQBg</string>
+    <string name="questions_answered">CgkIxZDJ2KMSEAIQEg</string>
+    <string name="rounds_played">CgkIxZDJ2KMSEAIQEw</string>
+    <string name="rounds_won">CgkIxZDJ2KMSEAIQFA</string>
+    <string name="duels_played">CgkIxZDJ2KMSEAIQFQ</string>
+
+    <string name="tv_signin_required">Please, sign in</string>
+
+
+    <string name="compl_duels">completed_duels</string>
+
+    <string-array name="topics">
+        <item>General Knowledge</item>
+        <item>Entertainment: Books</item>
+        <item>Entertainment: Film</item>
+        <item>Entertainment: Music</item>
+        <item>Entertainment: Musicals &amp; Theatres</item>
+        <item>Entertainment: Television</item>
+        <item>Entertainment: Video Games</item>
+        <item>Entertainment: Board Games</item>
+        <item>Entertainment: Comics</item>
+        <item>Entertainment: Cartoon &amp; Animations</item>
+        <item>Entertainment: Japanese Anime &amp; Manga</item>
+        <item>Science &amp; Nature</item>
+        <item>Science: Computers</item>
+        <item>Science: Mathematics</item>
+        <item>Science: Gadgets</item>
+        <item>Mythology</item>
+        <item>Sports</item>
+        <item>Geography</item>
+        <item>History</item>
+        <item>Politics</item>
+        <item>Art</item>
+        <item>Celebrities</item>
+        <item>Animals</item>
+        <item>Vehicles</item>
+        <item>Science: Gadgets</item>
+    </string-array>
+</resources>
+

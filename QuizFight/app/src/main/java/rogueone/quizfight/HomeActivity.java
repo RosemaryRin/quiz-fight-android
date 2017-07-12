@@ -186,8 +186,6 @@ public class HomeActivity extends SavedGamesActivity {
                         REQUEST_ACHIEVEMENTS);
             }
         });
-
-        getGames();
     }
 
     /**
@@ -306,10 +304,16 @@ public class HomeActivity extends SavedGamesActivity {
         }
     }
 
+
+
     @Override
     public void onResume() {
         super.onResume();
-        getGames();
+        if (configurationChanged) {
+            updateHistory();
+        } else {
+            getGames();
+        }
     }
 
     /* TODO To be tested

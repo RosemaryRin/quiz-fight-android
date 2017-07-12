@@ -84,7 +84,16 @@ public class StartDuelActivity extends SavedGamesActivity {
         ButterKnife.bind(this);
 
         application = (QuizFightApplication)getApplication();
-        getGames();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (configurationChanged) {
+            setupUI();
+        } else {
+            getGames();
+        }
     }
 
     private void setupUI() {
@@ -106,7 +115,7 @@ public class StartDuelActivity extends SavedGamesActivity {
         findViewById(R.id.button_random_player).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                createDuel("elena.pullin95@gmail.com"); //FIXME to be removed
+                createDuel("");
             }
         });
 
@@ -144,11 +153,20 @@ public class StartDuelActivity extends SavedGamesActivity {
 
     public void createDuel(String opponentUsername) {
         String[] topics = getRandomTopics().toArray(new String[3]); // 3 rounds
-        new NewDuel(new RESTDuel(
-                Games.Players.getCurrentPlayer(application.getClient()).getDisplayName(),
-                opponentUsername,
-                topics
-        )).call(new Callback<Round>() {
+        NewDuel newDuel;
+        if (opponentUsername.equals("")) {
+            newDuel = new NewDuel(new RESTDuel(
+                    Games.Players.getCurrentPlayer(application.getClient()).getDisplayName(),
+                    topics
+            ));
+        } else{
+            newDuel = new NewDuel(new RESTDuel(
+                    Games.Players.getCurrentPlayer(application.getClient()).getDisplayName(),
+                    opponentUsername,
+                    topics
+            ));
+        }
+        newDuel.call(new Callback<Round>() {
             @Override
             public void onResponse(Call<Round> call, Response<Round> response) {
                 mProgressBar.setVisibility(View.GONE);
@@ -235,42 +253,6 @@ public class StartDuelActivity extends SavedGamesActivity {
                         getResources().getString(R.string.no_facebook_access),
                         Toast.LENGTH_LONG).show();
             }
-
-            /*if (getArguments().getInt(ARG_SECTION_NUMBER) == 1) { // friends tab
-                Games.Players.loadConnectedPlayers(application.getClient(), true).setResultCallback(
-                        new ResultCallback<Players.LoadPlayersResult>() {
-                            @Override
-                            public void onResult(@NonNull Players.LoadPlayersResult loadPlayersResult) {
-                                PlayerBuffer friends = loadPlayersResult.getPlayers();
-                                if (friends.getCount() > 0) {
-                                    final ListView listView = (ListView) rootView.findViewById(R.id.listview_startduel_list);
-                                    rootView.findViewById(R.id.textview_startduel_nouserstoshow).setVisibility(View.GONE);
-                                    listView.setVisibility(View.VISIBLE);
-                                    final FriendListAdapter listAdapter = new FriendListAdapter(getContext(), friends);
-                                    listView.setAdapter(listAdapter);
-                                }
-                            }
-                        }
-                );
-            }
-            else { // leaderboard tab
-                Games.Leaderboards.loadPlayerCenteredScores(application.getClient(), getString(R.string.leaderboard_id), LeaderboardVariant.TIME_SPAN_ALL_TIME, LeaderboardVariant.COLLECTION_PUBLIC, 10, true).setResultCallback(
-                        new ResultCallback<Leaderboards.LoadScoresResult>() {
-                            @Override
-                            public void onResult(@NonNull Leaderboards.LoadScoresResult loadScoresResult) {
-                                LeaderboardScoreBuffer leaderboard = loadScoresResult.getScores();
-                                Log.d("Debug", ""+leaderboard.getCount());
-                                if (leaderboard.getCount() > 0) {
-                                    final ListView listView = (ListView) rootView.findViewById(R.id.listview_startduel_list);
-                                    rootView.findViewById(R.id.textview_startduel_nouserstoshow).setVisibility(View.GONE);
-                                    listView.setVisibility(View.VISIBLE);
-                                    final LeaderboardAdapter listAdapter = new LeaderboardAdapter(getContext(), leaderboard);
-                                    listView.setAdapter(listAdapter);
-                                }
-                            }
-                        }
-                );
-            }*/
 
             return rootView;
         }

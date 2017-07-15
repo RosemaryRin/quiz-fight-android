@@ -68,6 +68,7 @@ public class DuelActivity extends SavedGamesActivity {
 
     private Round round;
     private Question currentQuestion;
+    private String currentTopic;
     private int count;
     private int score;
     private Duel duel;
@@ -79,6 +80,7 @@ public class DuelActivity extends SavedGamesActivity {
 
     private FragmentManager fragmentManager;
     @BindView(R.id.progressbar_duel_difficultybar) ProgressBar progressBar_difficulty;
+    @BindView(R.id.textview_duel_topic) TextView textView_duelTopic;
     @BindView(R.id.textview_question) TextView textView_question;
     @BindView(R.id.progressbar_timer) ProgressBar progressBar;
     private TrueFalseFragment trueFalseFragment;
@@ -86,6 +88,7 @@ public class DuelActivity extends SavedGamesActivity {
     private AlertDialog dialog;
 
     @BindString(R.string.round) String roundString;
+    @BindString(R.string.topic) String topicString;
     @BindString(R.string.duel_id) String duelString;
     @BindString(R.string.count) String countString;
     @BindString(R.string.score) String scoreString;
@@ -153,6 +156,8 @@ public class DuelActivity extends SavedGamesActivity {
 
         if (extras.containsKey(roundString)) { // If the round is provided using Bundles
             round = extras.getParcelable(roundString);
+            currentTopic = extras.getString(topicString);
+            textView_duelTopic.setText(currentTopic);
             initDuel();
         } else { // If the round has to be retrieved using a server call
             new GetRound(
@@ -163,6 +168,8 @@ public class DuelActivity extends SavedGamesActivity {
                 public void onResponse(Call<Round> call, Response<Round> response) {
                     if (response.isSuccessful()) {
                         round = response.body();
+                        currentTopic = response.body().getTopic();
+                        textView_duelTopic.setText(currentTopic);
                         initDuel();
                     } else {
                         errorToast(errorRound);
@@ -283,7 +290,6 @@ public class DuelActivity extends SavedGamesActivity {
                 progressBar_difficulty.getProgressDrawable().setColorFilter(
                         Color.RED, android.graphics.PorterDuff.Mode.SRC_IN);
             }
-
             textView_question.setText(currentQuestion.getQuestion()); // show that...
             //.. with the correct Fragment
             if (currentQuestion.isTrueOrFalse()) {

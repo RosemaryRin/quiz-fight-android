@@ -15,7 +15,7 @@ public class RESTDuel {
     private String[] topics;
 
     public RESTDuel(@NonNull String user1, @NonNull String[] topics) {
-        new RESTDuel(user1, null, topics);
+        this(user1, null, topics);
     }
 
     public RESTDuel(@NonNull String user1, String user2, @NonNull String[] topics) {

@@ -31,15 +31,9 @@ public class History implements Serializable {
     }
 
     public List<Duel> getCompletedDuels(int n) {
-        List<Duel> inProgress = new ArrayList<>();
-        Iterator<Duel> iterator = duels.iterator();
-        while (iterator.hasNext() && inProgress.size() < n) {
-            Duel duel = iterator.next();
-            if (duel.isCompleted()) {
-                inProgress.add(duel);
-            }
-        }
-        return inProgress;
+        List<Duel> completedDuels = getCompletedDuels();
+        int size = completedDuels.size();
+        return completedDuels.subList(size - n, size);
     }
 
     public List<Duel> getInProgressDuels() {

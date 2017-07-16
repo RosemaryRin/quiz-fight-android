@@ -56,6 +56,8 @@
     <string name="score_dialog">You got %1$d points!</string>
     <string name="round_completed">Round completed!</string>
     <string name="ok">Ok</string>
+    <string name="correct_answer">Correct</string>
+    <string name="incorrect_answer">Incorrect</string>
 
     <string name="sign_out">Sign out</string>
     <string name="signed_in">signed_in</string>

@@ -289,6 +289,7 @@ public class HomeActivity extends SavedGamesActivity {
             List<Duel> duelsInProgress = history.getInProgressDuels(DUELS_SHOWN);
             mProgressBar2.setVisibility(View.INVISIBLE);
             if (completedDuels.size() > 0) {
+                noLastDuels.setVisibility(View.GONE);
                 findViewById(R.id.button_home_duelshistory).setVisibility(View.VISIBLE);
                 oldDuels_listview.setVisibility(View.VISIBLE);
                 final DuelSummaryAdapter complAdapter = new DuelSummaryAdapter(this, completedDuels);
@@ -301,6 +302,7 @@ public class HomeActivity extends SavedGamesActivity {
             }
             mProgressBar1.setVisibility(View.GONE);
             if (duelsInProgress.size() > 0) {
+                noDuelsProgress.setVisibility(View.GONE);
                 duelsInProgress_listview.setVisibility(View.VISIBLE);
                 final DuelSummaryAdapter progAdapter = new DuelSummaryAdapter(this, duelsInProgress);
                 duelsInProgress_listview.setAdapter(progAdapter);

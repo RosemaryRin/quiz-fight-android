@@ -44,6 +44,8 @@ public class TrueFalseFragment extends Fragment implements QuestionFragment {
     @Override
     public void fillOptions(@NonNull List<Option> options) {
         button_tf_one.setText(options.get(0).getOption());
+        button_tf_one.getBackground().clearColorFilter();
         button_tf_two.setText(options.get(1).getOption());
+        button_tf_two.getBackground().clearColorFilter();
     }
 }

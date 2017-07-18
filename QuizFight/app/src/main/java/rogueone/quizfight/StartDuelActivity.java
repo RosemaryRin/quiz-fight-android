@@ -3,7 +3,6 @@ package rogueone.quizfight;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
 import android.support.v7.widget.Toolbar;
@@ -170,7 +169,7 @@ public class StartDuelActivity extends SavedGamesActivity {
     }
 
     public void createDuel(String opponentUsername) {
-        String[] topics = getRandomTopics().toArray(new String[3]); // 3 rounds
+        final String[] topics = getRandomTopics().toArray(new String[3]); // 3 rounds
         NewDuel newDuel;
         if (opponentUsername.equals("")) {
             newDuel = new NewDuel(new RESTDuel(
@@ -188,7 +187,7 @@ public class StartDuelActivity extends SavedGamesActivity {
             @Override
             public void onResponse(Call<Round> call, Response<Round> response) {
                 mProgressBar.setVisibility(View.GONE);
-                startDuel(response.body());
+                startDuel(response.body(), topics[0]);
             }
 
             @Override
@@ -206,7 +205,7 @@ public class StartDuelActivity extends SavedGamesActivity {
         return list.subList(0, 3);
     }
 
-    private void startDuel(@NonNull Round round) {
+    private void startDuel(@NonNull Round round, String firstTopics) {
         Duel newDuel = new Duel(round.getDuelID(), round.getOpponent());
         history.addDuel(newDuel);
         SavedGames.writeSnapshot(snapshot, history, "", application.getClient());
@@ -214,6 +213,7 @@ public class StartDuelActivity extends SavedGamesActivity {
         // Begin with the first round
         Intent intent = new Intent(StartDuelActivity.this, DuelActivity.class);
         intent.putExtra(getString(R.string.round), round);
+        intent.putExtra(getString(R.string.topic), firstTopics);
         startActivity(intent);
         finish();
     }

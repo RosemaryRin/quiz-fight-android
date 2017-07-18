@@ -107,8 +107,6 @@ public class DuelActivity extends SavedGamesActivity {
     @BindString(R.string.rounds_played) String roundsPlayed;
     @BindString(R.string.questions_answered) String questionsAnswered;
     @BindString(R.string.leaderboard_id) String leaderboardId;
-    @BindString(R.string.correct_answer) String correctAnswer;
-    @BindString(R.string.incorrect_answer) String incorrectAnswer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

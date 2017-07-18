@@ -101,9 +101,6 @@ public class HomeActivity extends SavedGamesActivity {
 
         callbackManager = CallbackManager.Factory.create();
 
-        noDuelsProgress.setVisibility(View.INVISIBLE);
-        noLastDuels.setVisibility(View.INVISIBLE);
-
         loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
 
             @Override
@@ -311,8 +308,12 @@ public class HomeActivity extends SavedGamesActivity {
                 duelsInProgress_listview.setOnItemClickListener(new DuelDetailListener(this));
                 justifyListViewHeightBasedOnChildren(duelsInProgress_listview);
             } else {
-                noDuelsProgress.setVisibility(View.GONE);
+                noDuelsProgress.setVisibility(View.VISIBLE);
             }
+        }
+        else {
+            noDuelsProgress.setVisibility(View.VISIBLE);
+            noLastDuels.setVisibility(View.VISIBLE);
         }
     }
 

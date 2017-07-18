@@ -33,7 +33,9 @@ public class History implements Serializable {
     public List<Duel> getCompletedDuels(int n) {
         List<Duel> completedDuels = getCompletedDuels();
         int size = completedDuels.size();
-        return completedDuels.subList(size - n, size);
+        if (size - n >= 0) {
+            return completedDuels.subList(size - n, size);
+        } else return completedDuels;
     }
 
     public List<Duel> getInProgressDuels() {

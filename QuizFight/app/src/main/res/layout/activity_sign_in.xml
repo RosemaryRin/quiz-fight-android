@@ -7,14 +7,6 @@
     android:weightSum="1"
     android:background="@android:color/white">
 
-    <ImageView
-        android:id="@+id/logo_signin_iv"
-        android:layout_width="300dp"
-        android:layout_height="300dp"
-        android:adjustViewBounds="true"
-        android:cropToPadding="true"
-        android:src="@drawable/qf" />
-
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -33,5 +25,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:visibility="invisible" />
+
+    <ImageView
+        android:id="@+id/logo_signin_iv"
+        android:layout_width="300dp"
+        android:layout_height="203dp"
+        android:adjustViewBounds="true"
+        android:cropToPadding="true"
+        android:src="@drawable/qf" />
 
 </LinearLayout>

@@ -7,12 +7,16 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.os.Handler;
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -79,9 +83,9 @@ public class DuelActivity extends SavedGamesActivity {
     private CountDownTimer timer; // The timer
 
     private FragmentManager fragmentManager;
-    @BindView(R.id.progressbar_duel_difficultybar) ProgressBar progressBar_difficulty;
     @BindView(R.id.textview_duel_topic) TextView textView_duelTopic;
     @BindView(R.id.textview_question) TextView textView_question;
+    @BindView(R.id.progressbar_duel_difficultybar) ProgressBar progressBar_difficulty;
     @BindView(R.id.progressbar_timer) ProgressBar progressBar;
     private TrueFalseFragment trueFalseFragment;
     private MultipleChoiceFragment multipleChoiceFragment;
@@ -219,7 +223,7 @@ public class DuelActivity extends SavedGamesActivity {
             }
 
             public void onFinish() {
-                answer(0);
+                answer(0, -1);
             }
         }.start();
     }
@@ -228,32 +232,36 @@ public class DuelActivity extends SavedGamesActivity {
      * Handle a new answer saving its correctness and updating the UI.
      * @param answer The answer. It may be 0, if the timer expired.
      */
-    private void answer(int answer) {
+    private void answer(int answer, int id) {
         GoogleApiClient client = application.getClient();
         Games.Events.increment(client, questionsAnswered, 1);
         if (timer != null) {
             timer.cancel(); // Stop the timer
             availableTime = ALLOWED_TIME;
         }
-        if (answer == currentQuestion.getAnswer()) {
-            // TODO something green
+        if (id != -1) {
+            Button selected = (Button) findViewById(id);
+            if (answer == currentQuestion.getAnswer()) {
+                selected.getBackground().setColorFilter(ContextCompat.getColor(this,R.color.won_duel),
+                        PorterDuff.Mode.MULTIPLY);
+                answers[count] = true;
+                // Update achievements
+                Games.Achievements.increment(client, answers100, 1);
+                Games.Achievements.increment(client, answers250, 1);
+                Games.Achievements.increment(client, answers500, 1);
+                Games.Achievements.increment(client, answers1000, 1);
 
-            answers[count] = true;
-            // Update achievements
-            Games.Achievements.increment(client, answers100, 1);
-            Games.Achievements.increment(client, answers250, 1);
-            Games.Achievements.increment(client, answers500, 1);
-            Games.Achievements.increment(client, answers1000, 1);
+                // Update events
+                Games.Events.increment(client, correctAnswers, 1);
 
-            // Update events
-            Games.Events.increment(client, correctAnswers, 1);
-
-            score += currentQuestion.getDifficulty();
-            saveAnswer(true);
-        } else {
-            answers[count] = false;
-            // TODO something red
-            saveAnswer(false);
+                score += currentQuestion.getDifficulty();
+                saveAnswer(true);
+            } else {
+                selected.getBackground().setColorFilter(ContextCompat.getColor(this,R.color.lost_duel),
+                        PorterDuff.Mode.MULTIPLY);
+                answers[count] = false;
+                saveAnswer(false);
+            }
         }
         count++; // get the next question
         nextQuestion();
@@ -273,36 +281,40 @@ public class DuelActivity extends SavedGamesActivity {
     private void nextQuestion() {
         if (count < QUESTIONS_PER_ROUND) { // there are some more questions
             currentQuestion = round.getQuestions().get(count); // get the next question
-
-            // difficulty
-            int diff = currentQuestion.getDifficulty();
-            if (diff <= 1) {
-                progressBar_difficulty.setProgress(1);
-                progressBar_difficulty.getProgressDrawable().setColorFilter(
-                        Color.GREEN, android.graphics.PorterDuff.Mode.SRC_IN);
-            }
-            else if (diff == 2) {
-                progressBar_difficulty.setProgress(2);
-                progressBar_difficulty.getProgressDrawable().setColorFilter(
-                        Color.YELLOW, android.graphics.PorterDuff.Mode.SRC_IN);
-            } else {
-                progressBar_difficulty.setProgress(3);
-                progressBar_difficulty.getProgressDrawable().setColorFilter(
-                        Color.RED, android.graphics.PorterDuff.Mode.SRC_IN);
-            }
-            textView_question.setText(currentQuestion.getQuestion()); // show that...
-            //.. with the correct Fragment
-            if (currentQuestion.isTrueOrFalse()) {
-                showHide(true, trueFalseFragment);
-                showHide(false, multipleChoiceFragment);
-
-                trueFalseFragment.fillOptions(currentQuestion.getOptions());
-            } else {
-                showHide(false, trueFalseFragment);
-                showHide(true, multipleChoiceFragment);
-
-                multipleChoiceFragment.fillOptions(currentQuestion.getOptions());
-            }
+            final Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    // Do this after 1s = 1000ms
+                    // difficulty
+                    int diff = currentQuestion.getDifficulty();
+                    if (diff <= 1) {
+                        progressBar_difficulty.setProgress(1);
+                        progressBar_difficulty.getProgressDrawable().setColorFilter(
+                                Color.GREEN, android.graphics.PorterDuff.Mode.SRC_IN);
+                    }
+                    else if (diff == 2) {
+                        progressBar_difficulty.setProgress(2);
+                        progressBar_difficulty.getProgressDrawable().setColorFilter(
+                                Color.YELLOW, android.graphics.PorterDuff.Mode.SRC_IN);
+                    } else {
+                        progressBar_difficulty.setProgress(3);
+                        progressBar_difficulty.getProgressDrawable().setColorFilter(
+                                Color.RED, android.graphics.PorterDuff.Mode.SRC_IN);
+                    }
+                    textView_question.setText(currentQuestion.getQuestion()); // show that...
+                    //.. with the correct Fragment
+                    if (currentQuestion.isTrueOrFalse()) {
+                        showHide(true, trueFalseFragment);
+                        showHide(false, multipleChoiceFragment);
+                        trueFalseFragment.fillOptions(currentQuestion.getOptions());
+                    } else {
+                        showHide(false, trueFalseFragment);
+                        showHide(true, multipleChoiceFragment);
+                        multipleChoiceFragment.fillOptions(currentQuestion.getOptions());
+                    }
+                }
+            }, 1000);
             timer.start();
         } else { // every question has been answered, final housekeeping
             roundTerminated();
@@ -404,20 +416,21 @@ public class DuelActivity extends SavedGamesActivity {
      * @param v The clicked view
      */
     public void getAnswer(View v) {
-        switch (v.getId()) {
+        int view_id = v.getId();
+        switch (view_id) {
             case R.id.button_choice_one:
             case R.id.button_tf_one:
-                answer(ONE);
+                answer(ONE, view_id);
                 break;
             case R.id.button_choice_two:
             case R.id.button_tf_two:
-                answer(TWO);
+                answer(TWO, view_id);
                 break;
             case R.id.button_choice_three:
-                answer(THREE);
+                answer(THREE, view_id);
                 break;
             case R.id.button_choice_four:
-                answer(FOUR);
+                answer(FOUR, view_id);
                 break;
         }
     }

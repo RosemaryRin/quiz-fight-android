@@ -298,7 +298,7 @@ public class HomeActivity extends SavedGamesActivity {
                 oldDuels_listview.setAdapter(complAdapter);
                 complAdapter.notifyDataSetChanged();
                 oldDuels_listview.setOnItemClickListener(new DuelDetailListener(this));
-                //justifyListViewHeightBasedOnChildren(oldDuels_listview);
+                justifyListViewHeightBasedOnChildren(oldDuels_listview);
             } else {
                 noLastDuels.setVisibility(View.VISIBLE);
             }
@@ -309,7 +309,7 @@ public class HomeActivity extends SavedGamesActivity {
                 duelsInProgress_listview.setAdapter(progAdapter);
                 progAdapter.notifyDataSetChanged();
                 duelsInProgress_listview.setOnItemClickListener(new DuelDetailListener(this));
-                //justifyListViewHeightBasedOnChildren(duelsInProgress_listview);
+                justifyListViewHeightBasedOnChildren(duelsInProgress_listview);
             } else {
                 noDuelsProgress.setVisibility(View.GONE);
             }

@@ -47,8 +47,12 @@ public class MultipleChoiceFragment extends Fragment implements QuestionFragment
     @Override
     public void fillOptions(@NonNull List<Option> options) {
         button_mc_one.setText(options.get(0).getOption());
+        button_mc_one.getBackground().clearColorFilter();
         button_mc_two.setText(options.get(1).getOption());
+        button_mc_two.getBackground().clearColorFilter();
         button_mc_three.setText(options.get(2).getOption());
+        button_mc_three.getBackground().clearColorFilter();
         button_mc_four.setText(options.get(3).getOption());
+        button_mc_four.getBackground().clearColorFilter();
     }
 }

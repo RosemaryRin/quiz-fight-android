@@ -4,12 +4,8 @@
     android:layout_height="match_parent"
     android:gravity="center"
     android:orientation="vertical"
-    android:weightSum="1">
-
-    <com.google.android.gms.common.SignInButton
-        android:id="@+id/button_sign_in"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+    android:weightSum="1"
+    android:background="@android:color/white">
 
     <TextView
         android:layout_width="wrap_content"
@@ -19,6 +15,11 @@
         android:text="@string/tv_signin_required"
         android:textSize="@dimen/signin_required"/>
 
+    <com.google.android.gms.common.SignInButton
+        android:id="@+id/button_sign_in"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
     <ProgressBar
         android:id="@+id/indeterminateBar0"
         android:layout_width="wrap_content"
@@ -27,10 +28,10 @@
 
     <ImageView
         android:id="@+id/logo_signin_iv"
-        android:layout_width="200dp"
-        android:layout_height="200dp"
+        android:layout_width="300dp"
+        android:layout_height="203dp"
         android:adjustViewBounds="true"
         android:cropToPadding="true"
-        android:src="@drawable/logo_web" />
+        android:src="@drawable/qf" />
 
 </LinearLayout>

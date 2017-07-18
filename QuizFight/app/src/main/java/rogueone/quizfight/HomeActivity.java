@@ -297,7 +297,7 @@ public class HomeActivity extends SavedGamesActivity {
                 oldDuels_listview.setOnItemClickListener(new DuelDetailListener(this));
                 justifyListViewHeightBasedOnChildren(oldDuels_listview);
             } else {
-                noLastDuels.setVisibility(View.GONE);
+                noLastDuels.setVisibility(View.VISIBLE);
             }
             mProgressBar1.setVisibility(View.GONE);
             if (duelsInProgress.size() > 0) {
@@ -308,7 +308,7 @@ public class HomeActivity extends SavedGamesActivity {
                 duelsInProgress_listview.setOnItemClickListener(new DuelDetailListener(this));
                 justifyListViewHeightBasedOnChildren(duelsInProgress_listview);
             } else {
-                noDuelsProgress.setVisibility(View.GONE);
+                noDuelsProgress.setVisibility(View.VISIBLE);
             }
         }
         else {

@@ -311,7 +311,7 @@ public class HomeActivity extends SavedGamesActivity {
                 noDuelsProgress.setVisibility(View.VISIBLE);
             }
         }
-        else {
+        else if (history.isEmpty()){
             noDuelsProgress.setVisibility(View.VISIBLE);
             noLastDuels.setVisibility(View.VISIBLE);
         }

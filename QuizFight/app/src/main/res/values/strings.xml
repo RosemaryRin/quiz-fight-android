@@ -68,6 +68,7 @@
     <string name="count">count</string>
     <string name="score">score</string>
     <string name="available_time">allowed_time</string>
+    <string name="topic">topic</string>
 
     <string name="leaderboard_id">CgkIxZDJ2KMSEAIQAg</string>
     <string name="win_10_duels">CgkIxZDJ2KMSEAIQAw</string>

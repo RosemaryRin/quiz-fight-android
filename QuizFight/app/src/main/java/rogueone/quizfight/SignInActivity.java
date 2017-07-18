@@ -9,6 +9,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import rogueone.quizfight.models.Duel;
+import rogueone.quizfight.models.History;
 import rogueone.quizfight.rest.api.AddToken;
 import rogueone.quizfight.rest.api.GetProgress;
 import rogueone.quizfight.rest.pojo.PendingDuels;
@@ -109,6 +110,7 @@ public class SignInActivity extends SavedGamesActivity implements
         if (sharedPref.getBoolean(getString(R.string.signed_in), false)) {
             client.connect();
             mProgressBar.setVisibility(View.VISIBLE);
+            findViewById(R.id.button_sign_in).setVisibility(View.GONE);
         } else {
             textView_signIn.setVisibility(View.VISIBLE);
         }
